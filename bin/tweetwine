@@ -1,0 +1,17 @@
+#!/usr/bin/env ruby
+
+require "rubygems"
+require File.dirname(__FILE__) << "/../lib/tweetwine"
+
+def exit_with_usage(why = nil)
+  puts "#{why}" if why
+  puts "Usage: tweetwine username password"
+  exit(1)
+end
+
+exit_with_usage("Insufficient arguments") if ARGV.length < 2
+
+username = ARGV.shift
+password = ARGV.shift
+app = Tweetwine.new(username, password)
+app.friends_timeline
