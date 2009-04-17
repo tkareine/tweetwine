@@ -1,6 +1,6 @@
 In order to release, do
 
-mate lib/tweetwine.rb                   # update version number
+mate Rakefile                           # update version number
 mate CHANGELOG.rdoc                     # describe changes
 rake gemspec                            # update the gemspec
 git diff                                # review the changes

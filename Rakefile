@@ -1,34 +1,34 @@
 require "rubygems"
 
-FULL_NAME = "Tweetwine"
-PACKAGE_NAME = "tweetwine"
-VERSION = "0.0.0"
+full_name = "Tweetwine"
+package_name = "tweetwine"
+version = "0.0.0"
 
-require "lib/#{PACKAGE_NAME}"
+require "lib/#{package_name}"
 
 require "rake/clean"
 
 require "rake/gempackagetask"
 spec = Gem::Specification.new do |s|
-  s.name = PACKAGE_NAME
-  s.version = VERSION
+  s.name = package_name
+  s.version = version
   s.homepage = "http://github.com/tuomas/tweetwine"
-  s.summary = "A Twitter reader"
-  s.description =<<-END
-A tasty Twitter reader made for fun.
-  END
+  s.summary = "A simple Twitter reader"
+  s.description = "A simple but tasty Twitter reader made for fun."
 
   s.author = "Tuomas Kareinen"
   s.email = "tkareine@gmail.com"
 
-  s.files = FileList["lib/**/*.rb", "bin/**/*", "*.rdoc", "spec/**/*.rb"].to_a
-  s.executables << "tweetwine"
+  s.platform = Gem::Platform::RUBY
+  s.files = FileList["Rakefile", "*.rdoc", "bin/**/*", "lib/**/*", "spec/**/*"].to_a
+  s.executables = ["tweetwine"]
 
-  s.add_development_dependency("rspec", ">= 1.2.0")
+  s.add_dependency("json", ">= 1.1.4")
+  s.add_dependency("rest-client", ">= 0.9.2")
 
   s.has_rdoc = true
   s.extra_rdoc_files = FileList["*.rdoc"].to_a
-  s.rdoc_options << "--title"   << "#{FULL_NAME} #{VERSION}" \
+  s.rdoc_options << "--title"   << "#{full_name} #{version}" \
                  << "--main"    << "README.rdoc" \
                  << "--exclude" << "spec" \
                  << "--line-numbers"
@@ -46,13 +46,21 @@ task :gemspec do
   end
 end
 
+task :install => [:package] do
+  sh %{sudo gem install pkg/#{package_name}-#{version}.gem}
+end
+
+task :uninstall => [:clean] do
+  sh %{sudo gem uninstall #{package_name}}
+end
+
 require "rake/rdoctask"
 desc "Create documentation"
 Rake::RDocTask.new(:rdoc) do |rd|
-  rd.title = "#{FULL_NAME} #{VERSION}"
+  rd.rdoc_dir = "rdoc"
+  rd.title = "#{full_name} #{version}"
   rd.main = "README.rdoc"
   rd.rdoc_files.include("*.rdoc", "lib/**/*.rb")
-  rd.rdoc_dir = "rdoc"
   rd.options << "--line-numbers"
 end
 
@@ -60,15 +68,20 @@ require "spec/rake/spectask"
 desc "Run specs"
 Spec::Rake::SpecTask.new(:spec) do |t|
   t.spec_files = FileList["spec/**/*.rb"]
-  t.spec_opts = ["--format", "specdoc"]
+  t.spec_opts = ["--colour --format progress --loadby mtime"]
+  #t.warning = true
+end
+
+desc "Run specs with RCov"
+Spec::Rake::SpecTask.new(:rcov) do |t|
+  t.spec_files = FileList["spec/**/*.rb"]
   t.rcov = true
   t.rcov_opts = ["--exclude", "spec"]
-  #t.warning = true
 end
 
 desc "Find code smells"
 task :roodi do
-  sh("roodi '**/*.rb'")
+  sh %{roodi "**/*.rb"}
 end
 
 desc "Search unfinished parts of source code"
@@ -76,4 +89,4 @@ task :todo do
   FileList["**/*.rb"].egrep /#.*(TODO|FIXME)/
 end
 
-#task :default => :spec
+task :default => :spec

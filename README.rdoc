@@ -1,18 +1,27 @@
 = Tweetwine
 
-A tasty Twitter reader made for fun.
-
-== Installation
-
-Install the software as a RubyGem from GitHub:
-
-  $ sudo gem install tuomas-tweetwine --source http://gems.github.com
+A simple but tasty Twitter reader made for fun.
 
 The program is compatible with Ruby 1.9.1.
 
 == Usage
 
-  $ tweetwine username password
+  $ tweetwine [-a username:password] [command]
+
+The program needs the user's username and password for authentication. This
+information can be given either as an argument to the program or via a
+configuration file. Without argument [-a], the program attempts to read the
+configuration file for authentication.
+
+At present, the only supported [command] is "friends", which shows the
+friend timeline (the user's home).
+
+If [command] is not given, it defaults to "friend".
+
+The configuration file, in <tt>~/.tweetwine</tt>, uses YAML syntax:
+
+  username: <your_username>
+  password: <your_password> 
 
 == Contacting
 

@@ -1,17 +1,61 @@
 #!/usr/bin/env ruby
 
 require "rubygems"
+require "getoptlong"
+require "yaml"
 require File.dirname(__FILE__) << "/../lib/tweetwine"
 
+include Tweetwine
+
 def exit_with_usage(why = nil)
-  puts "#{why}" if why
-  puts "Usage: tweetwine username password"
+  puts "#{why}\n\n" if why
+  puts <<-END
+Usage: tweetwine [-a username:password] [command]
+
+  The program needs the user's username and password for authentication.
+  This information can be given either as an argument to the program or via
+  a configuration file. Without argument [-a], the program attempts to read
+  the configuration file in YAML format at "~/.tweetwine" for
+  authentication.
+
+  Argument [command] can be one of #{Client::COMMANDS.map {|cmd| "\"#{cmd}\"" }.join(",")}.
+  If [command] is not given, it defaults to "friend".
+  END
   exit(1)
 end
 
-exit_with_usage("Insufficient arguments") if ARGV.length < 2
+def parse_args
+  opts = GetoptLong.new(
+    [ "--help", "-h", GetoptLong::NO_ARGUMENT ],
+    [ "--auth", "-a", GetoptLong::REQUIRED_ARGUMENT ]
+  )
 
-username = ARGV.shift
-password = ARGV.shift
-app = Tweetwine.new(username, password)
-app.friends_timeline
+  username, password = nil
+
+  opts.each do |opt, arg|
+    case opt
+    when "--help" then exit_with_usage
+    when "--auth" then username, password = arg.split(":", 2)
+    end
+  end rescue exit_with_usage
+
+  unless username
+    config = YAML.load(File.read(ENV["HOME"] + "/.tweetwine")) \
+        rescue exit_with_usage("No auth info given as argument and no configuration file (~/.tweetwine) found.")
+    username, password = [config["username"], config["password"]]
+  end
+
+  command = if ARGV.empty? then "friends" else ARGV.shift end
+  exit_with_usage("Unknown command.") unless Client::COMMANDS.include? command
+
+  [command, username, password]
+end
+
+command, username, password = parse_args
+client = Client.new(username, password)
+
+begin
+  client.send(command.to_sym)
+rescue RuntimeError => e
+  puts "Error: #{e.message}"
+end
