@@ -13,8 +13,8 @@ spec = Gem::Specification.new do |s|
   s.name = package_name
   s.version = version
   s.homepage = "http://github.com/tuomas/tweetwine"
-  s.summary = "A simple Twitter reader"
-  s.description = "A simple but tasty Twitter reader made for fun."
+  s.summary = "A simple Twitter command line client"
+  s.description = "A simple but tasty Twitter command line client."
 
   s.author = "Tuomas Kareinen"
   s.email = "tkareine@gmail.com"
