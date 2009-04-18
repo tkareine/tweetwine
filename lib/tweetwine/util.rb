@@ -2,6 +2,14 @@ require "time"
 
 module Tweetwine
   module Util
+    COLOR_CODES = {
+      :red => "\033[31m"
+    }
+
+    def self.colorize(text, color_code)
+      "#{COLOR_CODES[color_code.to_sym]}#{text}\033[0m"
+    end
+
     def self.humanize_time_diff(from, to)
       from = Time.parse(from.to_s) unless from.is_a? Time
       to = Time.parse(to.to_s) unless to.is_a? Time

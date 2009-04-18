@@ -5,19 +5,25 @@ module Tweetwine
   class Client
     COMMANDS = %w{friends}
 
-    def initialize(username, password)
-      @username, @password = username.to_s, password.to_s
+    def initialize(options)
+      @username, @password = options[:username].to_s, options[:password].to_s
+      @colorize = options[:colorize]
     end
 
     def friends
       response = RestClient.get "https://#{@username}:#{@password}@twitter.com/statuses/friends_timeline.json"
-      statuses = JSON.parse(response)
+      print_statuses JSON.parse(response)
+    end
+
+    private
+
+    def print_statuses(statuses)
       statuses.each do |status|
         time_diff_value, time_diff_unit = Util.humanize_time_diff(Time.now, status["created_at"])
         puts <<-END
-#{status["user"]["screen_name"]}, #{time_diff_value} #{time_diff_unit} ago:
+#{Util.colorize(status["user"]["screen_name"], :red)}, #{time_diff_value} #{time_diff_unit} ago:
 #{status["text"]}
-      
+
         END
       end
     end
