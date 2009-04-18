@@ -8,10 +8,11 @@ module Tweetwine
     def initialize(options)
       @username, @password = options[:username].to_s, options[:password].to_s
       @colorize = options[:colorize]
+      @num_statuses = options[:num_statuses]
     end
 
     def friends
-      response = RestClient.get "https://#{@username}:#{@password}@twitter.com/statuses/friends_timeline.json"
+      response = RestClient.get "https://#{@username}:#{@password}@twitter.com/statuses/friends_timeline.json?count=#{@num_statuses}"
       print_statuses JSON.parse(response)
     end
 

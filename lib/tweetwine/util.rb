@@ -33,6 +33,15 @@ module Tweetwine
       [value, pluralize_unit(value, unit)]
     end
 
+    def self.parse_positive_int(str)
+      integer = str.to_i
+      if integer > 0    # nil.to_i == 0
+        return integer
+      else
+        return nil
+      end
+    end
+
     private
 
     def self.colorize_str(color_code, str)
