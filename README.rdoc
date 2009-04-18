@@ -6,17 +6,19 @@ The program requires Ruby. It is compatible with Ruby 1.9.1.
 
 == Usage
 
+Run the program with
+
   $ tweetwine [-a username:password] [command]
 
 The program needs the user's username and password for authentication. This
-information can be given either as an argument to the program or via a
-configuration file. Without argument [-a], the program attempts to read the
+information can be given either as an option to the program or via a
+configuration file. Without option [-a], the program attempts to read the
 configuration file for authentication.
 
 At present, the only supported [command] is "friends", which shows the
 friend timeline (the user's home).
 
-If [command] is not given, it defaults to "friend".
+If [command] is not given, it defaults to "friends".
 
 The configuration file, in <tt>~/.tweetwine</tt>, uses YAML syntax:
 
@@ -24,7 +26,7 @@ The configuration file, in <tt>~/.tweetwine</tt>, uses YAML syntax:
   password: <your_password>
   colorize: true|false 
 
-For other options, see:
+For all the options, see:
 
   $ tweetwine -h
 

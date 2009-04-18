@@ -9,6 +9,11 @@ include Tweetwine
 class HelpNeeded; end
 class AlreadyReportedArgumentError < ArgumentError; end
 
+DEFAULT_OPTIONS = {
+  :colorize     => false,
+  :num_statuses => 20
+}
+
 def exit_with_error(why = nil)
   puts "Error: #{why}" if why
   exit(2)
@@ -25,24 +30,22 @@ Usage: tweetwine [options...] [command]
   configuration file in YAML format at "~/.tweetwine" for authentication.
 
   Argument [command] can be one of #{Client::COMMANDS.map {|cmd| "\"#{cmd}\"" }.join(",")}.
-  If [command] is not given, it defaults to "friend".
+  If [command] is not given, it defaults to "#{Client::COMMANDS[0]}".
 
   Options:
 
   -a, --auth <username>:<password>  Authentication data.
   -c, --color                       Colorize output with ANSI escape codes.
   -h, --help                        This help message.
-  -n, --num <num>                   The number of statuses to show.
+  -n, --num <num>                   The number of statuses to show, defaults
+                                    to #{DEFAULT_OPTIONS[:num_statuses]}.
 
   END
   exit(1)
 end
 
 def parse_args
-  options = {
-    :colorize     => false,
-    :num_statuses => 20
-  }
+  options = DEFAULT_OPTIONS.dup
 
   opts = GetoptLong.new(
     [ "--auth",   "-a", GetoptLong::REQUIRED_ARGUMENT ],
@@ -72,7 +75,7 @@ def parse_args
     end
   end
 
-  command = if ARGV.empty? then "friends" else ARGV.shift end
+  command = if ARGV.empty? then Client::COMMANDS[0] else ARGV.shift end
   raise ArgumentError, "Unknown command." unless Client::COMMANDS.include? command
 
   [command, options]
