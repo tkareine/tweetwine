@@ -3,11 +3,18 @@ require "time"
 module Tweetwine
   module Util
     COLOR_CODES = {
-      :red => "\033[31m"
+      :green  => "\033[32m",
+      :red    => "\033[31m"
     }
 
-    def self.colorize(text, color_code)
-      "#{COLOR_CODES[color_code.to_sym]}#{text}\033[0m"
+    def self.colorize(color, str, matcher = nil)
+      color_code = COLOR_CODES[color.to_sym]
+
+      unless matcher
+        colorize_str(color_code, str)
+      else
+        str.gsub(matcher) { |s| colorize_str(color_code, s) }
+      end
     end
 
     def self.humanize_time_diff(from, to)
@@ -27,6 +34,10 @@ module Tweetwine
     end
 
     private
+
+    def self.colorize_str(color_code, str)
+      "#{color_code}#{str}\033[0m"
+    end
 
     def self.pluralize_unit(value, unit)
       if ["hour", "day"].include?(unit) && value > 1

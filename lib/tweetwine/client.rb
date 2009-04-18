@@ -20,9 +20,13 @@ module Tweetwine
     def print_statuses(statuses)
       statuses.each do |status|
         time_diff_value, time_diff_unit = Util.humanize_time_diff(Time.now, status["created_at"])
+        from_user = status["user"]["screen_name"]
+        from_user = Util.colorize(:green, from_user) if @colorize
+        text = status["text"]
+        text = Util.colorize(:red, text, /@\w+/) if @colorize
         puts <<-END
-#{Util.colorize(status["user"]["screen_name"], :red)}, #{time_diff_value} #{time_diff_unit} ago:
-#{status["text"]}
+#{from_user}, #{time_diff_value} #{time_diff_unit} ago:
+#{text}
 
         END
       end

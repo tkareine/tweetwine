@@ -4,6 +4,14 @@ require "time"
 include Tweetwine
 
 describe Util do
+  it "should colorize a string" do
+    Util.colorize(:red, "foo bar").should == "\033[31mfoo bar\033[0m"
+  end
+
+  it "should colorize selected parts of a string" do
+    Util.colorize(:red, "foo bar baz", /bar/).should == "foo \033[31mbar\033[0m baz"
+  end
+
   it "should humanize time difference" do
     Util.humanize_time_diff(Time.parse("2009-01-01 00:00:59").to_s, Time.parse("2009-01-01 00:01:00")).should == [1, "sec"]
     Util.humanize_time_diff(Time.parse("2009-01-01 01:00:00").to_s, Time.parse("2009-01-01 01:00:00")).should == [0, "sec"]

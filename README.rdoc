@@ -2,7 +2,7 @@
 
 A simple but tasty Twitter reader made for fun.
 
-The program is compatible with Ruby 1.9.1.
+The program requires Ruby. It is compatible with Ruby 1.9.1.
 
 == Usage
 
@@ -21,7 +21,12 @@ If [command] is not given, it defaults to "friend".
 The configuration file, in <tt>~/.tweetwine</tt>, uses YAML syntax:
 
   username: <your_username>
-  password: <your_password> 
+  password: <your_password>
+  colorize: true|false 
+
+For other options, see:
+
+  $ tweetwine -h
 
 == Contacting
 

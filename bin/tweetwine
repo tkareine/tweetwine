@@ -51,7 +51,7 @@ def parse_args
   opts.each do |opt, arg|
     case opt
     when "--auth" then options[:username], options[:password] = arg.split(":", 2)
-    when "--color" then options[:color] = true
+    when "--color" then options[:colorize] = true
     when "--help" then raise HelpNeeded
     end
   end rescue exit_with_usage
@@ -60,6 +60,7 @@ def parse_args
     begin
       config = YAML.load(File.read(ENV["HOME"] + "/.tweetwine"))
       options[:username], options[:password] = [config["username"], config["password"]]
+      options[:colorize] = config["colorize"] if config.has_key? "colorize"
     rescue
       raise ArgumentError, "No auth info given as argument and no configuration file (~/.tweetwine) found."
     end
