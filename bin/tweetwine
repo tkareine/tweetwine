@@ -78,13 +78,13 @@ def parse_args
   command = if ARGV.empty? then Client::COMMANDS[0] else ARGV.shift end
   raise ArgumentError, "Unknown command." unless Client::COMMANDS.include? command
 
-  [command, options]
+  [options, command, ARGV]
 end
 
 begin
-  command, options = parse_args
+  options, command, args = parse_args
   client = Client.new(options)
-  client.send(command.to_sym)
+  client.send(command.to_sym, *args)
 rescue HelpNeeded, AlreadyReportedArgumentError
   exit_with_usage
 rescue ArgumentError => e

@@ -3,20 +3,28 @@ require "rest_client"
 
 module Tweetwine
   class Client
-    COMMANDS = %w{friends}
+    COMMANDS = %w{friends user}
 
     def initialize(options)
-      @username, @password = options[:username].to_s, options[:password].to_s
+      @username, password = options[:username].to_s, options[:password].to_s
+      @base_url = "https://#{@username}:#{password}@twitter.com/"
       @colorize = options[:colorize]
       @num_statuses = options[:num_statuses]
     end
 
     def friends
-      response = RestClient.get "https://#{@username}:#{@password}@twitter.com/statuses/friends_timeline.json?count=#{@num_statuses}"
-      print_statuses JSON.parse(response)
+      print_statuses JSON.parse(get("statuses/friends_timeline.json?count=#{@num_statuses}"))
+    end
+
+    def user(user = @username, *rest)
+      print_statuses JSON.parse(get("statuses/user_timeline/#{user}.json?count=#{@num_statuses}"))
     end
 
     private
+
+    def get(rest)
+      RestClient.get @base_url + rest
+    end
 
     def print_statuses(statuses)
       statuses.each do |status|
