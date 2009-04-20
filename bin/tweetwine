@@ -11,7 +11,7 @@ class AlreadyReportedArgumentError < ArgumentError; end
 
 DEFAULT_OPTIONS = {
   :colorize     => false,
-  :num_statuses => 20
+  :num_statuses => Client::MAX_NUM_STATUSES
 }
 
 def exit_with_error(why = nil)
@@ -29,7 +29,7 @@ Usage: tweetwine [options...] [command]
   configuration file. Without option [-a], the program attempts to read the
   configuration file in YAML format at "~/.tweetwine" for authentication.
 
-  Argument [command] can be one of #{Client::COMMANDS.map {|cmd| "\"#{cmd}\"" }.join(",")}.
+  Argument [command] can be one of #{Client::COMMANDS.map {|cmd| "\"#{cmd}\"" }.join(", ")}.
   If [command] is not given, it defaults to "#{Client::COMMANDS[0]}".
 
   Options:
@@ -54,16 +54,24 @@ def parse_args
     [ "--num",    "-n", GetoptLong::REQUIRED_ARGUMENT ]
   )
 
-  opts.each do |opt, arg|
-    case opt
-    when "--auth"   then options[:username], options[:password] = arg.split(":", 2)
-    when "--color"  then options[:colorize] = true
-    when "--help"   then raise HelpNeeded
-    when "--num"
-      arg = Util.parse_positive_int(arg)
-      options[:num_statuses] = arg unless arg.nil?
+  begin
+    opts.each do |opt, arg|
+      case opt
+      when "--auth"   then options[:username], options[:password] = arg.split(":", 2)
+      when "--color"  then options[:colorize] = true
+      when "--help"   then raise HelpNeeded
+      when "--num"
+        arg = arg.to_i
+        if (1..Client::MAX_NUM_STATUSES).include? arg
+          options[:num_statuses] = arg
+        else
+          raise ArgumentError, "Invalid number of statuses to show -- must be between 1..#{Client::MAX_NUM_STATUSES}"
+        end
+      end
     end
-  end rescue raise AlreadyReportedArgumentError
+  rescue GetoptLong::InvalidOption, GetoptLong::MissingArgument
+    raise AlreadyReportedArgumentError
+  end
 
   unless options[:username]
     begin
@@ -89,6 +97,6 @@ rescue HelpNeeded, AlreadyReportedArgumentError
   exit_with_usage
 rescue ArgumentError => e
   exit_with_usage e.message
-rescue RuntimeError => e
-  exit_with_error e.message
+#rescue RuntimeError => e
+#  exit_with_error e.message
 end

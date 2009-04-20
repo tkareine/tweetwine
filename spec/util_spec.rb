@@ -12,16 +12,6 @@ describe Util do
     Util.colorize(:red, "foo bar baz", /bar/).should == "foo \033[31mbar\033[0m baz"
   end
 
-  it "should parse positive integers" do
-    Util.parse_positive_int("1").should == 1
-    Util.parse_positive_int("42").should == 42
-    Util.parse_positive_int("1sdfgsdf").should == 1
-    Util.parse_positive_int(nil).should be_nil
-    Util.parse_positive_int("0").should be_nil
-    Util.parse_positive_int("-1").should be_nil
-    Util.parse_positive_int("sdfgdfg").should be_nil
-  end
-
   it "should humanize time difference" do
     Util.humanize_time_diff(Time.parse("2009-01-01 00:00:59").to_s, Time.parse("2009-01-01 00:01:00")).should == [1, "sec"]
     Util.humanize_time_diff(Time.parse("2009-01-01 01:00:00").to_s, Time.parse("2009-01-01 01:00:00")).should == [0, "sec"]
