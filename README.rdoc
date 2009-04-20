@@ -1,6 +1,6 @@
 = Tweetwine
 
-A simple but tasty Twitter reader made for fun.
+A simple but tasty Twitter agent for command line use, made for fun.
 
 The program requires Ruby. It is compatible with Ruby 1.9.1.
 
