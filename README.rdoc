@@ -15,8 +15,12 @@ information can be given either as an option to the program or via a
 configuration file. Without option [-a], the program attempts to read the
 configuration file for authentication.
 
-At present, the only supported [command] is "friends", which shows the
-friend timeline (the user's home).
+The supported commands are
+
+ * "friends" to fetch the friends statuses (the contents of the user's
+   home),
+ * "user" to fetch a specific user's statuses, and
+ * "msg" to send a status update. 
 
 If [command] is not given, it defaults to "friends".
 
