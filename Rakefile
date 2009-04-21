@@ -64,19 +64,12 @@ Rake::RDocTask.new(:rdoc) do |rd|
   rd.options << "--line-numbers"
 end
 
-require "spec/rake/spectask"
-desc "Run specs"
-Spec::Rake::SpecTask.new(:spec) do |t|
-  t.spec_files = FileList["spec/**/*.rb"]
-  t.spec_opts = ["--colour --format progress --loadby mtime"]
-  #t.warning = true
-end
-
-desc "Run specs with RCov"
-Spec::Rake::SpecTask.new(:rcov) do |t|
-  t.spec_files = FileList["spec/**/*.rb"]
-  t.rcov = true
-  t.rcov_opts = ["--exclude", "spec"]
+require "rake/testtask"
+desc "Run tests"
+Rake::TestTask.new do |t|
+  t.test_files = FileList["test/*_test.rb"]
+  t.verbose = true
+  t.warning = true
 end
 
 desc "Find code smells"
@@ -89,4 +82,4 @@ task :todo do
   FileList["**/*.rb"].egrep /#.*(TODO|FIXME)/
 end
 
-task :default => :spec
+task :default => :test
