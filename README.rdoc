@@ -17,10 +17,10 @@ configuration file for authentication.
 
 The supported commands are
 
- * "friends" to fetch the friends statuses (the contents of the user's
-   home),
- * "user" to fetch a specific user's statuses, and
- * "msg" to send a status update. 
+* "friends" to fetch the friends statuses (the contents of the user's
+  home),
+* "user" to fetch a specific user's statuses, and
+* "msg" to send a status update. 
 
 If [command] is not given, it defaults to "friends".
 
