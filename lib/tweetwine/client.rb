@@ -12,7 +12,7 @@ module Tweetwine
       @username, password = options[:username].to_s, options[:password].to_s
       @base_url = "https://#{@username}:#{password}@twitter.com/"
       @colorize = options[:colorize]
-      @num_statuses = options[:num_statuses]
+      @num_statuses = options[:num_statuses] || MAX_NUM_STATUSES
     end
 
     def friends
@@ -25,14 +25,14 @@ module Tweetwine
 
     def msg(status = nil)
       unless status
-        printf "New status message: "
+        printf "New status: "
         status = $stdin.gets
       end
       if confirm_user_action("Really send?")
         msg = status[0...MAX_STATUS_LENGTH]
         body = {:status => msg }
         status = JSON.parse(post("statuses/update.json", body))
-        puts "Sent new status message.\n\n"
+        puts "Sent status update.\n\n"
         print_statuses([status])
       else
         puts "Cancelled."
@@ -52,7 +52,7 @@ module Tweetwine
     def confirm_user_action(msg)
       printf "#{msg} [yn] "
       confirmation = $stdin.gets.strip
-      confirmation =~ /y/i
+      confirmation.downcase[0,1] == "y"
     end
 
     def print_statuses(statuses)
