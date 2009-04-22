@@ -2,29 +2,35 @@
 
 A simple but tasty Twitter agent for command line use, made for fun.
 
-The program requires Ruby. It is compatible with Ruby 1.9.1.
+== Installation
+
+Install Tweetwine as a RubyGem from GitHub:
+
+  $ sudo gem install tuomas-tweetwine --source http://gems.github.com
+
+The program is compatible with Ruby 1.9.1.
 
 == Usage
 
-Run the program with
+In the command line, run the program by entering
 
   $ tweetwine [-a username:password] [command]
 
 The program needs the user's username and password for authentication. This
-information can be given either as an option to the program or via a
-configuration file. Without option [-a], the program attempts to read the
-configuration file for authentication.
+information can be supplied either as an option to the program or via a
+configuration file. Without option <tt>[-a]</tt>, the program attempts to
+read the configuration file for authentication.
 
 The supported commands are
 
-* "friends" to fetch the friends statuses (the contents of the user's
-  home),
-* "user" to fetch a specific user's statuses, and
-* "msg" to send a status update. 
+<tt>friends</tt>:: Fetch friends' statuses (the contents of the user's home).
+<tt>user [name]</tt>:: Fetch a specific user's statuses, identified by the argument; if given no argument, fetch your own statuses.
+<tt>msg [status]</tt>:: Send a status update, but confirm the action first before actually sending. The status update can either be given as an argument or via STDIN if no argument is given.
 
-If [command] is not given, it defaults to "friends".
+If <tt>[command]</tt> is not given, it defaults to <tt>friends</tt>.
 
-The configuration file, in <tt>~/.tweetwine</tt>, uses YAML syntax:
+The configuration file, in <tt>~/.tweetwine</tt>, is in YAML syntax. It can
+contain the following settings:
 
   username: <your_username>
   password: <your_password>
