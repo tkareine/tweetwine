@@ -11,7 +11,7 @@ module Tweetwine
     def initialize(options)
       @username, password = options[:username].to_s, options[:password].to_s
       @base_url = "https://#{@username}:#{password}@twitter.com/"
-      @colorize = options[:colorize]
+      @colorize = options[:colorize] || false
       @num_statuses = options[:num_statuses] || MAX_NUM_STATUSES
     end
 
