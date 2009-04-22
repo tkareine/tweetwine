@@ -50,7 +50,7 @@ module Tweetwine
     end
 
     def confirm_user_action(msg)
-      printf "#{msg} [yn] "
+      printf "#{msg} [yN] "
       confirmation = $stdin.gets.strip
       confirmation.downcase[0,1] == "y"
     end
