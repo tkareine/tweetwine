@@ -6,7 +6,7 @@ require File.dirname(__FILE__) << "/../lib/tweetwine"
 
 include Tweetwine
 
-class HelpNeeded; end
+class HelpNeeded < StandardError; end
 class AlreadyReportedArgumentError < ArgumentError; end
 
 DEFAULT_OPTIONS = {
@@ -97,6 +97,6 @@ rescue HelpNeeded, AlreadyReportedArgumentError
   exit_with_usage
 rescue ArgumentError => e
   exit_with_usage e.message
-#rescue RuntimeError => e
-#  exit_with_error e.message
+rescue ClientError => e
+  exit_with_error e.message
 end

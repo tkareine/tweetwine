@@ -9,6 +9,13 @@ class ClientTest < Test::Unit::TestCase
       @client = Client.new({ :username => "foo", :password => "bar" })
     end
 
+    should "raise ClientError for invalid request" do
+      RestClient.expects(:get) \
+                .with("https://foo:bar@twitter.com/statuses/friends_timeline.json?count=20") \
+                .raises(RestClient::Unauthorized)
+      assert_raises(ClientError) { @client.friends }
+    end
+
     should "fetch friends' status timeline" do
       statuses = [
         {

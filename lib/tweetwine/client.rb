@@ -2,6 +2,8 @@ require "json"
 require "rest_client"
 
 module Tweetwine
+  class ClientError < RuntimeError; end
+
   class Client
     COMMANDS = %w{friends user msg}
 
@@ -41,12 +43,18 @@ module Tweetwine
 
     private
 
-    def get(rest_uri)
-      RestClient.get @base_url + rest_uri
+    def get(rest_url)
+      rest_client_action(:get, @base_url + rest_url)
     end
 
     def post(rest_url, body)
-      RestClient.post @base_url + rest_url, body
+      rest_client_action(:post, @base_url + rest_url, body)
+    end
+
+    def rest_client_action(action, *args)
+      RestClient.send(action, *args)
+    rescue RestClient::Exception => e
+      raise ClientError, e.message
     end
 
     def confirm_user_action(msg)
