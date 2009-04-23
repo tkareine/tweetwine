@@ -34,7 +34,7 @@ class ClientTest < Test::Unit::TestCase
       RestClient.expects(:get) \
                 .with("https://foo:bar@twitter.com/statuses/friends_timeline.json?count=20") \
                 .returns(statuses.to_json)
-      @io.expects(:print_statuses).with(statuses)
+      @io.expects(:show_statuses).with(statuses)
       @client.friends
     end
 
@@ -49,7 +49,7 @@ class ClientTest < Test::Unit::TestCase
       RestClient.expects(:get) \
                 .with("https://foo:bar@twitter.com/statuses/user_timeline/zanzibar.json?count=20") \
                 .returns(statuses.to_json)
-      @io.expects(:print_statuses).with(statuses)
+      @io.expects(:show_statuses).with(statuses)
       @client.user("zanzibar")
     end
 
@@ -64,7 +64,7 @@ class ClientTest < Test::Unit::TestCase
       RestClient.expects(:get) \
                 .with("https://foo:bar@twitter.com/statuses/user_timeline/foo.json?count=20") \
                 .returns(statuses.to_json)
-      @io.expects(:print_statuses).with(statuses)
+      @io.expects(:show_statuses).with(statuses)
       @client.user
     end
 
@@ -79,7 +79,7 @@ class ClientTest < Test::Unit::TestCase
                 .returns(status.to_json)
       @io.expects(:confirm).with("Really send?").returns(true)
       @io.expects(:info).with("Sent status update.\n\n")
-      @io.expects(:print_statuses).with([status])
+      @io.expects(:show_statuses).with([status])
       @client.update("wondering about")
     end
 
@@ -87,7 +87,7 @@ class ClientTest < Test::Unit::TestCase
       RestClient.expects(:post).never
       @io.expects(:confirm).with("Really send?").returns(false)
       @io.expects(:info).with("Cancelled.")
-      @io.expects(:print_statuses).never
+      @io.expects(:show_statuses).never
       @client.update("wondering about")
     end
 
@@ -106,7 +106,7 @@ class ClientTest < Test::Unit::TestCase
       @io.expects(:warn).with("Update will be truncated: #{truncated_status_update}")
       @io.expects(:confirm).with("Really send?").returns(true)
       @io.expects(:info).with("Sent status update.\n\n")
-      @io.expects(:print_statuses).with([status])
+      @io.expects(:show_statuses).with([status])
       @client.update(long_status_update)
     end
   end

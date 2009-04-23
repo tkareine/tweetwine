@@ -19,11 +19,11 @@ module Tweetwine
     end
 
     def friends
-      @io.print_statuses JSON.parse(get("statuses/friends_timeline.json?count=#{@num_statuses}"))
+      @io.show_statuses JSON.parse(get("statuses/friends_timeline.json?count=#{@num_statuses}"))
     end
 
     def user(user = @username)
-      @io.print_statuses JSON.parse(get("statuses/user_timeline/#{user}.json?count=#{@num_statuses}"))
+      @io.show_statuses JSON.parse(get("statuses/user_timeline/#{user}.json?count=#{@num_statuses}"))
     end
 
     def update(new_status = nil)
@@ -35,7 +35,7 @@ module Tweetwine
       if @io.confirm("Really send?")
         status = JSON.parse(post("statuses/update.json", {:status => new_status}))
         @io.info "Sent status update.\n\n"
-        @io.print_statuses([status])
+        @io.show_statuses([status])
       else
         @io.info "Cancelled."
       end

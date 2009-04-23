@@ -37,8 +37,8 @@ Usage: tweetwine [options...] [command]
   -a, --auth <username>:<password>  Authentication data.
   -c, --color                       Colorize output with ANSI escape codes.
   -h, --help                        This help message.
-  -n, --num <num>                   The number of statuses to show, defaults
-                                    to #{DEFAULT_OPTIONS[:num_statuses]}.
+  -n, --num <num>                   The number of statuses to fetch,
+                                    defaults to #{DEFAULT_OPTIONS[:num_statuses]}.
 
   END
   exit(1)

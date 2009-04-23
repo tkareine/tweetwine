@@ -67,7 +67,7 @@ Hi, @barman! Lulz woo!
 
       END
       )
-      @io.print_statuses(statuses)
+      @io.show_statuses(statuses)
     end
   end
 
@@ -93,7 +93,7 @@ Hi, \033[31m@barman\033[0m! Lulz woo!
 
       END
       )
-      @io.print_statuses(statuses)
+      @io.show_statuses(statuses)
     end
   end
 end

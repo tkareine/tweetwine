@@ -25,7 +25,7 @@ module Tweetwine
       confirmation.downcase[0,1] == "y"
     end
 
-    def print_statuses(statuses)
+    def show_statuses(statuses)
       statuses.each do |status|
         time_diff_value, time_diff_unit = Util.humanize_time_diff(Time.now, status["created_at"])
         from_user = status["user"]["screen_name"]
