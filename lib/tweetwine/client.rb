@@ -5,7 +5,7 @@ module Tweetwine
   class ClientError < RuntimeError; end
 
   class Client
-    COMMANDS = %w{friends user msg}
+    COMMANDS = %w{friends user update}
 
     MAX_NUM_STATUSES = 20
     MAX_STATUS_LENGTH = 140
@@ -25,7 +25,7 @@ module Tweetwine
       print_statuses JSON.parse(get("statuses/user_timeline/#{user}.json?count=#{@num_statuses}"))
     end
 
-    def msg(status = nil)
+    def update(status = nil)
       unless status
         printf "New status: "
         status = $stdin.gets

@@ -25,7 +25,7 @@ The supported commands are
 
 <tt>friends</tt>:: Fetch friends' statuses (the contents of the user's home).
 <tt>user [name]</tt>:: Fetch a specific user's statuses, identified by the argument; if given no argument, fetch your own statuses.
-<tt>msg [status]</tt>:: Send a status update, but confirm the action first before actually sending. The status update can either be given as an argument or via STDIN if no argument is given.
+<tt>update [status]</tt>:: Send a status update, but confirm the action first before actually sending. The status update can either be given as an argument or via STDIN if no argument is given.
 
 If <tt>[command]</tt> is not given, it defaults to <tt>friends</tt>.
 

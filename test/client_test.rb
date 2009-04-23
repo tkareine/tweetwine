@@ -36,7 +36,7 @@ class ClientTest < Test::Unit::TestCase
       @client.friends
     end
 
-    should "fetch user's status timeline" do
+    should "fetch a specific user's statuses, with the user identified by given argument" do
       statuses = [
         {
           :created_at => Time.at(1),
@@ -51,7 +51,22 @@ class ClientTest < Test::Unit::TestCase
       @client.user("zanzibar")
     end
 
-    should "post a new status update with confirmation" do
+    should "fetch a specific user's statuses, with the user being the authenticated user itself when given no argument" do
+      statuses = [
+        {
+          :created_at => Time.at(1),
+          :user => { :username => "foo" },
+          :text => "wassup?"
+        }
+      ]
+      RestClient.expects(:get) \
+                .with("https://foo:bar@twitter.com/statuses/user_timeline/foo.json?count=20") \
+                .returns(statuses.to_json)
+      @client.expects(:print_statuses)
+      @client.user
+    end
+
+    should "post a status update, with confirmation" do
       statuses = [
         {
           :created_at => Time.at(1),
@@ -64,7 +79,7 @@ class ClientTest < Test::Unit::TestCase
                 .returns(statuses.to_json)
       @client.expects(:print_statuses)
       @client.expects(:confirm_user_action).returns(true)
-      @client.msg("wondering about")
+      @client.update("wondering about")
     end
   end
 end
