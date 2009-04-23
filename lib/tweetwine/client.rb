@@ -15,29 +15,29 @@ module Tweetwine
       @base_url = "https://#{@username}:#{password}@twitter.com/"
       @colorize = options[:colorize] || false
       @num_statuses = options[:num_statuses] || MAX_NUM_STATUSES
+      @io = IO.new(options)
     end
 
     def friends
-      print_statuses JSON.parse(get("statuses/friends_timeline.json?count=#{@num_statuses}"))
+      @io.print_statuses JSON.parse(get("statuses/friends_timeline.json?count=#{@num_statuses}"))
     end
 
     def user(user = @username)
-      print_statuses JSON.parse(get("statuses/user_timeline/#{user}.json?count=#{@num_statuses}"))
+      @io.print_statuses JSON.parse(get("statuses/user_timeline/#{user}.json?count=#{@num_statuses}"))
     end
 
-    def update(status = nil)
-      unless status
-        print "New status: "
-        status = $stdin.gets
+    def update(new_status = nil)
+      new_status = @io.prompt("Status update") unless new_status
+      if new_status.length > MAX_STATUS_LENGTH
+        new_status = new_status[0...MAX_STATUS_LENGTH]
+        @io.warn("Update will be truncated: #{new_status}")
       end
-      if confirm_user_action("Really send?")
-        msg = status[0...MAX_STATUS_LENGTH]
-        body = {:status => msg }
-        status = JSON.parse(post("statuses/update.json", body))
-        puts "Sent status update.\n\n"
-        print_statuses([status])
+      if @io.confirm("Really send?")
+        status = JSON.parse(post("statuses/update.json", {:status => new_status}))
+        @io.info "Sent status update.\n\n"
+        @io.print_statuses([status])
       else
-        puts "Cancelled."
+        @io.info "Cancelled."
       end
     end
 
@@ -55,27 +55,6 @@ module Tweetwine
       RestClient.send(action, *args)
     rescue RestClient::Exception => e
       raise ClientError, e.message
-    end
-
-    def confirm_user_action(msg)
-      print "#{msg} [yN] "
-      confirmation = $stdin.gets.strip
-      confirmation.downcase[0,1] == "y"
-    end
-
-    def print_statuses(statuses)
-      statuses.each do |status|
-        time_diff_value, time_diff_unit = Util.humanize_time_diff(Time.now, status["created_at"])
-        from_user = status["user"]["screen_name"]
-        from_user = Util.colorize(:green, from_user) if @colorize
-        text = status["text"]
-        text = Util.colorize(:red, text, /@\w+/) if @colorize
-        puts <<-END
-#{from_user}, #{time_diff_value} #{time_diff_unit} ago:
-#{text}
-
-        END
-      end
     end
   end
 end

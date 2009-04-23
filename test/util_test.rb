@@ -5,14 +5,6 @@ class UtilTest < Test::Unit::TestCase
   include Tweetwine
 
   context "The module" do
-    should "colorize a string" do
-      assert_equal "\033[31mfoo bar\033[0m", Util.colorize(:red, "foo bar")
-    end
-
-    should "colorize selected parts of a string" do
-      assert_equal "foo \033[31mbar\033[0m baz", Util.colorize(:red, "foo bar baz", /bar/)
-    end
-
     should "humanize time difference" do
       assert_equal [1,  "sec"],   Util.humanize_time_diff(Time.parse("2009-01-01 00:00:59").to_s, Time.parse("2009-01-01 00:01:00"))
       assert_equal [0,  "sec"],   Util.humanize_time_diff(Time.parse("2009-01-01 01:00:00").to_s, Time.parse("2009-01-01 01:00:00"))
