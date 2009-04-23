@@ -66,7 +66,7 @@ class ClientTest < Test::Unit::TestCase
       @client.user
     end
 
-    should "post a status update, with confirmation" do
+    should "post a status update, when positive confirmation" do
       statuses = [
         {
           :created_at => Time.at(1),
@@ -78,7 +78,21 @@ class ClientTest < Test::Unit::TestCase
                 .with("https://foo:bar@twitter.com/statuses/update.json", {:status => "wondering about"}) \
                 .returns(statuses.to_json)
       @client.expects(:print_statuses)
-      @client.expects(:confirm_user_action).returns(true)
+      $stdin.expects(:gets).returns("y")
+      @client.update("wondering about")
+    end
+
+    should "cancel a status update, when negative confirmation" do
+      RestClient.expects(:post).never
+      @client.expects(:print_statuses).never
+      $stdin.expects(:gets).returns("n")
+      @client.update("wondering about")
+    end
+
+    should "cancel a status update, when default confirmation" do
+      RestClient.expects(:post).never
+      @client.expects(:print_statuses).never
+      $stdin.expects(:gets).returns("")
       @client.update("wondering about")
     end
   end
