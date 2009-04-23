@@ -27,7 +27,7 @@ module Tweetwine
 
     def update(status = nil)
       unless status
-        printf "New status: "
+        print "New status: "
         status = $stdin.gets
       end
       if confirm_user_action("Really send?")
@@ -58,7 +58,7 @@ module Tweetwine
     end
 
     def confirm_user_action(msg)
-      printf "#{msg} [yN] "
+      print "#{msg} [yN] "
       confirmation = $stdin.gets.strip
       confirmation.downcase[0,1] == "y"
     end
