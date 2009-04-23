@@ -16,7 +16,7 @@ class ClientTest < Test::Unit::TestCase
       assert_raises(ClientError) { @client.friends }
     end
 
-    should "fetch friends' status timeline" do
+    should "fetch friends' statuses" do
       statuses = [
         {
           :created_at => Time.at(1),
