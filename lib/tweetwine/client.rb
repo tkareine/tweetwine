@@ -5,16 +5,27 @@ module Tweetwine
   class ClientError < RuntimeError; end
 
   class Client
+    attr_reader :num_statuses
+
     COMMANDS = %w{friends user update}
 
-    MAX_NUM_STATUSES = 20
+    DEFAULT_NUM_STATUSES = 20
+    MAX_NUM_STATUSES = 200
     MAX_STATUS_LENGTH = 140
 
     def initialize(options)
       @username, password = options[:username].to_s, options[:password].to_s
       @base_url = "https://#{@username}:#{password}@twitter.com/"
       @colorize = options[:colorize] || false
-      @num_statuses = options[:num_statuses] || MAX_NUM_STATUSES
+      @num_statuses = if options[:num_statuses]
+        if (1..MAX_NUM_STATUSES).include? options[:num_statuses]
+          options[:num_statuses]
+        else
+          raise ArgumentError, "Invalid number of statuses to show -- must be between 1..#{Client::MAX_NUM_STATUSES}"
+        end
+      else
+        DEFAULT_NUM_STATUSES
+      end
       @io = IO.new(options)
     end
 

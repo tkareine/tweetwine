@@ -4,6 +4,22 @@ require "json"
 class ClientTest < Test::Unit::TestCase
   include Tweetwine
 
+  context "Upon initializing a client" do
+    should "use default num of statuses if not configured otherwise" do
+      @client = Client.new({ :username => "foo", :password => "bar" })
+      assert_equal Client::DEFAULT_NUM_STATUSES, @client.num_statuses
+    end
+
+    should "use configured num of statuses if in allowed range" do
+      @client = Client.new({ :username => "foo", :password => "bar", :num_statuses => 12 })
+      assert_equal 12, @client.num_statuses
+    end
+
+    should "raise an exception for configured num of statuses if not in allowed range" do
+      assert_raises(ArgumentError) { Client.new({ :username => "foo", :password => "bar", :num_statuses => Client::MAX_NUM_STATUSES + 1 }) }
+    end
+  end
+
   context "A client" do
     setup do
       @client = Client.new({ :username => "foo", :password => "bar" })
