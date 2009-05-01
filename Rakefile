@@ -20,7 +20,7 @@ spec = Gem::Specification.new do |s|
   s.email = "tkareine@gmail.com"
 
   s.platform = Gem::Platform::RUBY
-  s.files = FileList["Rakefile", "*.rdoc", "bin/**/*", "lib/**/*", "spec/**/*"].to_a
+  s.files = FileList["Rakefile", "*.rdoc", "bin/**/*", "lib/**/*", "test/**/*"].to_a
   s.executables = ["tweetwine"]
 
   s.add_dependency("json", ">= 1.1.4")
@@ -30,7 +30,7 @@ spec = Gem::Specification.new do |s|
   s.extra_rdoc_files = FileList["*.rdoc"].to_a
   s.rdoc_options << "--title"   << "#{full_name} #{version}" \
                  << "--main"    << "README.rdoc" \
-                 << "--exclude" << "spec" \
+                 << "--exclude" << "test" \
                  << "--line-numbers"
 end
 
