@@ -1,91 +1,37 @@
 #!/usr/bin/env ruby
 
 require "rubygems"
-require "getoptlong"
+require "optparse"
+
 require File.dirname(__FILE__) << "/../lib/tweetwine"
 
 include Tweetwine
 
-class HelpNeeded < StandardError; end
-class AlreadyReportedArgumentError < ArgumentError; end
-
-def exit_with_error(why = nil)
-  puts "Error: #{why}" if why
-  exit(2)
-end
-
-def exit_with_usage(why = nil)
-  puts "#{why}\n\n" if why
-  puts <<-END
-Usage: tweetwine [options...] [command]
-
-  The program needs the user's username and password for authentication.
-  This information can be given either as an option to the program or via a
-  configuration file. Without option [-a], the program attempts to read the
-  configuration file in YAML format at "~/.tweetwine" for authentication.
-
-  Argument [command] can be one of #{Client::COMMANDS.map {|cmd| "\"#{cmd}\"" }.join(", ")}.
-  If [command] is not given, it defaults to "#{Client::COMMANDS[0]}".
-
-  Options:
-
-  -a, --auth <username>:<password>  Authentication data.
-  -c, --color                       Colorize output with ANSI escape codes.
-  -h, --help                        This help message.
-  -n, --num <num>                   The number of statuses to fetch,
-                                    defaults to #{Client::DEFAULT_NUM_STATUSES}.
-
-  END
-  exit(1)
-end
-
-def parse_args
-  options = {}
-
-  opts = GetoptLong.new(
-    [ "--auth",   "-a", GetoptLong::REQUIRED_ARGUMENT ],
-    [ "--color",  "-c", GetoptLong::NO_ARGUMENT ],
-    [ "--help",   "-h", GetoptLong::NO_ARGUMENT ],
-    [ "--num",    "-n", GetoptLong::REQUIRED_ARGUMENT ]
-  )
-
-  begin
-    opts.each do |opt, arg|
-      case opt
-        when "--auth"   then options[:username], options[:password] = arg.split(":", 2)
-        when "--color"  then options[:colorize] = true
-        when "--help"   then raise HelpNeeded
-        when "--num"    then options[:num_statuses] = arg.to_i
-      end
-    end
-  rescue GetoptLong::InvalidOption, GetoptLong::MissingArgument
-    raise AlreadyReportedArgumentError
-  end
-
-  unless options[:username]
-    begin
-      config = Tweetwine::Config.load(ENV["HOME"] + "/.tweetwine")
-      options[:username], options[:password] = [config.username, config.password]
-      options[:colorize] = config.colorize if config.colorize?
-    rescue Exception => e
-      raise ArgumentError, "No auth info given as argument and no configuration file (~/.tweetwine) found."
-    end
-  end
-
-  command = if ARGV.empty? then Client::COMMANDS[0] else ARGV.shift end
-  raise ArgumentError, "Unknown command." unless Client::COMMANDS.include? command
-
-  [options, command, ARGV]
-end
-
 begin
-  options, command, args = parse_args
-  client = Client.new(options)
-  client.send(command.to_sym, *args)
-rescue HelpNeeded, AlreadyReportedArgumentError
-  exit_with_usage
-rescue ArgumentError => e
-  exit_with_usage e.message
-rescue ClientError => e
-  exit_with_error e.message
+  config = StartupConfig.new(Client::COMMANDS)
+  config.parse(ARGV, ENV["HOME"] + "/.tweetwine") do |args|
+    options = {}
+    OptionParser.new do |opt|
+      opt.banner = "Usage: tweetwine [options...] [command]\n\n"
+      opt.on("-a", "--auth USERNAME:PASSWORD", "Authentication") do |arg|
+        options[:username], options[:password] = arg.split(":", 2)
+      end
+      opt.on("-c", "--colorize", "Colorize output with ANSI escape codes") do
+        options[:colorize] = true
+      end
+      opt.on("-n", "--num N", Integer, "The number of statuses to fetch, defaults to #{Client::DEFAULT_NUM_STATUSES}") do |arg|
+        options[:num_statuses] = arg
+      end
+      opt.on_tail("-h", "--help", "Show this help message") do
+        puts opt
+        exit(1)
+      end
+    end.parse!(args)
+    options
+  end
+  client = Client.new(config.options)
+  client.send(config.command, *config.args)
+rescue ArgumentError, ClientError => e
+  puts "Error: #{e.message}"
+  exit(2)
 end

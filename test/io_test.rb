@@ -1,8 +1,8 @@
 require File.dirname(__FILE__) << "/test_helper"
 
-class IOTest < Test::Unit::TestCase
-  include Tweetwine
+module Tweetwine
 
+class IOTest < Test::Unit::TestCase
   context "An IO" do
     setup do
       @input = mock()
@@ -96,4 +96,6 @@ Hi, \033[31m@barman\033[0m! Lulz woo!
       @io.show_statuses(statuses)
     end
   end
+end
+
 end

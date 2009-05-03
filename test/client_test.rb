@@ -1,10 +1,16 @@
 require File.dirname(__FILE__) << "/test_helper"
 require "json"
 
-class ClientTest < Test::Unit::TestCase
-  include Tweetwine
+module Tweetwine
 
+class ClientTest < Test::Unit::TestCase
   context "Upon initializing a client" do
+    should "raise exception when no authentication data is given" do
+      assert_raises(ArgumentError) { Client.new({}) }
+      assert_raises(ArgumentError) { Client.new({ :password => "bar" }) }
+      assert_raises(ArgumentError) { Client.new({ :username => "", :password => "bar" }) }
+    end
+
     should "use default num of statuses if not configured otherwise" do
       @client = Client.new({ :username => "foo", :password => "bar" })
       assert_equal Client::DEFAULT_NUM_STATUSES, @client.num_statuses
@@ -126,4 +132,6 @@ class ClientTest < Test::Unit::TestCase
       @client.update(long_status_update)
     end
   end
+end
+
 end

@@ -1,9 +1,9 @@
 require File.dirname(__FILE__) << "/test_helper"
 require "time"
 
-class UtilTest < Test::Unit::TestCase
-  include Tweetwine
+module Tweetwine
 
+class UtilTest < Test::Unit::TestCase
   context "The module" do
     should "humanize time difference" do
       assert_equal [1,  "sec"],   Util.humanize_time_diff(Time.parse("2009-01-01 00:00:59").to_s, Time.parse("2009-01-01 00:01:00"))
@@ -23,4 +23,6 @@ class UtilTest < Test::Unit::TestCase
       assert_equal [2,  "days"],  Util.humanize_time_diff(Time.parse("2009-01-01 01:00").to_s, Time.parse("2009-01-03 03:00"))
     end
   end
+end
+
 end

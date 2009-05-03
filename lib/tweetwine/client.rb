@@ -7,15 +7,16 @@ module Tweetwine
   class Client
     attr_reader :num_statuses
 
-    COMMANDS = %w{friends user update}
+    COMMANDS = [:friends, :user, :update]
 
     DEFAULT_NUM_STATUSES = 20
     MAX_NUM_STATUSES = 200
     MAX_STATUS_LENGTH = 140
 
     def initialize(options)
-      @username, password = options[:username].to_s, options[:password].to_s
-      @base_url = "https://#{@username}:#{password}@twitter.com/"
+      @username = options[:username].to_s
+      raise ArgumentError, "No authentication data given" if @username.empty?
+      @base_url = "https://#{@username}:#{options[:password]}@twitter.com/"
       @colorize = options[:colorize] || false
       @num_statuses = if options[:num_statuses]
         if (1..MAX_NUM_STATUSES).include? options[:num_statuses]
