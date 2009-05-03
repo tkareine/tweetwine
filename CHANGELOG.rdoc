@@ -1,3 +1,9 @@
+=== 0.1.2 released 2009-05-04
+
+* Renamed command "friends" to "home".
+* Added command "mentions".
+* Improved command line argument and configuration file parsing.
+
 === 0.1.1 released 2009-04-23
 
 * Renamed command "msg" to "update".
