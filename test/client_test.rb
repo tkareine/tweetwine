@@ -37,10 +37,10 @@ class ClientTest < Test::Unit::TestCase
       RestClient.expects(:get) \
                 .with("https://foo:bar@twitter.com/statuses/friends_timeline.json?count=20") \
                 .raises(RestClient::Unauthorized)
-      assert_raises(ClientError) { @client.friends }
+      assert_raises(ClientError) { @client.home }
     end
 
-    should "fetch friends' statuses" do
+    should "fetch friends' statuses, home view" do
       statuses = [
         {
           "created_at" => Time.at(1).to_s,
@@ -57,7 +57,7 @@ class ClientTest < Test::Unit::TestCase
                 .with("https://foo:bar@twitter.com/statuses/friends_timeline.json?count=20") \
                 .returns(statuses.to_json)
       @io.expects(:show_statuses).with(statuses)
-      @client.friends
+      @client.home
     end
 
     should "fetch a specific user's statuses, with the user identified by given argument" do
