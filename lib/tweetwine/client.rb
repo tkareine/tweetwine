@@ -7,7 +7,7 @@ module Tweetwine
   class Client
     attr_reader :num_statuses
 
-    COMMANDS = [:home, :user, :update]
+    COMMANDS = [:home, :mentions, :user, :update]
 
     DEFAULT_NUM_STATUSES = 20
     MAX_NUM_STATUSES = 200
@@ -32,6 +32,10 @@ module Tweetwine
 
     def home
       @io.show_statuses JSON.parse(get("statuses/friends_timeline.json?count=#{@num_statuses}"))
+    end
+
+    def mentions
+      @io.show_statuses JSON.parse(get("statuses/mentions.json?count=#{@num_statuses}"))
     end
 
     def user(user = @username)

@@ -40,7 +40,7 @@ class ClientTest < Test::Unit::TestCase
       assert_raises(ClientError) { @client.home }
     end
 
-    should "fetch friends' statuses, home view" do
+    should "fetch friends' statuses (home view)" do
       statuses = [
         {
           "created_at" => Time.at(1).to_s,
@@ -58,6 +58,28 @@ class ClientTest < Test::Unit::TestCase
                 .returns(statuses.to_json)
       @io.expects(:show_statuses).with(statuses)
       @client.home
+    end
+
+    should "fetch mentions" do
+      statuses = [
+        {
+          "created_at" => Time.at(1).to_s,
+          "in_reply_to_screen_name" => "foo",
+          "user" => { "username" => "zanzibar" },
+          "text" => "wassup, @foo?"
+        },
+        {
+          "created_at" => Time.at(2).to_s,
+          "in_reply_to_screen_name" => "foo",
+          "user" => { "username" => "lulzwoo" },
+          "text" => "@foo, doing nuttin"
+        }
+      ]
+      RestClient.expects(:get) \
+                .with("https://foo:bar@twitter.com/statuses/mentions.json?count=20") \
+                .returns(statuses.to_json)
+      @io.expects(:show_statuses).with(statuses)
+      @client.mentions
     end
 
     should "fetch a specific user's statuses, with the user identified by given argument" do

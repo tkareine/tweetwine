@@ -52,7 +52,7 @@ class IOTest < Test::Unit::TestCase
       @io = IO.new({ :input => @input, :output => @output, :colorize => false })
     end
 
-    should "print statuses, with colorization off" do
+    should "print statuses without in-reply info" do
       statuses = [
         {
           "created_at" => Time.at(1),
@@ -69,6 +69,25 @@ Hi, @barman! Lulz woo!
       )
       @io.show_statuses(statuses)
     end
+
+    should "print statuses with in-reply info" do
+      statuses = [
+        {
+          "created_at" => Time.at(1),
+          "in_reply_to_screen_name" => "barman",
+          "user" => { "screen_name" => "fooman" },
+          "text" => "Hi, @barman! Lulz woo!"
+        }
+      ]
+      Util.expects(:humanize_time_diff).returns([2, "secs"])
+      @output.expects(:puts).with(<<-END
+fooman, in reply to barman, 2 secs ago:
+Hi, @barman! Lulz woo!
+
+      END
+      )
+      @io.show_statuses(statuses)
+    end
   end
 
   context "An IO, with colorization enabled" do
@@ -78,7 +97,7 @@ Hi, @barman! Lulz woo!
       @io = IO.new({ :input => @input, :output => @output, :colorize => true })
     end
 
-    should "print statuses, with colorization off" do
+    should "print statuses without in-reply info" do
       statuses = [
         {
           "created_at" => Time.at(1),
@@ -89,6 +108,25 @@ Hi, @barman! Lulz woo!
       Util.expects(:humanize_time_diff).returns([2, "secs"])
       @output.expects(:puts).with(<<-END
 \033[32mfooman\033[0m, 2 secs ago:
+Hi, \033[31m@barman\033[0m! Lulz woo!
+
+      END
+      )
+      @io.show_statuses(statuses)
+    end
+
+    should "print statuses with in-reply info" do
+      statuses = [
+        {
+          "created_at" => Time.at(1),
+          "in_reply_to_screen_name" => "barman",
+          "user" => { "screen_name" => "fooman" },
+          "text" => "Hi, @barman! Lulz woo!"
+        }
+      ]
+      Util.expects(:humanize_time_diff).returns([2, "secs"])
+      @output.expects(:puts).with(<<-END
+\033[32mfooman\033[0m, in reply to \033[32mbarman\033[0m, 2 secs ago:
 Hi, \033[31m@barman\033[0m! Lulz woo!
 
       END

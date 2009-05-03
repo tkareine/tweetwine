@@ -30,10 +30,17 @@ module Tweetwine
         time_diff_value, time_diff_unit = Util.humanize_time_diff(Time.now, status["created_at"])
         from_user = status["user"]["screen_name"]
         from_user = colorize(:green, from_user) if @colorize
+        in_reply_to = status["in_reply_to_screen_name"]
+        in_reply_to = if in_reply_to && !in_reply_to.empty?
+          in_reply_to = colorize(:green, in_reply_to) if @colorize
+          "in reply to #{in_reply_to}, "
+        else
+          ""
+        end
         text = status["text"]
         text = colorize(:red, text, /@\w+/) if @colorize
         @output.puts <<-END
-#{from_user}, #{time_diff_value} #{time_diff_unit} ago:
+#{from_user}, #{in_reply_to}#{time_diff_value} #{time_diff_unit} ago:
 #{text}
 
         END
@@ -44,8 +51,7 @@ module Tweetwine
 
     COLOR_CODES = {
       :green    => "\033[32m",
-      :red      => "\033[31m",
-      :neutral  => "\033[0m"
+      :red      => "\033[31m"
     }
 
     def colorize(color, str, matcher = nil)
@@ -59,7 +65,7 @@ module Tweetwine
     end
 
     def colorize_str(color_code, str)
-      "#{color_code}#{str}#{COLOR_CODES[:neutral]}"
+      "#{color_code}#{str}\033[0m"
     end
   end
 end
