@@ -35,7 +35,7 @@ When invoking the program, the supported commands are
 <tt>user [name]</tt>:: Fetch a specific user's latest statuses, identified by the argument; if given no argument, fetch the statuses of the authenticated user.
 <tt>update [status]</tt>:: Send a status update, but confirm the action first before actually sending. The status update can either be given as an argument or via STDIN if no argument is given.
 
-If <tt>[command]</tt> is not given, it defaults to <tt>home</tt>.
+If no <tt>[command]</tt> is given, the default action is <tt>home</tt>.
 
 For all the options, see:
 
