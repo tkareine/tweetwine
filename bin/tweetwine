@@ -11,22 +11,33 @@ begin
   config = StartupConfig.new(Client::COMMANDS)
   config.parse(ARGV, ENV["HOME"] + "/.tweetwine") do |args|
     options = {}
-    OptionParser.new do |opt|
-      opt.banner = "Usage: tweetwine [options...] [command]\n\n"
-      opt.on("-a", "--auth USERNAME:PASSWORD", "Authentication") do |arg|
-        options[:username], options[:password] = arg.split(":", 2)
-      end
-      opt.on("-c", "--colorize", "Colorize output with ANSI escape codes") do
-        options[:colorize] = true
-      end
-      opt.on("-n", "--num N", Integer, "The number of statuses to fetch, defaults to #{Client::DEFAULT_NUM_STATUSES}") do |arg|
-        options[:num_statuses] = arg
-      end
-      opt.on_tail("-h", "--help", "Show this help message") do
-        puts opt
-        exit(1)
-      end
-    end.parse!(args)
+    begin
+      OptionParser.new do |opt|
+        opt.banner =<<-END
+Usage: tweetwine [options...] [command]
+
+  Commands: #{Client::COMMANDS.join(", ")}
+
+  Options:
+
+        END
+        opt.on("-a", "--auth USERNAME:PASSWORD", "Authentication") do |arg|
+          options[:username], options[:password] = arg.split(":", 2)
+        end
+        opt.on("-c", "--colorize", "Colorize output with ANSI escape codes") do
+          options[:colorize] = true
+        end
+        opt.on("-n", "--num N", Integer, "The number of statuses to fetch, defaults to #{Client::DEFAULT_NUM_STATUSES}") do |arg|
+          options[:num_statuses] = arg
+        end
+        opt.on_tail("-h", "--help", "Show this help message") do
+          puts opt
+          exit(1)
+        end
+      end.parse!(args)
+    rescue OptionParser::ParseError => e
+      raise ArgumentError.new(e)
+    end
     options
   end
   client = Client.new(config.options)
