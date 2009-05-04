@@ -22,7 +22,7 @@ module Tweetwine
         if (1..MAX_NUM_STATUSES).include? options[:num_statuses]
           options[:num_statuses]
         else
-          raise ArgumentError, "Invalid number of statuses to show -- must be between 1..#{Client::MAX_NUM_STATUSES}"
+          raise ArgumentError, "Invalid number of statuses to show -- must be between 1..#{MAX_NUM_STATUSES}"
         end
       else
         DEFAULT_NUM_STATUSES
@@ -31,15 +31,15 @@ module Tweetwine
     end
 
     def home
-      @io.show_statuses JSON.parse(get("statuses/friends_timeline.json?count=#{@num_statuses}"))
+      get_and_show "statuses/friends_timeline.json?count=#{@num_statuses}"
     end
 
     def mentions
-      @io.show_statuses JSON.parse(get("statuses/mentions.json?count=#{@num_statuses}"))
+      get_and_show "statuses/mentions.json?count=#{@num_statuses}"
     end
 
     def user(user = @username)
-      @io.show_statuses JSON.parse(get("statuses/user_timeline/#{user}.json?count=#{@num_statuses}"))
+      get_and_show "statuses/user_timeline/#{user}.json?count=#{@num_statuses}"
     end
 
     def update(new_status = nil)
@@ -58,6 +58,10 @@ module Tweetwine
     end
 
     private
+
+    def get_and_show(rest_url)
+      @io.show_statuses JSON.parse(get(rest_url))
+    end
 
     def get(rest_url)
       rest_client_action(:get, @base_url + rest_url)

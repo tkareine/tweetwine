@@ -27,7 +27,7 @@ module Tweetwine
 
     def show_statuses(statuses)
       statuses.each do |status|
-        time_diff_value, time_diff_unit = Util.humanize_time_diff(Time.now, status["created_at"])
+        time_diff_value, time_diff_unit = Util.humanize_time_diff(status["created_at"], Time.now)
         from_user = status["user"]["screen_name"]
         from_user = colorize(:green, from_user) if @colorize
         in_reply_to = status["in_reply_to_screen_name"]
