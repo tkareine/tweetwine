@@ -1,15 +1,16 @@
 === 0.1.2 released 2009-05-04
 
-* Renamed command "friends" to "home".
-* Added command "mentions".
-* Improved command line argument and configuration file parsing.
+* Renamed command "friends" to "home"
+* Added command "mentions"
+* When showing a status, indicate if it is a reply
+* Improved command line argument and configuration file parsing
 
 === 0.1.1 released 2009-04-23
 
-* Renamed command "msg" to "update".
-* If status update if longer than 140 characters, warn about it.
+* Renamed command "msg" to "update"
+* If status update if longer than 140 characters, warn about it
 
 === 0.1.0 released 2009-04-22
 
-* Initial release with minimal functionality.
-* Usable for quickly checking friends' statuses and sending status updates.
+* Initial release with minimal functionality
+* Usable for quickly checking friends' statuses and sending status updates
