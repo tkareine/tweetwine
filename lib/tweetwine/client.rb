@@ -46,9 +46,9 @@ module Tweetwine
       new_status = @io.prompt("Status update") unless new_status
       if new_status.length > MAX_STATUS_LENGTH
         new_status = new_status[0...MAX_STATUS_LENGTH]
-        @io.warn("Update will be truncated: #{new_status}")
+        @io.warn("Status will be truncated: #{new_status}")
       end
-      if @io.confirm("Really send?")
+      if !new_status.empty? && @io.confirm("Really send?")
         status = JSON.parse(post("statuses/update.json", {:status => new_status}))
         @io.info "Sent status update.\n\n"
         @io.show_statuses([status])

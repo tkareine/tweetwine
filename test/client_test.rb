@@ -112,7 +112,7 @@ class ClientTest < Test::Unit::TestCase
       @client.user
     end
 
-    should "post a status update, when positive confirmation" do
+    should "post a status update via argument, when positive confirmation" do
       status = {
         "created_at" => Time.at(1).to_s,
         "user" => { "username" => "foo" },
@@ -127,7 +127,23 @@ class ClientTest < Test::Unit::TestCase
       @client.update("wondering about")
     end
 
-    should "cancel a status update, when negative confirmation" do
+    should "post a status update via prompt, when positive confirmation" do
+      status = {
+        "created_at" => Time.at(1).to_s,
+        "user" => { "username" => "foo" },
+        "text" => "wondering about"
+      }
+      RestClient.expects(:post) \
+                .with("https://foo:bar@twitter.com/statuses/update.json", {:status => "wondering about"}) \
+                .returns(status.to_json)
+      @io.expects(:prompt).with("Status update").returns("wondering about")
+      @io.expects(:confirm).with("Really send?").returns(true)
+      @io.expects(:info).with("Sent status update.\n\n")
+      @io.expects(:show_statuses).with([status])
+      @client.update
+    end
+
+    should "cancel a status update via argument, when negative confirmation" do
       RestClient.expects(:post).never
       @io.expects(:confirm).with("Really send?").returns(false)
       @io.expects(:info).with("Cancelled.")
@@ -135,7 +151,33 @@ class ClientTest < Test::Unit::TestCase
       @client.update("wondering about")
     end
 
-    should "truncate a status update too long and warn the user" do
+    should "cancel a status update via prompt, when negative confirmation" do
+      RestClient.expects(:post).never
+      @io.expects(:prompt).with("Status update").returns("wondering about")
+      @io.expects(:confirm).with("Really send?").returns(false)
+      @io.expects(:info).with("Cancelled.")
+      @io.expects(:show_statuses).never
+      @client.update
+    end
+
+    should "cancel a status update via argument, when empty status" do
+      RestClient.expects(:post).never
+      @io.expects(:confirm).never
+      @io.expects(:info).with("Cancelled.")
+      @io.expects(:show_statuses).never
+      @client.update("")
+    end
+
+    should "cancel a status update via prompt, when empty status" do
+      RestClient.expects(:post).never
+      @io.expects(:prompt).with("Status update").returns("")
+      @io.expects(:confirm).never
+      @io.expects(:info).with("Cancelled.")
+      @io.expects(:show_statuses).never
+      @client.update
+    end
+
+    should "truncate a status update with too long argument and warn the user" do
       long_status_update = "x aaa bbb ccc ddd eee fff ggg hhh iii jjj kkk lll mmm nnn ooo ppp qqq rrr sss ttt uuu vvv www xxx yyy zzz 111 222 333 444 555 666 777 888 999 000"
       truncated_status_update = "x aaa bbb ccc ddd eee fff ggg hhh iii jjj kkk lll mmm nnn ooo ppp qqq rrr sss ttt uuu vvv www xxx yyy zzz 111 222 333 444 555 666 777 888 99"
       status = {
@@ -147,7 +189,7 @@ class ClientTest < Test::Unit::TestCase
       RestClient.expects(:post) \
                 .with("https://foo:bar@twitter.com/statuses/update.json", {:status => truncated_status_update}) \
                 .returns(status.to_json)
-      @io.expects(:warn).with("Update will be truncated: #{truncated_status_update}")
+      @io.expects(:warn).with("Status will be truncated: #{truncated_status_update}")
       @io.expects(:confirm).with("Really send?").returns(true)
       @io.expects(:info).with("Sent status update.\n\n")
       @io.expects(:show_statuses).with([status])
