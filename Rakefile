@@ -2,7 +2,7 @@ require "rubygems"
 
 full_name = "Tweetwine"
 package_name = "tweetwine"
-version = "0.1.2"
+version = "0.1.3"
 
 require "lib/#{package_name}"
 
