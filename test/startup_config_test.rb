@@ -22,6 +22,23 @@ class StartupConfigTest < Test::Unit::TestCase
       assert_equal :default_action, @config.command
     end
 
+    should "check that given command is supported" do
+      @config.parse(%w{default_action}) { |args| {} }
+      assert_equal :default_action, @config.command
+
+      @config.parse(%w{another_action}) { |args| {} }
+      assert_equal :another_action, @config.command
+    end
+
+    should "parse cmdline args and command" do
+      @config.parse(%w{--opt foo another_action}) do |args|
+         args.slice!(0..1)
+         {:opt => "foo"}
+      end
+      assert_equal({:opt => "foo"}, @config.options)
+      assert_equal :another_action, @config.command
+    end
+
     context "when given no cmdline args and a config file" do
       setup do
         @config.parse([], TEST_CONFIG_FILE)

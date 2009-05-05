@@ -13,7 +13,7 @@ module Tweetwine
     def parse(args = [], config_file = nil, &cmd_parser)
       options = parse_options(args, config_file, &cmd_parser)
       command = if args.empty? then @supported_commands.first else args.shift.to_sym end
-      raise ArgumentError, "Unknown command." unless @supported_commands.include? command
+      raise ArgumentError, "Unknown command" unless @supported_commands.include? command
       @options, @command, @args = options, command, args
       self
     end
