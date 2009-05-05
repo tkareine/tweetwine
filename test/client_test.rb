@@ -9,6 +9,7 @@ class ClientTest < Test::Unit::TestCase
       assert_raises(ArgumentError) { Client.new({}) }
       assert_raises(ArgumentError) { Client.new({ :password => "bar" }) }
       assert_raises(ArgumentError) { Client.new({ :username => "", :password => "bar" }) }
+      assert_nothing_raised { Client.new({ :username => "foo", :password => "bar" }) }
     end
 
     should "use default num of statuses if not configured otherwise" do
