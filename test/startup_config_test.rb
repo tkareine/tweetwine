@@ -30,13 +30,14 @@ class StartupConfigTest < Test::Unit::TestCase
       assert_equal :another_action, @config.command
     end
 
-    should "parse cmdline args and command" do
-      @config.parse(%w{--opt foo another_action}) do |args|
+    should "parse cmdline args, command, and leftover args" do
+      @config.parse(%w{--opt foo another_action left overs}) do |args|
          args.slice!(0..1)
          {:opt => "foo"}
       end
       assert_equal({:opt => "foo"}, @config.options)
       assert_equal :another_action, @config.command
+      assert_equal %w{left overs},  @config.args
     end
 
     context "when given no cmdline args and a config file" do
