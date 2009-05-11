@@ -5,12 +5,12 @@ module Tweetwine
   class ClientError < RuntimeError; end
 
   class Client
-    attr_reader :num_statuses
+    attr_reader :num_statuses, :page_num
 
     COMMANDS = [:home, :mentions, :user, :update]
 
     DEFAULT_NUM_STATUSES = 20
-    MAX_NUM_STATUSES = 200
+    DEFAULT_PAGE_NUM = 1
     MAX_STATUS_LENGTH = 140
 
     def initialize(options)
@@ -18,28 +18,21 @@ module Tweetwine
       raise ArgumentError, "No authentication data given" if @username.empty?
       @base_url = "https://#{@username}:#{options[:password]}@twitter.com/"
       @colorize = options[:colorize] || false
-      @num_statuses = if options[:num_statuses]
-        if (1..MAX_NUM_STATUSES).include? options[:num_statuses]
-          options[:num_statuses]
-        else
-          raise ArgumentError, "Invalid number of statuses to show -- must be between 1..#{MAX_NUM_STATUSES}"
-        end
-      else
-        DEFAULT_NUM_STATUSES
-      end
+      @num_statuses = parse_positive_int_option(options[:num_statuses], DEFAULT_NUM_STATUSES, 1, "number of statuses_to_show")
+      @page_num = parse_positive_int_option(options[:page_num], DEFAULT_PAGE_NUM, 1, "page number")
       @io = IO.new(options)
     end
 
     def home
-      get_and_show "statuses/friends_timeline.json?count=#{@num_statuses}"
+      get_result_as_json_and_show "statuses/friends_timeline"
     end
 
     def mentions
-      get_and_show "statuses/mentions.json?count=#{@num_statuses}"
+      get_result_as_json_and_show "statuses/mentions"
     end
 
     def user(user = @username)
-      get_and_show "statuses/user_timeline/#{user}.json?count=#{@num_statuses}"
+      get_result_as_json_and_show "statuses/user_timeline/#{user}"
     end
 
     def update(new_status = nil)
@@ -59,16 +52,29 @@ module Tweetwine
 
     private
 
-    def get_and_show(rest_url)
-      @io.show_statuses JSON.parse(get(rest_url))
+    def parse_positive_int_option(value, default, min, name_for_error)
+      if value
+        value = value.to_i
+        if value >= min
+          value
+        else
+          raise ArgumentError, "Invalid #{name_for_error} -- must be greater than or equal to #{min}"
+        end
+      else
+        default
+      end
     end
 
-    def get(rest_url)
-      rest_client_action(:get, @base_url + rest_url)
+    def get_result_as_json_and_show(url_body)
+      @io.show_statuses JSON.parse(get(url_body + ".json?count=#{@num_statuses}&page=#{@page_num}"))
     end
 
-    def post(rest_url, body)
-      rest_client_action(:post, @base_url + rest_url, body)
+    def get(body_url)
+      rest_client_action(:get, @base_url + body_url)
+    end
+
+    def post(body_url, body)
+      rest_client_action(:post, @base_url + body_url, body)
     end
 
     def rest_client_action(action, *args)

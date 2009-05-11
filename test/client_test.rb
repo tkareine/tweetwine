@@ -12,18 +12,32 @@ class ClientTest < Test::Unit::TestCase
       assert_nothing_raised { Client.new({ :username => "foo", :password => "bar" }) }
     end
 
-    should "use default num of statuses if not configured otherwise" do
+    should "use default number of statuses if not configured otherwise" do
       @client = Client.new({ :username => "foo", :password => "bar" })
       assert_equal Client::DEFAULT_NUM_STATUSES, @client.num_statuses
     end
 
-    should "use configured num of statuses if in allowed range" do
+    should "use configured number of statuses if in allowed range" do
       @client = Client.new({ :username => "foo", :password => "bar", :num_statuses => 12 })
       assert_equal 12, @client.num_statuses
     end
 
-    should "raise an exception for configured num of statuses if not in allowed range" do
-      assert_raises(ArgumentError) { Client.new({ :username => "foo", :password => "bar", :num_statuses => Client::MAX_NUM_STATUSES + 1 }) }
+    should "raise an exception for configured number of statuses if not in allowed range" do
+      assert_raises(ArgumentError) { Client.new({ :username => "foo", :password => "bar", :num_statuses => 0 }) }
+    end
+
+    should "use default page number if not configured otherwise" do
+      @client = Client.new({ :username => "foo", :password => "bar" })
+      assert_equal Client::DEFAULT_PAGE_NUM, @client.page_num
+    end
+
+    should "use configured page number if in allowed range" do
+      @client = Client.new({ :username => "foo", :password => "bar", :page_num => 12 })
+      assert_equal 12, @client.page_num
+    end
+
+    should "raise an exception for configured page number if not in allowed range" do
+      assert_raises(ArgumentError) { Client.new({ :username => "foo", :password => "bar", :page_num => 0 }) }
     end
   end
 
@@ -32,11 +46,12 @@ class ClientTest < Test::Unit::TestCase
       @client = Client.new({ :username => "foo", :password => "bar" })
       @io = mock()
       @client.instance_variable_set(:@io, @io)
+      @query_params = "count=#{Client::DEFAULT_NUM_STATUSES}&page=#{Client::DEFAULT_PAGE_NUM}"
     end
 
     should "raise ClientError for invalid request" do
       RestClient.expects(:get) \
-                .with("https://foo:bar@twitter.com/statuses/friends_timeline.json?count=20") \
+                .with("https://foo:bar@twitter.com/statuses/friends_timeline.json?#{@query_params}") \
                 .raises(RestClient::Unauthorized)
       assert_raises(ClientError) { @client.home }
     end
@@ -55,7 +70,7 @@ class ClientTest < Test::Unit::TestCase
         }
       ]
       RestClient.expects(:get) \
-                .with("https://foo:bar@twitter.com/statuses/friends_timeline.json?count=20") \
+                .with("https://foo:bar@twitter.com/statuses/friends_timeline.json?#{@query_params}") \
                 .returns(statuses.to_json)
       @io.expects(:show_statuses).with(statuses)
       @client.home
@@ -77,7 +92,7 @@ class ClientTest < Test::Unit::TestCase
         }
       ]
       RestClient.expects(:get) \
-                .with("https://foo:bar@twitter.com/statuses/mentions.json?count=20") \
+                .with("https://foo:bar@twitter.com/statuses/mentions.json?#{@query_params}") \
                 .returns(statuses.to_json)
       @io.expects(:show_statuses).with(statuses)
       @client.mentions
@@ -92,7 +107,7 @@ class ClientTest < Test::Unit::TestCase
         }
       ]
       RestClient.expects(:get) \
-                .with("https://foo:bar@twitter.com/statuses/user_timeline/zanzibar.json?count=20") \
+                .with("https://foo:bar@twitter.com/statuses/user_timeline/zanzibar.json?#{@query_params}") \
                 .returns(statuses.to_json)
       @io.expects(:show_statuses).with(statuses)
       @client.user("zanzibar")
@@ -107,7 +122,7 @@ class ClientTest < Test::Unit::TestCase
         }
       ]
       RestClient.expects(:get) \
-                .with("https://foo:bar@twitter.com/statuses/user_timeline/foo.json?count=20") \
+                .with("https://foo:bar@twitter.com/statuses/user_timeline/foo.json?#{@query_params}") \
                 .returns(statuses.to_json)
       @io.expects(:show_statuses).with(statuses)
       @client.user

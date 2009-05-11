@@ -30,6 +30,9 @@ Usage: tweetwine [options...] [command]
         opt.on("-n", "--num N", Integer, "The number of statuses to fetch, defaults to #{Client::DEFAULT_NUM_STATUSES}") do |arg|
           options[:num_statuses] = arg
         end
+        opt.on("-p", "--page N", Integer, "The page number of the statuses to fetch, defaults to #{Client::DEFAULT_PAGE_NUM}") do |arg|
+          options[:page_num] = arg
+        end
         opt.on_tail("-h", "--help", "Show this help message") do
           puts opt
           exit(1)
