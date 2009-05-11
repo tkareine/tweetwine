@@ -18,8 +18,8 @@ module Tweetwine
       raise ArgumentError, "No authentication data given" if @username.empty?
       @base_url = "https://#{@username}:#{options[:password]}@twitter.com/"
       @colorize = options[:colorize] || false
-      @num_statuses = parse_positive_int_option(options[:num_statuses], DEFAULT_NUM_STATUSES, 1, "number of statuses_to_show")
-      @page_num = parse_positive_int_option(options[:page_num], DEFAULT_PAGE_NUM, 1, "page number")
+      @num_statuses = parse_int_gt_option(options[:num_statuses], DEFAULT_NUM_STATUSES, 1, "number of statuses_to_show")
+      @page_num = parse_int_gt_option(options[:page_num], DEFAULT_PAGE_NUM, 1, "page number")
       @io = IO.new(options)
     end
 
@@ -52,7 +52,7 @@ module Tweetwine
 
     private
 
-    def parse_positive_int_option(value, default, min, name_for_error)
+    def parse_int_gt_option(value, default, min, name_for_error)
       if value
         value = value.to_i
         if value >= min
