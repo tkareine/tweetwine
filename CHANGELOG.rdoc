@@ -1,3 +1,7 @@
+=== 0.1.4 released 2009-05-12
+
+* Command line option "--page N" fetches a specific status page
+
 === 0.1.3 released 2009-05-05
 
 * Empty status update indicates cancellation of the command
