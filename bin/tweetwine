@@ -5,6 +5,15 @@ require "optparse"
 
 require File.dirname(__FILE__) << "/../lib/tweetwine"
 
+EXIT_HELP = 1
+EXIT_SIGINT = 2
+EXIT_ERROR = 64
+
+trap("INT") do
+  puts "\nCancelled by interruption."
+  exit(EXIT_SIGINT)
+end
+
 include Tweetwine
 
 begin
@@ -35,7 +44,7 @@ Usage: tweetwine [options...] [command]
         end
         opt.on_tail("-h", "--help", "Show this help message") do
           puts opt
-          exit(1)
+          exit(EXIT_HELP)
         end
       end.parse!(args)
     rescue OptionParser::ParseError => e
@@ -47,5 +56,5 @@ Usage: tweetwine [options...] [command]
   client.send(config.command, *config.args)
 rescue ArgumentError, ClientError => e
   puts "Error: #{e.message}"
-  exit(2)
+  exit(EXIT_ERROR)
 end
