@@ -24,7 +24,7 @@ spec = Gem::Specification.new do |s|
   s.executables = ["tweetwine"]
 
   s.add_dependency("json", ">= 1.1.4")
-  s.add_dependency("rest-client", ">= 0.9.2")
+  s.add_dependency("rest-client", ">= 1.0.0")
 
   s.has_rdoc = true
   s.extra_rdoc_files = FileList["*.rdoc"].to_a
