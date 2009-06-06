@@ -10,7 +10,7 @@ EXIT_SIGINT = 2
 EXIT_ERROR = 64
 
 trap("INT") do
-  puts "\nCancelled by interruption."
+  puts "\nAbort."
   exit(EXIT_SIGINT)
 end
 
