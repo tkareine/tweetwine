@@ -1,3 +1,8 @@
+=== 0.1.5 released 2009-06-06
+
+* URLs of http(s) scheme are highlighted. Changed colors.
+* Friendly abort message when interrupting the program with Ctrl+C.
+
 === 0.1.4 released 2009-05-12
 
 * Command line option "--page N" fetches a specific status page
