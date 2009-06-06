@@ -38,7 +38,10 @@ module Tweetwine
           ""
         end
         text = status["text"]
-        text = colorize(:red, text, /@\w+/) if @colorize
+        if @colorize
+          text = colorize(:yellow, text, NICK_REGEX)
+          text = colorize(:cyan, text, URL_REGEX)
+        end
         @output.puts <<-END
 #{from_user}, #{in_reply_to}#{time_diff_value} #{time_diff_unit} ago:
 #{text}
@@ -50,9 +53,17 @@ module Tweetwine
     private
 
     COLOR_CODES = {
-      :green    => "\033[32m",
-      :red      => "\033[31m"
-    }
+      :cyan     => 36,
+      :green    => 32,
+      :magenta  => 35,
+      :yellow   => 33
+    }.inject({}) do |result, pair|
+      result[pair.first.to_sym] = "\033[#{pair.last}m"
+      result
+    end
+
+    NICK_REGEX = /@\w+/
+    URL_REGEX = /(http|https):\/\/[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(([0-9]{1,5})?\/\S*)?/i
 
     def colorize(color, str, matcher = nil)
       color_code = COLOR_CODES[color.to_sym]

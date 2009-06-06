@@ -108,7 +108,7 @@ Hi, @barman! Lulz woo!
       Util.expects(:humanize_time_diff).returns([2, "secs"])
       @output.expects(:puts).with(<<-END
 \033[32mfooman\033[0m, 2 secs ago:
-Hi, \033[31m@barman\033[0m! Lulz woo!
+Hi, \033[33m@barman\033[0m! Lulz woo!
 
       END
       )
@@ -121,13 +121,13 @@ Hi, \033[31m@barman\033[0m! Lulz woo!
           "created_at" => Time.at(1),
           "in_reply_to_screen_name" => "barman",
           "user" => { "screen_name" => "fooman" },
-          "text" => "Hi, @barman! Lulz woo!"
+          "text" => "Hi, @barman! Check this: http://www.foo.com. Nice, isn't it?"
         }
       ]
       Util.expects(:humanize_time_diff).returns([2, "secs"])
       @output.expects(:puts).with(<<-END
 \033[32mfooman\033[0m, in reply to \033[32mbarman\033[0m, 2 secs ago:
-Hi, \033[31m@barman\033[0m! Lulz woo!
+Hi, \033[33m@barman\033[0m! Check this: \033[36mhttp://www.foo.com\033[0m. Nice, isn't it?
 
       END
       )
