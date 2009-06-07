@@ -1,5 +1,15 @@
 module Tweetwine
   class IO
+    COLOR_CODES = {
+      :cyan     => 36,
+      :green    => 32,
+      :magenta  => 35,
+      :yellow   => 33
+    }
+
+    NICK_REGEX = /@\w+/
+    URL_REGEX = /(http|https):\/\/[a-z0-9]+([\-\.]{1}[a-z0-9]+)*(:[0-9]{2,5})?(((\/[a-z0-9_\-]+)+\/?)|(\/))?/i
+
     def initialize(options)
       @input = options[:input] || $stdin
       @output = options[:output] || $stdout
@@ -30,16 +40,6 @@ module Tweetwine
     end
 
     private
-
-    COLOR_CODES = {
-      :cyan     => 36,
-      :green    => 32,
-      :magenta  => 35,
-      :yellow   => 33
-    }
-
-    NICK_REGEX = /@\w+/
-    URL_REGEX = /(http|https):\/\/[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(([0-9]{1,5})?\/\S*)?/i
 
     def show_status(status)
       time_diff_value, time_diff_unit = Util.humanize_time_diff(status["created_at"], Time.now)

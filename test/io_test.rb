@@ -134,6 +134,56 @@ Hi, \033[33m@barman\033[0m! Check this: \033[36mhttp://www.foo.com\033[0m. Nice,
       @io.show_statuses(statuses)
     end
   end
+
+  context "Nick regex" do
+    should "match a proper nick reference" do
+      assert_full_match IO::NICK_REGEX, "@nick"
+      assert_full_match IO::NICK_REGEX, "@nick_man"
+    end
+
+    should "not match an inproper nick reference" do
+      assert_no_full_match IO::NICK_REGEX, "@"
+      assert_no_full_match IO::NICK_REGEX, "nick"
+      assert_no_full_match IO::NICK_REGEX, "@nick-man"
+    end
+  end
+
+  context "URL regex" do
+    should "match an IP" do
+      assert_full_match IO::URL_REGEX, "http://127.0.0.1"
+      assert_full_match IO::URL_REGEX, "http://127.0.0.1/"
+      assert_full_match IO::URL_REGEX, "https://127.0.0.1"
+      assert_full_match IO::URL_REGEX, "https://127.0.0.1/"
+    end
+
+    should "match a FQDN" do
+      assert_full_match IO::URL_REGEX, "https://fo.com"
+      assert_full_match IO::URL_REGEX, "https://fo.com/"
+      assert_full_match IO::URL_REGEX, "http://www.foo.com"
+      assert_full_match IO::URL_REGEX, "http://www.foo.com/"
+      assert_full_match IO::URL_REGEX, "https://www.foo.com"
+      assert_full_match IO::URL_REGEX, "https://www.foo.com/"
+    end
+
+    should "respect whitespace, parentheses, periods, etc. at the end" do
+      assert_full_match IO::URL_REGEX, "http://tr.im/WGAP"
+      assert_no_full_match IO::URL_REGEX, "http://tr.im/WGAP "
+      assert_no_full_match IO::URL_REGEX, "http://tr.im/WGAP)"
+      assert_no_full_match IO::URL_REGEX, "http://tr.im/WGAP."
+      assert_no_full_match IO::URL_REGEX, "http://tr.im/WGAP,"
+    end
+
+    should "match multipart URLs" do
+      assert_full_match IO::URL_REGEX, "http://technomancy.us/126"
+      assert_full_match IO::URL_REGEX, "http://technomancy.us/126/"
+      assert_full_match IO::URL_REGEX, "http://bit.ly/18rUVx"
+      assert_full_match IO::URL_REGEX, "http://bit.ly/18rUVx/"
+      assert_full_match IO::URL_REGEX, "http://bit.ly/18rU_Vx"
+      assert_full_match IO::URL_REGEX, "http://bit.ly/18rU_Vx/"
+      assert_full_match IO::URL_REGEX, "http://www.ireport.com/docs/DOC-266869"
+      assert_full_match IO::URL_REGEX, "http://www.ireport.com/docs/DOC-266869/"
+    end
+  end
 end
 
 end
