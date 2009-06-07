@@ -57,10 +57,7 @@ module Tweetwine
       :green    => 32,
       :magenta  => 35,
       :yellow   => 33
-    }.inject({}) do |result, pair|
-      result[pair.first.to_sym] = "\033[#{pair.last}m"
-      result
-    end
+    }
 
     NICK_REGEX = /@\w+/
     URL_REGEX = /(http|https):\/\/[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(([0-9]{1,5})?\/\S*)?/i
@@ -76,7 +73,7 @@ module Tweetwine
     end
 
     def colorize_str(color_code, str)
-      "#{color_code}#{str}\033[0m"
+      "\033[#{color_code}m#{str}\033[0m"
     end
   end
 end
