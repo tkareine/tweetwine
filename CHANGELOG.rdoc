@@ -1,3 +1,7 @@
+=== 0.1.7 released 2009-06-07
+
+* Small compatibility fix with Ruby 1.9.
+
 === 0.1.6 released 2009-06-07
 
 * Improved URL highlighting.

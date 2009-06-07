@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{tweetwine}
-  s.version = "0.1.6"
+  s.version = "0.1.7"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Tuomas Kareinen"]
@@ -14,7 +14,7 @@ Gem::Specification.new do |s|
   s.extra_rdoc_files = ["CHANGELOG.rdoc", "README.rdoc"]
   s.files = ["Rakefile", "CHANGELOG.rdoc", "README.rdoc", "bin/tweetwine", "lib/tweetwine", "lib/tweetwine/client.rb", "lib/tweetwine/io.rb", "lib/tweetwine/startup_config.rb", "lib/tweetwine/util.rb", "lib/tweetwine.rb", "test/client_test.rb", "test/io_test.rb", "test/startup_config_test.rb", "test/test_config.yaml", "test/test_helper.rb", "test/util_test.rb"]
   s.homepage = %q{http://github.com/tuomas/tweetwine}
-  s.rdoc_options = ["--title", "Tweetwine 0.1.6", "--main", "README.rdoc", "--exclude", "test", "--line-numbers"]
+  s.rdoc_options = ["--title", "Tweetwine 0.1.7", "--main", "README.rdoc", "--exclude", "test", "--line-numbers"]
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.4}
   s.summary = %q{A simple Twitter agent for command line use}
