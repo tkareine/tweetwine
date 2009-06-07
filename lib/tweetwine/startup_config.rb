@@ -1,3 +1,5 @@
+require "yaml"
+
 module Tweetwine
   class StartupConfig
     attr_reader :options, :command, :args, :supported_commands
