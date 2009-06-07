@@ -26,28 +26,7 @@ module Tweetwine
     end
 
     def show_statuses(statuses)
-      statuses.each do |status|
-        time_diff_value, time_diff_unit = Util.humanize_time_diff(status["created_at"], Time.now)
-        from_user = status["user"]["screen_name"]
-        from_user = colorize(:green, from_user) if @colorize
-        in_reply_to = status["in_reply_to_screen_name"]
-        in_reply_to = if in_reply_to && !in_reply_to.empty?
-          in_reply_to = colorize(:green, in_reply_to) if @colorize
-          "in reply to #{in_reply_to}, "
-        else
-          ""
-        end
-        text = status["text"]
-        if @colorize
-          text = colorize(:yellow, text, NICK_REGEX)
-          text = colorize(:cyan, text, URL_REGEX)
-        end
-        @output.puts <<-END
-#{from_user}, #{in_reply_to}#{time_diff_value} #{time_diff_unit} ago:
-#{text}
-
-        END
-      end
+      statuses.each { |status| show_status(status) }
     end
 
     private
@@ -61,6 +40,29 @@ module Tweetwine
 
     NICK_REGEX = /@\w+/
     URL_REGEX = /(http|https):\/\/[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(([0-9]{1,5})?\/\S*)?/i
+
+    def show_status(status)
+      time_diff_value, time_diff_unit = Util.humanize_time_diff(status["created_at"], Time.now)
+      from_user = status["user"]["screen_name"]
+      from_user = colorize(:green, from_user) if @colorize
+      in_reply_to = status["in_reply_to_screen_name"]
+      in_reply_to = if in_reply_to && !in_reply_to.empty?
+        in_reply_to = colorize(:green, in_reply_to) if @colorize
+        "in reply to #{in_reply_to}, "
+      else
+        ""
+      end
+      text = status["text"]
+      if @colorize
+        text = colorize(:yellow, text, NICK_REGEX)
+        text = colorize(:cyan, text, URL_REGEX)
+      end
+      @output.puts <<-END
+#{from_user}, #{in_reply_to}#{time_diff_value} #{time_diff_unit} ago:
+#{text}
+
+      END
+    end
 
     def colorize(color, str, matcher = nil)
       color_code = COLOR_CODES[color.to_sym]
