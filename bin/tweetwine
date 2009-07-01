@@ -1,10 +1,5 @@
 #!/usr/bin/env ruby
 
-require "rubygems"
-require "optparse"
-
-require File.dirname(__FILE__) << "/../lib/tweetwine"
-
 EXIT_HELP = 1
 EXIT_SIGINT = 2
 EXIT_ERROR = 64
@@ -13,6 +8,11 @@ trap("INT") do
   puts "\nAbort."
   exit(EXIT_SIGINT)
 end
+
+require "rubygems"
+require "optparse"
+
+require File.dirname(__FILE__) << "/../lib/tweetwine"
 
 include Tweetwine
 
