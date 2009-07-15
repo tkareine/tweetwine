@@ -86,6 +86,7 @@ module Tweetwine
           str << "page=#{@page_num}"
         when :num_statuses
           str << "count=#{@num_statuses}"
+        # do nothing on else
         end
       end
       str.join("&")
