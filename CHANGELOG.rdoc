@@ -1,3 +1,8 @@
+=== 0.1.9 released 2009-07-15
+
+* Added commands "friends" and "followers"
+* Removed dependency to the "json" gem. It is included in Ruby 1.9.
+
 === 0.1.8 released 2009-07-01
 
 * SIGINT (Ctrl+c) is trapper earlier, resulting in clean abort while Ruby
