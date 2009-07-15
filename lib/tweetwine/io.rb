@@ -35,34 +35,47 @@ module Tweetwine
       confirmation.downcase[0,1] == "y"
     end
 
-    def show_statuses(statuses)
-      statuses.each { |status| show_status(status) }
+    def show(record)
+      if record[:status]
+        show_as_status(record)
+      else
+        show_as_user(record)
+      end
     end
 
-    private
-
-    def show_status(status)
-      time_diff_value, time_diff_unit = Util.humanize_time_diff(status["created_at"], Time.now)
-      from_user = status["user"]["screen_name"]
+    def show_as_status(record)
+      time_diff_value, time_diff_unit = Util.humanize_time_diff(record[:status][:created_at], Time.now)
+      from_user = record[:user]
       from_user = colorize(:green, from_user) if @colorize
-      in_reply_to = status["in_reply_to_screen_name"]
+      in_reply_to = record[:status][:in_reply_to]
       in_reply_to = if in_reply_to && !in_reply_to.empty?
         in_reply_to = colorize(:green, in_reply_to) if @colorize
         "in reply to #{in_reply_to}, "
       else
         ""
       end
-      text = status["text"]
+      status = record[:status][:text]
       if @colorize
-        text = colorize(:yellow, text, NICK_REGEX)
-        text = colorize(:cyan, text, URL_REGEX)
+        status = colorize(:yellow, status, NICK_REGEX)
+        status = colorize(:cyan, status, URL_REGEX)
       end
       @output.puts <<-END
 #{from_user}, #{in_reply_to}#{time_diff_value} #{time_diff_unit} ago:
-#{text}
+#{status}
 
       END
     end
+
+    def show_as_user(record)
+      user = record[:user]
+      user = colorize(:green, user) if @colorize
+      @output.puts <<-END
+#{user}
+
+      END
+    end
+
+    private
 
     def colorize(color, str, matcher = nil)
       color_code = COLOR_CODES[color.to_sym]

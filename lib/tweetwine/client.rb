@@ -7,7 +7,7 @@ module Tweetwine
   class Client
     attr_reader :num_statuses, :page_num
 
-    COMMANDS = [:home, :mentions, :user, :update]
+    COMMANDS = [:home, :mentions, :user, :update, :friends, :followers]
 
     DEFAULT_NUM_STATUSES = 20
     DEFAULT_PAGE_NUM = 1
@@ -24,15 +24,15 @@ module Tweetwine
     end
 
     def home
-      get_result_as_json_and_show "statuses/friends_timeline"
+      show_statuses(get_response_as_json("statuses/friends_timeline", :num_statuses, :page))
     end
 
     def mentions
-      get_result_as_json_and_show "statuses/mentions"
+      show_statuses(get_response_as_json("statuses/mentions", :num_statuses, :page))
     end
 
     def user(user = @username)
-      get_result_as_json_and_show "statuses/user_timeline/#{user}"
+      show_statuses(get_response_as_json("statuses/user_timeline/#{user}", :num_statuses, :page))
     end
 
     def update(new_status = nil)
@@ -44,10 +44,18 @@ module Tweetwine
       if !new_status.empty? && @io.confirm("Really send?")
         status = JSON.parse(post("statuses/update.json", {:status => new_status}))
         @io.info "Sent status update.\n\n"
-        @io.show_statuses([status])
+        show_statuses([status])
       else
         @io.info "Cancelled."
       end
+    end
+
+    def friends
+      show_users(get_response_as_json("statuses/friends/#{@username}", :page))
+    end
+
+    def followers
+      show_users(get_response_as_json("statuses/followers/#{@username}", :page))
     end
 
     private
@@ -65,8 +73,49 @@ module Tweetwine
       end
     end
 
-    def get_result_as_json_and_show(url_body)
-      @io.show_statuses JSON.parse(get(url_body + ".json?count=#{@num_statuses}&page=#{@page_num}"))
+    def get_response_as_json(url_body, *query_opts)
+      url = url_body + ".json?#{parse_query_options(query_opts)}"
+      JSON.parse(get(url))
+    end
+
+    def parse_query_options(query_opts)
+      str = []
+      query_opts.each do |opt|
+        case opt
+        when :page
+          str << "page=#{@page_num}"
+        when :num_statuses
+          str << "count=#{@num_statuses}"
+        end
+      end
+      str.join("&")
+    end
+
+    def show_statuses(data)
+      show_responses(data) { |entry| [entry["user"], entry] }
+    end
+
+    def show_users(data)
+      show_responses(data) { |entry| [entry, entry["status"]] }
+    end
+
+    def show_responses(data)
+      data.each do |entry|
+        user_data, status_data = yield entry
+        @io.show(parse_response(user_data, status_data))
+      end
+    end
+
+    def parse_response(user_data, status_data)
+      record = { :user => user_data["screen_name"] }
+      if status_data
+        record[:status] = {
+          :created_at  => status_data["created_at"],
+          :in_reply_to => status_data["in_reply_to_screen_name"],
+          :text        => status_data["text"]
+        }
+      end
+      record
     end
 
     def get(body_url)

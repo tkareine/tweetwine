@@ -52,14 +52,24 @@ class IOTest < Test::Unit::TestCase
       @io = IO.new({ :input => @input, :output => @output, :colorize => false })
     end
 
-    should "print statuses without in-reply info" do
-      statuses = [
-        {
-          "created_at" => Time.at(1),
-          "user" => { "screen_name" => "fooman" },
-          "text" => "Hi, @barman! Lulz woo!"
+    should "output a record as user info when no status is given" do
+      record = { :user => "fooman" }
+      @output.expects(:puts).with(<<-END
+fooman
+
+      END
+      )
+      @io.show(record)
+    end
+
+    should "output record as a status when status is given, without in-reply info" do
+      record = {
+        :user   => "fooman",
+        :status => {
+          :created_at => Time.at(1),
+          :text       => "Hi, @barman! Lulz woo!"
         }
-      ]
+      }
       Util.expects(:humanize_time_diff).returns([2, "secs"])
       @output.expects(:puts).with(<<-END
 fooman, 2 secs ago:
@@ -67,26 +77,26 @@ Hi, @barman! Lulz woo!
 
       END
       )
-      @io.show_statuses(statuses)
+      @io.show(record)
     end
 
-    should "print statuses with in-reply info" do
-      statuses = [
-        {
-          "created_at" => Time.at(1),
-          "in_reply_to_screen_name" => "barman",
-          "user" => { "screen_name" => "fooman" },
-          "text" => "Hi, @barman! Lulz woo!"
+    should "output record as a status when status is given, with in-reply info" do
+      record = {
+        :user   => "barman",
+        :status => {
+          :created_at   => Time.at(1),
+          :text         => "Hi, @fooman! Check this: http://www.foo.com. Nice, isn't it?",
+          :in_reply_to  => "fooman"
         }
-      ]
+      }
       Util.expects(:humanize_time_diff).returns([2, "secs"])
       @output.expects(:puts).with(<<-END
-fooman, in reply to barman, 2 secs ago:
-Hi, @barman! Lulz woo!
+barman, in reply to fooman, 2 secs ago:
+Hi, @fooman! Check this: http://www.foo.com. Nice, isn't it?
 
       END
       )
-      @io.show_statuses(statuses)
+      @io.show(record)
     end
   end
 
@@ -97,14 +107,24 @@ Hi, @barman! Lulz woo!
       @io = IO.new({ :input => @input, :output => @output, :colorize => true })
     end
 
-    should "print statuses without in-reply info" do
-      statuses = [
-        {
-          "created_at" => Time.at(1),
-          "user" => { "screen_name" => "fooman" },
-          "text" => "Hi, @barman! Lulz woo!"
+    should "output a record as user info when no status is given" do
+      record = { :user => "fooman" }
+      @output.expects(:puts).with(<<-END
+\033[32mfooman\033[0m
+
+      END
+      )
+      @io.show(record)
+    end
+
+    should "output record as a status when status is given, without in-reply info" do
+      record = {
+        :user   => "fooman",
+        :status => {
+          :created_at => Time.at(1),
+          :text       => "Hi, @barman! Lulz woo!"
         }
-      ]
+      }
       Util.expects(:humanize_time_diff).returns([2, "secs"])
       @output.expects(:puts).with(<<-END
 \033[32mfooman\033[0m, 2 secs ago:
@@ -112,26 +132,26 @@ Hi, \033[33m@barman\033[0m! Lulz woo!
 
       END
       )
-      @io.show_statuses(statuses)
+      @io.show(record)
     end
 
-    should "print statuses with in-reply info" do
-      statuses = [
-        {
-          "created_at" => Time.at(1),
-          "in_reply_to_screen_name" => "barman",
-          "user" => { "screen_name" => "fooman" },
-          "text" => "Hi, @barman! Check this: http://www.foo.com. Nice, isn't it?"
+    should "output record as a status when status is given, with in-reply info" do
+      record = {
+        :user   => "barman",
+        :status => {
+          :created_at   => Time.at(1),
+          :text         => "Hi, @fooman! Check this: http://www.foo.com. Nice, isn't it?",
+          :in_reply_to  => "fooman"
         }
-      ]
+      }
       Util.expects(:humanize_time_diff).returns([2, "secs"])
       @output.expects(:puts).with(<<-END
-\033[32mfooman\033[0m, in reply to \033[32mbarman\033[0m, 2 secs ago:
-Hi, \033[33m@barman\033[0m! Check this: \033[36mhttp://www.foo.com\033[0m. Nice, isn't it?
+\033[32mbarman\033[0m, in reply to \033[32mfooman\033[0m, 2 secs ago:
+Hi, \033[33m@fooman\033[0m! Check this: \033[36mhttp://www.foo.com\033[0m. Nice, isn't it?
 
       END
       )
-      @io.show_statuses(statuses)
+      @io.show(record)
     end
   end
 

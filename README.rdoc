@@ -34,6 +34,8 @@ When invoking the program, the supported commands are
 <tt>mentions</tt>:: Fetch latest mentions for the authenticated user.
 <tt>user [name]</tt>:: Fetch a specific user's latest statuses, identified by the argument; if given no argument, fetch the statuses of the authenticated user.
 <tt>update [status]</tt>:: Send a status update, but confirm the action first before actually sending. The status update can either be given as an argument or via STDIN if no argument is given.
+<tt>friends</tt>:: Fetch friends and their latest statuses.
+<tt>followers</tt>:: Fetch followers and their latest statuses.
 
 If no <tt>[command]</tt> is given, the default action is <tt>home</tt>.
 

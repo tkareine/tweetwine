@@ -46,116 +46,144 @@ class ClientTest < Test::Unit::TestCase
       @client = Client.new({ :username => "foo", :password => "bar" })
       @io = mock()
       @client.instance_variable_set(:@io, @io)
-      @query_params = "count=#{Client::DEFAULT_NUM_STATUSES}&page=#{Client::DEFAULT_PAGE_NUM}"
+      @statuses_query_params = "count=#{Client::DEFAULT_NUM_STATUSES}&page=#{Client::DEFAULT_PAGE_NUM}"
+      @users_query_params = "page=#{Client::DEFAULT_PAGE_NUM}"
     end
 
     should "raise ClientError for invalid request" do
       RestClient.expects(:get) \
-                .with("https://foo:bar@twitter.com/statuses/friends_timeline.json?#{@query_params}") \
+                .with("https://foo:bar@twitter.com/statuses/friends_timeline.json?#{@statuses_query_params}") \
                 .raises(RestClient::Unauthorized)
       assert_raises(ClientError) { @client.home }
     end
 
     should "fetch friends' statuses (home view)" do
-      statuses = [
+      statuses, records = create_test_statuses(
         {
-          "created_at" => Time.at(1).to_s,
-          "user" => { "username" => "zanzibar" },
-          "text" => "wassup?"
+          :user => "zanzibar",
+          :status => {
+            :created_at   => Time.at(1).to_s,
+            :text         => "wassup?",
+            :in_reply_to  => nil
+          }
         },
         {
-          "created_at" => Time.at(2).to_s,
-          "user" => { "username" => "lulzwoo" },
-          "text" => "nuttin"
+          :user => "lulzwoo",
+          :status => {
+            :created_at   => Time.at(1).to_s,
+            :text         => "nuttin'",
+            :in_reply_to  => nil
+          }
         }
-      ]
+      )
       RestClient.expects(:get) \
-                .with("https://foo:bar@twitter.com/statuses/friends_timeline.json?#{@query_params}") \
+                .with("https://foo:bar@twitter.com/statuses/friends_timeline.json?#{@statuses_query_params}") \
                 .returns(statuses.to_json)
-      @io.expects(:show_statuses).with(statuses)
+      @io.expects(:show).with(records[0])
+      @io.expects(:show).with(records[1])
       @client.home
     end
 
     should "fetch mentions" do
-      statuses = [
+      statuses, records = create_test_statuses(
         {
-          "created_at" => Time.at(1).to_s,
-          "in_reply_to_screen_name" => "foo",
-          "user" => { "username" => "zanzibar" },
-          "text" => "wassup, @foo?"
+          :user => "zanzibar",
+          :status => {
+            :created_at   => Time.at(1).to_s,
+            :text         => "wassup, @foo?",
+            :in_reply_to  => "foo"
+          }
         },
         {
-          "created_at" => Time.at(2).to_s,
-          "in_reply_to_screen_name" => "foo",
-          "user" => { "username" => "lulzwoo" },
-          "text" => "@foo, doing nuttin"
+          :user => "lulzwoo",
+          :status => {
+            :created_at   => Time.at(1).to_s,
+            :text         => "@foo, doing nuttin'",
+            :in_reply_to  => "foo"
+          }
         }
-      ]
+      )
       RestClient.expects(:get) \
-                .with("https://foo:bar@twitter.com/statuses/mentions.json?#{@query_params}") \
+                .with("https://foo:bar@twitter.com/statuses/mentions.json?#{@statuses_query_params}") \
                 .returns(statuses.to_json)
-      @io.expects(:show_statuses).with(statuses)
+      @io.expects(:show).with(records[0])
+      @io.expects(:show).with(records[1])
       @client.mentions
     end
 
     should "fetch a specific user's statuses, with the user identified by given argument" do
-      statuses = [
+      statuses, records = create_test_statuses(
         {
-          "created_at" => Time.at(1).to_s,
-          "user" => { "username" => "zanzibar" },
-          "text" => "wassup?"
+          :user => "zanzibar",
+          :status => {
+            :created_at   => Time.at(1).to_s,
+            :text         => "wassup?",
+            :in_reply_to  => nil
+          }
         }
-      ]
+      )
       RestClient.expects(:get) \
-                .with("https://foo:bar@twitter.com/statuses/user_timeline/zanzibar.json?#{@query_params}") \
+                .with("https://foo:bar@twitter.com/statuses/user_timeline/zanzibar.json?#{@statuses_query_params}") \
                 .returns(statuses.to_json)
-      @io.expects(:show_statuses).with(statuses)
+      @io.expects(:show).with(records[0])
       @client.user("zanzibar")
     end
 
     should "fetch a specific user's statuses, with the user being the authenticated user itself when given no argument" do
-      statuses = [
+      statuses, records = create_test_statuses(
         {
-          "created_at" => Time.at(1).to_s,
-          "user" => { "username" => "foo" },
-          "text" => "wassup?"
+          :user => "foo",
+          :status => {
+            :created_at   => Time.at(1).to_s,
+            :text         => "wassup?",
+            :in_reply_to  => nil
+          }
         }
-      ]
+      )
       RestClient.expects(:get) \
-                .with("https://foo:bar@twitter.com/statuses/user_timeline/foo.json?#{@query_params}") \
+                .with("https://foo:bar@twitter.com/statuses/user_timeline/foo.json?#{@statuses_query_params}") \
                 .returns(statuses.to_json)
-      @io.expects(:show_statuses).with(statuses)
+      @io.expects(:show).with(records[0])
       @client.user
     end
 
     should "post a status update via argument, when positive confirmation" do
-      status = {
-        "created_at" => Time.at(1).to_s,
-        "user" => { "username" => "foo" },
-        "text" => "wondering about"
-      }
+      statuses, records = create_test_statuses(
+        {
+          :user => "foo",
+          :status => {
+            :created_at   => Time.at(1).to_s,
+            :text         => "wondering around",
+            :in_reply_to  => nil
+          }
+        },
+      )
       RestClient.expects(:post) \
                 .with("https://foo:bar@twitter.com/statuses/update.json", {:status => "wondering about"}) \
-                .returns(status.to_json)
+                .returns(statuses[0].to_json)
       @io.expects(:confirm).with("Really send?").returns(true)
       @io.expects(:info).with("Sent status update.\n\n")
-      @io.expects(:show_statuses).with([status])
+      @io.expects(:show).with(records[0])
       @client.update("wondering about")
     end
 
     should "post a status update via prompt, when positive confirmation" do
-      status = {
-        "created_at" => Time.at(1).to_s,
-        "user" => { "username" => "foo" },
-        "text" => "wondering about"
-      }
+      statuses, records = create_test_statuses(
+        { :user => "foo",
+          :status => {
+            :created_at   => Time.at(1).to_s,
+            :text         => "wondering around",
+            :in_reply_to  => nil
+          }
+        },
+      )
       RestClient.expects(:post) \
                 .with("https://foo:bar@twitter.com/statuses/update.json", {:status => "wondering about"}) \
-                .returns(status.to_json)
+                .returns(statuses[0].to_json)
       @io.expects(:prompt).with("Status update").returns("wondering about")
       @io.expects(:confirm).with("Really send?").returns(true)
       @io.expects(:info).with("Sent status update.\n\n")
-      @io.expects(:show_statuses).with([status])
+      @io.expects(:show).with(records[0])
       @client.update
     end
 
@@ -163,8 +191,8 @@ class ClientTest < Test::Unit::TestCase
       RestClient.expects(:post).never
       @io.expects(:confirm).with("Really send?").returns(false)
       @io.expects(:info).with("Cancelled.")
-      @io.expects(:show_statuses).never
-      @client.update("wondering about")
+      @io.expects(:show).never
+      @client.update("wondering around")
     end
 
     should "cancel a status update via prompt, when negative confirmation" do
@@ -172,7 +200,7 @@ class ClientTest < Test::Unit::TestCase
       @io.expects(:prompt).with("Status update").returns("wondering about")
       @io.expects(:confirm).with("Really send?").returns(false)
       @io.expects(:info).with("Cancelled.")
-      @io.expects(:show_statuses).never
+      @io.expects(:show).never
       @client.update
     end
 
@@ -180,7 +208,7 @@ class ClientTest < Test::Unit::TestCase
       RestClient.expects(:post).never
       @io.expects(:confirm).never
       @io.expects(:info).with("Cancelled.")
-      @io.expects(:show_statuses).never
+      @io.expects(:show).never
       @client.update("")
     end
 
@@ -189,27 +217,84 @@ class ClientTest < Test::Unit::TestCase
       @io.expects(:prompt).with("Status update").returns("")
       @io.expects(:confirm).never
       @io.expects(:info).with("Cancelled.")
-      @io.expects(:show_statuses).never
+      @io.expects(:show).never
       @client.update
     end
 
     should "truncate a status update with too long argument and warn the user" do
       long_status_update = "x aaa bbb ccc ddd eee fff ggg hhh iii jjj kkk lll mmm nnn ooo ppp qqq rrr sss ttt uuu vvv www xxx yyy zzz 111 222 333 444 555 666 777 888 999 000"
       truncated_status_update = "x aaa bbb ccc ddd eee fff ggg hhh iii jjj kkk lll mmm nnn ooo ppp qqq rrr sss ttt uuu vvv www xxx yyy zzz 111 222 333 444 555 666 777 888 99"
-      status = {
-        "created_at" => Time.at(1).to_s,
-        "user" => { "username" => "foo" },
-        "text" => truncated_status_update
-      }
-
+      statuses, records = create_test_statuses(
+        { :user => "foo",
+          :status => {
+            :created_at   => Time.at(1).to_s,
+            :text         => truncated_status_update,
+            :in_reply_to  => nil
+          }
+        },
+      )
       RestClient.expects(:post) \
                 .with("https://foo:bar@twitter.com/statuses/update.json", {:status => truncated_status_update}) \
-                .returns(status.to_json)
+                .returns(statuses[0].to_json)
       @io.expects(:warn).with("Status will be truncated: #{truncated_status_update}")
       @io.expects(:confirm).with("Really send?").returns(true)
       @io.expects(:info).with("Sent status update.\n\n")
-      @io.expects(:show_statuses).with([status])
+      @io.expects(:show).with(records[0])
       @client.update(long_status_update)
+    end
+
+    should "fetch friends" do
+      users, records = create_test_users(
+        {
+          :user => "zanzibar",
+          :status => {
+            :created_at   => Time.at(1).to_s,
+            :text         => "wassup, @foo?",
+            :in_reply_to  => "foo"
+          }
+        },
+        {
+          :user => "lulzwoo",
+          :status => {
+            :created_at   => Time.at(1).to_s,
+            :text         => "@foo, doing nuttin'",
+            :in_reply_to  => "foo"
+          }
+        }
+      )
+      RestClient.expects(:get) \
+                .with("https://foo:bar@twitter.com/statuses/friends/foo.json?#{@users_query_params}") \
+                .returns(users.to_json)
+      @io.expects(:show).with(records[0])
+      @io.expects(:show).with(records[1])
+      @client.friends
+    end
+
+    should "fetch followers" do
+      users, records = create_test_users(
+        {
+          :user => "zanzibar",
+          :status => {
+            :created_at   => Time.at(1).to_s,
+            :text         => "wassup, @foo?",
+            :in_reply_to  => "foo"
+          }
+        },
+        {
+          :user => "lulzwoo",
+          :status => {
+            :created_at   => Time.at(1).to_s,
+            :text         => "@foo, doing nuttin'",
+            :in_reply_to  => "foo"
+          }
+        }
+      )
+      RestClient.expects(:get) \
+                .with("https://foo:bar@twitter.com/statuses/followers/foo.json?#{@users_query_params}") \
+                .returns(users.to_json)
+      @io.expects(:show).with(records[0])
+      @io.expects(:show).with(records[1])
+      @client.followers
     end
   end
 end
