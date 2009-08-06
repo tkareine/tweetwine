@@ -85,14 +85,14 @@ Hi, @barman! Lulz woo!
         :user   => "barman",
         :status => {
           :created_at   => Time.at(1),
-          :text         => "Hi, @fooman! Check this: http://www.foo.com. Nice, isn't it?",
+          :text         => "Hi, @fooman! How are you doing?",
           :in_reply_to  => "fooman"
         }
       }
       Util.expects(:humanize_time_diff).returns([2, "secs"])
       @output.expects(:puts).with(<<-END
 barman, in reply to fooman, 2 secs ago:
-Hi, @fooman! Check this: http://www.foo.com. Nice, isn't it?
+Hi, @fooman! How are you doing?
 
       END
       )
@@ -140,14 +140,32 @@ Hi, \033[33m@barman\033[0m! Lulz woo!
         :user   => "barman",
         :status => {
           :created_at   => Time.at(1),
-          :text         => "Hi, @fooman! Check this: http://www.foo.com. Nice, isn't it?",
+          :text         => "Hi, @fooman! How are you doing?",
           :in_reply_to  => "fooman"
         }
       }
       Util.expects(:humanize_time_diff).returns([2, "secs"])
       @output.expects(:puts).with(<<-END
 \033[32mbarman\033[0m, in reply to \033[32mfooman\033[0m, 2 secs ago:
-Hi, \033[33m@fooman\033[0m! Check this: \033[36mhttp://www.foo.com\033[0m. Nice, isn't it?
+Hi, \033[33m@fooman\033[0m! How are you doing?
+
+      END
+      )
+      @io.show(record)
+    end
+
+    should "highlight HTTP and HTTPS URIs in a status" do
+      record = {
+        :user   => "barman",
+        :status => {
+          :created_at   => Time.at(1),
+          :text         => "Three links: http://bit.ly/18rU_Vx http://is.gd/1qLk3 and https://is.gd/2rLk4",
+        }
+      }
+      Util.expects(:humanize_time_diff).returns([2, "secs"])
+      @output.expects(:puts).with(<<-END
+\033[32mbarman\033[0m, 2 secs ago:
+Three links: \033[36mhttp://bit.ly/18rU_Vx\033[0m \033[36mhttp://is.gd/1qLk3\033[0m and \033[36mhttps://is.gd/2rLk4\033[0m
 
       END
       )
@@ -165,43 +183,6 @@ Hi, \033[33m@fooman\033[0m! Check this: \033[36mhttp://www.foo.com\033[0m. Nice,
       assert_no_full_match IO::NICK_REGEX, "@"
       assert_no_full_match IO::NICK_REGEX, "nick"
       assert_no_full_match IO::NICK_REGEX, "@nick-man"
-    end
-  end
-
-  context "URL regex" do
-    should "match an IP" do
-      assert_full_match IO::URL_REGEX, "http://127.0.0.1"
-      assert_full_match IO::URL_REGEX, "http://127.0.0.1/"
-      assert_full_match IO::URL_REGEX, "https://127.0.0.1"
-      assert_full_match IO::URL_REGEX, "https://127.0.0.1/"
-    end
-
-    should "match a FQDN" do
-      assert_full_match IO::URL_REGEX, "https://fo.com"
-      assert_full_match IO::URL_REGEX, "https://fo.com/"
-      assert_full_match IO::URL_REGEX, "http://www.foo.com"
-      assert_full_match IO::URL_REGEX, "http://www.foo.com/"
-      assert_full_match IO::URL_REGEX, "https://www.foo.com"
-      assert_full_match IO::URL_REGEX, "https://www.foo.com/"
-    end
-
-    should "respect whitespace, parentheses, periods, etc. at the end" do
-      assert_full_match IO::URL_REGEX, "http://tr.im/WGAP"
-      assert_no_full_match IO::URL_REGEX, "http://tr.im/WGAP "
-      assert_no_full_match IO::URL_REGEX, "http://tr.im/WGAP)"
-      assert_no_full_match IO::URL_REGEX, "http://tr.im/WGAP."
-      assert_no_full_match IO::URL_REGEX, "http://tr.im/WGAP,"
-    end
-
-    should "match multipart URLs" do
-      assert_full_match IO::URL_REGEX, "http://technomancy.us/126"
-      assert_full_match IO::URL_REGEX, "http://technomancy.us/126/"
-      assert_full_match IO::URL_REGEX, "http://bit.ly/18rUVx"
-      assert_full_match IO::URL_REGEX, "http://bit.ly/18rUVx/"
-      assert_full_match IO::URL_REGEX, "http://bit.ly/18rU_Vx"
-      assert_full_match IO::URL_REGEX, "http://bit.ly/18rU_Vx/"
-      assert_full_match IO::URL_REGEX, "http://www.ireport.com/docs/DOC-266869"
-      assert_full_match IO::URL_REGEX, "http://www.ireport.com/docs/DOC-266869/"
     end
   end
 end

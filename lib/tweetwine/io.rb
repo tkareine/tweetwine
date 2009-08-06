@@ -1,3 +1,5 @@
+require "uri"
+
 module Tweetwine
   class IO
     COLOR_CODES = {
@@ -8,7 +10,6 @@ module Tweetwine
     }
 
     NICK_REGEX = /@\w+/
-    URL_REGEX = /(http|https):\/\/[a-z0-9]+([\-\.]{1}[a-z0-9]+)*(:[0-9]{2,5})?(((\/[a-z0-9_\-]+)+\/?)|(\/))?/i
 
     def initialize(options)
       @input = options[:input] || $stdin
@@ -46,18 +47,18 @@ module Tweetwine
     def show_as_status(record)
       time_diff_value, time_diff_unit = Util.humanize_time_diff(record[:status][:created_at], Time.now)
       from_user = record[:user]
-      from_user = colorize(:green, from_user) if @colorize
+      colorize!(:green, from_user) if @colorize
       in_reply_to = record[:status][:in_reply_to]
       in_reply_to = if in_reply_to && !in_reply_to.empty?
-        in_reply_to = colorize(:green, in_reply_to) if @colorize
+        colorize!(:green, in_reply_to) if @colorize
         "in reply to #{in_reply_to}, "
       else
         ""
       end
       status = record[:status][:text]
       if @colorize
-        status = colorize(:yellow, status, NICK_REGEX)
-        status = colorize(:cyan, status, URL_REGEX)
+        colorize!(:yellow, status, [NICK_REGEX])
+        colorize!(:cyan, status, URI.extract(status, ["http", "https"]))
       end
       @output.puts <<-END
 #{from_user}, #{in_reply_to}#{time_diff_value} #{time_diff_unit} ago:
@@ -68,7 +69,7 @@ module Tweetwine
 
     def show_as_user(record)
       user = record[:user]
-      user = colorize(:green, user) if @colorize
+      colorize!(:green, user) if @colorize
       @output.puts <<-END
 #{user}
 
@@ -77,13 +78,15 @@ module Tweetwine
 
     private
 
-    def colorize(color, str, matcher = nil)
+    def colorize!(color, str, patterns = nil)
       color_code = COLOR_CODES[color.to_sym]
 
-      unless matcher
-        colorize_str(color_code, str)
+      if patterns
+        patterns.each do |pattern|
+          str.sub!(pattern) { |s| colorize_str(color_code, s) }
+        end
       else
-        str.gsub(matcher) { |s| colorize_str(color_code, s) }
+        str.replace colorize_str(color_code, str)
       end
     end
 

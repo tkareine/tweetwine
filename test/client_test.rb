@@ -156,7 +156,7 @@ class ClientTest < Test::Unit::TestCase
             :text         => "wondering around",
             :in_reply_to  => nil
           }
-        },
+        }
       )
       RestClient.expects(:post) \
                 .with("https://foo:bar@twitter.com/statuses/update.json", {:status => "wondering about"}) \
@@ -175,7 +175,7 @@ class ClientTest < Test::Unit::TestCase
             :text         => "wondering around",
             :in_reply_to  => nil
           }
-        },
+        }
       )
       RestClient.expects(:post) \
                 .with("https://foo:bar@twitter.com/statuses/update.json", {:status => "wondering about"}) \
@@ -231,7 +231,7 @@ class ClientTest < Test::Unit::TestCase
             :text         => truncated_status_update,
             :in_reply_to  => nil
           }
-        },
+        }
       )
       RestClient.expects(:post) \
                 .with("https://foo:bar@twitter.com/statuses/update.json", {:status => truncated_status_update}) \
