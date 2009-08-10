@@ -57,8 +57,10 @@ module Tweetwine
       end
       status = record[:status][:text]
       if @colorize
-        colorize!(:yellow, status, [NICK_REGEX])
-        colorize!(:cyan, status, URI.extract(status, ["http", "https"]))
+        colorize_all!(:yellow, status, NICK_REGEX)
+        URI.extract(status, ["http", "https"]).each do |url|
+          colorize_first!(:cyan, status, url)
+        end
       end
       @output.puts <<-END
 #{from_user}, #{in_reply_to}#{time_diff_value} #{time_diff_unit} ago:
@@ -78,16 +80,16 @@ module Tweetwine
 
     private
 
-    def colorize!(color, str, patterns = nil)
-      color_code = COLOR_CODES[color.to_sym]
+    def colorize_all!(color, str, pattern)
+      str.gsub!(pattern) { |s| colorize_str(COLOR_CODES[color.to_sym], s) }
+    end
 
-      if patterns
-        patterns.each do |pattern|
-          str.sub!(pattern) { |s| colorize_str(color_code, s) }
-        end
-      else
-        str.replace colorize_str(color_code, str)
-      end
+    def colorize_first!(color, str, pattern)
+      str.sub!(pattern) { |s| colorize_str(COLOR_CODES[color.to_sym], s) }
+    end
+
+    def colorize!(color, str)
+      str.replace colorize_str(COLOR_CODES[color.to_sym], str)
     end
 
     def colorize_str(color_code, str)

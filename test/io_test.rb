@@ -122,13 +122,13 @@ Hi, @fooman! How are you doing?
         :user   => "fooman",
         :status => {
           :created_at => Time.at(1),
-          :text       => "Hi, @barman! Lulz woo!"
+          :text       => "Wondering the meaning of life."
         }
       }
       Util.expects(:humanize_time_diff).returns([2, "secs"])
       @output.expects(:puts).with(<<-END
 \033[32mfooman\033[0m, 2 secs ago:
-Hi, \033[33m@barman\033[0m! Lulz woo!
+Wondering the meaning of life.
 
       END
       )
@@ -166,6 +166,24 @@ Hi, \033[33m@fooman\033[0m! How are you doing?
       @output.expects(:puts).with(<<-END
 \033[32mbarman\033[0m, 2 secs ago:
 Three links: \033[36mhttp://bit.ly/18rU_Vx\033[0m \033[36mhttp://is.gd/1qLk3\033[0m and \033[36mhttps://is.gd/2rLk4\033[0m
+
+      END
+      )
+      @io.show(record)
+    end
+
+    should "highlight nicks in a status" do
+      record = {
+        :user   => "barman",
+        :status => {
+          :created_at   => Time.at(1),
+          :text         => "I salute you @fooman, @barbaz, and @spoonman!",
+        }
+      }
+      Util.expects(:humanize_time_diff).returns([2, "secs"])
+      @output.expects(:puts).with(<<-END
+\033[32mbarman\033[0m, 2 secs ago:
+I salute you \033[33m@fooman\033[0m, \033[33m@barbaz\033[0m, and \033[33m@spoonman\033[0m!
 
       END
       )
