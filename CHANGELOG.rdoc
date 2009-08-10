@@ -1,3 +1,7 @@
+=== 0.1.11 released 2009-08-10
+
+* Fixed highlighting multiple nicks in statuses.
+
 === 0.1.10 released 2009-08-09
 
 * Improved URL highlight support.
