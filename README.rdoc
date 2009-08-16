@@ -22,7 +22,7 @@ information can be supplied either via a configuration file or as an option
 former method over the latter.
 
 The configuration file, in <tt>~/.tweetwine</tt>, is in YAML syntax. The
-program recognizes the following settings:
+program recognizes the following basic settings:
 
   username: <your_username>
   password: <your_password>
@@ -42,6 +42,32 @@ If no <tt>[command]</tt> is given, the default action is <tt>home</tt>.
 For all the options, see:
 
   $ tweetwine -h
+
+=== URL shortening for status update
+
+Before actually sending a status update, it is possible for the software to
+shorten the URLs in the update. This can be enabled via the configuration
+file; for example:
+
+  username: spoonman
+  password: withyourhands
+  colorize: true
+  shorten_urls:
+    enable: true
+    service_url: http://is.gd/create.php
+    method: post
+    url_param_name: URL
+    xpath_selector: //input[@id='short_url']/@value
+
+The supported methods are <tt>get</tt> and <tt>post</tt>. The method chosen
+affects whether parameters are passed as URL query parameters or as payload
+in the HTTP request, respectively. Extra parameters can be given via
+<tt>extra_parameter</tt> key, as a hash.
+
+The <tt>xpath_selector</tt> is needed to extract the shortened URL from the
+result.
+
+The command line option <tt>--no-url-shorten</tt> disables the feature.
 
 == Contacting
 
