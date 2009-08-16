@@ -59,44 +59,57 @@ fooman
 
       END
       )
-      @io.show(record)
+      @io.show_record(record)
     end
 
-    should "output record as a status when status is given, without in-reply info" do
+    should "output a record as status info when status is given, without in-reply info" do
+      status = "Hi, @barman! Lulz woo!"
       record = {
         :user   => "fooman",
         :status => {
           :created_at => Time.at(1),
-          :text       => "Hi, @barman! Lulz woo!"
+          :text       => status
         }
       }
       Util.expects(:humanize_time_diff).returns([2, "secs"])
       @output.expects(:puts).with(<<-END
 fooman, 2 secs ago:
-Hi, @barman! Lulz woo!
+#{status}
 
       END
       )
-      @io.show(record)
+      @io.show_record(record)
     end
 
-    should "output record as a status when status is given, with in-reply info" do
+    should "output a record as status info when status is given, with in-reply info" do
+      status = "Hi, @fooman! How are you doing?"
       record = {
         :user   => "barman",
         :status => {
           :created_at   => Time.at(1),
-          :text         => "Hi, @fooman! How are you doing?",
+          :text         => status,
           :in_reply_to  => "fooman"
         }
       }
       Util.expects(:humanize_time_diff).returns([2, "secs"])
       @output.expects(:puts).with(<<-END
 barman, in reply to fooman, 2 secs ago:
-Hi, @fooman! How are you doing?
+#{status}
 
       END
       )
-      @io.show(record)
+      @io.show_record(record)
+    end
+
+    should "output a preview of a status" do
+      status = "@nick, check http://bit.ly/18rU_Vx"
+      @output.expects(:puts).with(<<-END
+
+#{status}
+
+      END
+      )
+      @io.show_status_preview(status)
     end
   end
 
@@ -114,10 +127,10 @@ Hi, @fooman! How are you doing?
 
       END
       )
-      @io.show(record)
+      @io.show_record(record)
     end
 
-    should "output record as a status when status is given, without in-reply info" do
+    should "output a record as status info when status is given, without in-reply info" do
       record = {
         :user   => "fooman",
         :status => {
@@ -132,10 +145,10 @@ Wondering the meaning of life.
 
       END
       )
-      @io.show(record)
+      @io.show_record(record)
     end
 
-    should "output record as a status when status is given, with in-reply info" do
+    should "output a record as status info when status is given, with in-reply info" do
       record = {
         :user   => "barman",
         :status => {
@@ -151,7 +164,18 @@ Hi, \033[33m@fooman\033[0m! How are you doing?
 
       END
       )
-      @io.show(record)
+      @io.show_record(record)
+    end
+
+    should "output a preview of a status" do
+      status = "@nick, check http://bit.ly/18rU_Vx"
+      @output.expects(:puts).with(<<-END
+
+\033[33m@nick\033[0m, check \033[36mhttp://bit.ly/18rU_Vx\033[0m
+
+      END
+      )
+      @io.show_status_preview(status)
     end
 
     should "highlight HTTP and HTTPS URIs in a status" do
@@ -169,7 +193,7 @@ Three links: \033[36mhttp://bit.ly/18rU_Vx\033[0m \033[36mhttp://is.gd/1qLk3\033
 
       END
       )
-      @io.show(record)
+      @io.show_record(record)
     end
 
     should "highlight nicks in a status" do
@@ -187,7 +211,7 @@ I salute you \033[33m@fooman\033[0m, \033[33m@barbaz\033[0m, and \033[33m@spoonm
 
       END
       )
-      @io.show(record)
+      @io.show_record(record)
     end
   end
 

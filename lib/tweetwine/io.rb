@@ -36,49 +36,69 @@ module Tweetwine
       confirmation.downcase[0,1] == "y"
     end
 
-    def show(record)
+    def show_status_preview(status)
+      @output.puts <<-END
+
+#{format_status(status)}
+
+      END
+    end
+
+    def show_record(record)
       if record[:status]
-        show_as_status(record)
+        show_record_as_user_with_status(record)
       else
-        show_as_user(record)
+        show_record_as_user(record)
       end
     end
 
-    def show_as_status(record)
-      time_diff_value, time_diff_unit = Util.humanize_time_diff(record[:status][:created_at], Time.now)
-      from_user = record[:user]
-      colorize!(:green, from_user) if @colorize
-      in_reply_to = record[:status][:in_reply_to]
-      in_reply_to = if in_reply_to && !in_reply_to.empty?
-        colorize!(:green, in_reply_to) if @colorize
-        "in reply to #{in_reply_to}, "
-      else
-        ""
-      end
-      status = record[:status][:text]
+    private
+
+    def show_record_as_user(record)
+      @output.puts <<-END
+#{format_user(record[:user])}
+
+      END
+    end
+
+    def show_record_as_user_with_status(record)
+      @output.puts <<-END
+#{format_record_header(record)}
+#{format_status(record[:status][:text])}
+
+      END
+    end
+
+    def format_user(user)
+      user = user.dup
+      colorize!(:green, user) if @colorize
+      user
+    end
+
+    def format_status(status)
+      status = status.dup
       if @colorize
         colorize_all!(:yellow, status, NICK_REGEX)
         URI.extract(status, ["http", "https"]).each do |url|
           colorize_first!(:cyan, status, url)
         end
       end
-      @output.puts <<-END
-#{from_user}, #{in_reply_to}#{time_diff_value} #{time_diff_unit} ago:
-#{status}
-
-      END
+      status
     end
 
-    def show_as_user(record)
-      user = record[:user]
-      colorize!(:green, user) if @colorize
-      @output.puts <<-END
-#{user}
-
-      END
+    def format_record_header(record)
+      time_diff_value, time_diff_unit = Util.humanize_time_diff(record[:status][:created_at], Time.now)
+      from_user = record[:user].dup
+      colorize!(:green, from_user) if @colorize
+      in_reply_to = record[:status][:in_reply_to]
+      in_reply_to = if in_reply_to && !in_reply_to.empty?
+        in_reply_to = colorize!(:green, in_reply_to.dup) if @colorize
+        "in reply to #{in_reply_to}, "
+      else
+        ""
+      end
+      "#{from_user}, #{in_reply_to}#{time_diff_value} #{time_diff_unit} ago:"
     end
-
-    private
 
     def colorize_all!(color, str, pattern)
       str.gsub!(pattern) { |s| colorize_str(COLOR_CODES[color.to_sym], s) }

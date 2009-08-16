@@ -6,30 +6,33 @@ require "mocha"
 
 module Tweetwine
   module TestHelpers
-    def create_test_statuses(*records)
-      statuses = records.map do |record|
+    def create_test_statuses(*gen_records)
+      status_records = gen_records.map do |gen_record|
         {
-          "created_at"              => record[:status][:created_at],
-          "text"                    => record[:status][:text],
-          "in_reply_to_screen_name" => record[:status][:in_reply_to],
-          "user"                    => { "screen_name" => record[:user] }
+          "user"                    => { "screen_name" => gen_record[:user] },
+          "created_at"              => gen_record[:status][:created_at],
+          "text"                    => gen_record[:status][:text],
+          "in_reply_to_screen_name" => gen_record[:status][:in_reply_to]
         }
       end
-      [statuses, records]
+      [status_records, gen_records]
     end
 
-    def create_test_users(*records)
-      statuses = records.map do |record|
-        {
-          "screen_name" => record[:user],
-          "status"      => {
-            "created_at"              => record[:status][:created_at],
-            "text"                    => record[:status][:text],
-            "in_reply_to_screen_name" => record[:status][:in_reply_to],
-          }
-        }
+    def create_test_users(*gen_records)
+      user_records = gen_records.map do |gen_record|
+        user_record = { "screen_name" => gen_record[:user] }
+        if gen_record[:status]
+          user_record.merge!({
+            "status" => {
+              "created_at"              => gen_record[:status][:created_at],
+              "text"                    => gen_record[:status][:text],
+              "in_reply_to_screen_name" => gen_record[:status][:in_reply_to],
+            }
+          })
+        end
+        user_record
       end
-      [statuses, records]
+      [user_records, gen_records]
     end
   end
 end

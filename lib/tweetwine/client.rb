@@ -17,7 +17,6 @@ module Tweetwine
       @username = options[:username].to_s
       raise ArgumentError, "No authentication data given" if @username.empty?
       @base_url = "https://#{@username}:#{options[:password]}@twitter.com/"
-      @colorize = options[:colorize] || false
       @num_statuses = parse_int_gt_option(options[:num_statuses], DEFAULT_NUM_STATUSES, 1, "number of statuses_to_show")
       @page_num = parse_int_gt_option(options[:page_num], DEFAULT_PAGE_NUM, 1, "page number")
       @io = IO.new(options)
@@ -37,17 +36,22 @@ module Tweetwine
 
     def update(new_status = nil)
       new_status = @io.prompt("Status update") unless new_status
+      new_status = new_status.strip
       if new_status.length > MAX_STATUS_LENGTH
         new_status = new_status[0...MAX_STATUS_LENGTH]
-        @io.warn("Status will be truncated: #{new_status}")
+        @io.warn("Status will be truncated.")
       end
-      if !new_status.empty? && @io.confirm("Really send?")
-        status = JSON.parse(post("statuses/update.json", {:status => new_status}))
-        @io.info "Sent status update.\n\n"
-        show_statuses([status])
-      else
-        @io.info "Cancelled."
+      completed = false
+      if !new_status.empty?
+        @io.show_status_preview(new_status)
+        if @io.confirm("Really send?")
+          status = JSON.parse(post("statuses/update.json", {:status => new_status}))
+          @io.info "Sent status update.\n\n"
+          show_statuses([status])
+          completed = true
+        end
       end
+      @io.info "Cancelled." unless completed
     end
 
     def friends
@@ -103,7 +107,7 @@ module Tweetwine
     def show_responses(data)
       data.each do |entry|
         user_data, status_data = yield entry
-        @io.show(parse_response(user_data, status_data))
+        @io.show_record(parse_response(user_data, status_data))
       end
     end
 
