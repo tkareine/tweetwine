@@ -129,7 +129,7 @@ module Tweetwine
 
     def rest_client_action(action, *args)
       RestClient.send(action, *args)
-    rescue RestClient::Exception => e
+    rescue RestClient::Exception, SystemCallError => e
       raise ClientError, e.message
     end
   end
