@@ -8,7 +8,8 @@ Install Tweetwine as a RubyGem from GitHub:
 
   $ sudo gem install tuomas-tweetwine --source http://gems.github.com
 
-The program is compatible with Ruby 1.9.1.
+The program is compatible with Ruby 1.9.1, and it requires <b>rest_client</b>
+gem to be installed. In addition, <b>json</b> gem is needed for Ruby 1.8.6.
 
 == Usage
 
@@ -69,6 +70,8 @@ The <tt>xpath_selector</tt> is needed to extract the shortened URL from the
 result.
 
 The command line option <tt>--no-url-shorten</tt> disables the feature.
+
+The use of the feature requires <b>nokogiri</b> gem to be installed.
 
 == Contacting
 
