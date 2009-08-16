@@ -1,3 +1,9 @@
+=== 0.2.0 released 2009-08-17
+
+* URL shortening by using an external web service.
+* Show a preview before sending status update.
+* Avoid stack trace upon erroneous connection.
+
 === 0.1.11 released 2009-08-10
 
 * Fixed highlighting multiple nicks in statuses.
