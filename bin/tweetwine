@@ -39,7 +39,7 @@ Usage: tweetwine [options...] [command]
         opt.on("-n", "--num N", Integer, "The number of statuses to fetch, defaults to #{Client::DEFAULT_NUM_STATUSES}") do |arg|
           options[:num_statuses] = arg
         end
-        opt.on("--no-url-shorten", "Do not shorten URLs") do
+        opt.on("--no-url-shorten", "Do not shorten URLs for status update") do
           options[:shorten_urls] = { :enable => false }
         end
         opt.on("-p", "--page N", Integer, "The page number of the statuses to fetch, defaults to #{Client::DEFAULT_PAGE_NUM}") do |arg|
