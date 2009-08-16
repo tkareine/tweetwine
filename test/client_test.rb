@@ -47,7 +47,7 @@ class ClientTest < Test::Unit::TestCase
     end
   end
 
-  context "At runtime, a client" do
+  context "At runtime, a client, with URL shortening disabled" do
     setup do
       @io = mock()
       @username = "spiky"
@@ -323,6 +323,55 @@ class ClientTest < Test::Unit::TestCase
       @io.expects(:show_record).with(gen_records[0])
       @io.expects(:show_record).with(gen_records[1])
       @client.followers
+    end
+  end
+
+  context "At runtime, a client, with URL shortening enabled" do
+    setup do
+      @io = mock()
+      @username = "spiky"
+      @password = "lullaby"
+      @client = Client.new(@io, {
+        :username => @username,
+        :password => @password,
+        :shorten_urls => {
+          :enable         => true,
+          :service_url    => "http://shorten.it/create",
+          :method         => "post",
+          :url_param_name => "url",
+          :xpath_selector => "//input[@id='short_url']/@value"
+        }
+      })
+      @url_shortener = @client.instance_variable_get(:@url_shortener)
+      @base_url = "https://#{@username}:#{@password}@twitter.com"
+      @statuses_query_params = "count=#{Client::DEFAULT_NUM_STATUSES}&page=#{Client::DEFAULT_PAGE_NUM}"
+      @users_query_params = "page=#{Client::DEFAULT_PAGE_NUM}"
+    end
+
+    should "shorten URLs, avoiding truncation with long URLs" do
+      long_urls = ["http://www.google.fi/search?q=ruby+nokogiri&ie=utf-8&oe=utf-8&aq=t&rls=org.mozilla:en-US:official&client=firefox-a", "http://www.w3.org/TR/1999/REC-xpath-19991116"]
+      long_status = long_urls.join(" and ")
+      short_urls = ["http://shorten.it/2k7i8", "http://shorten.it/2k7mk"]
+      shortened_status = short_urls.join(" and ")
+      status_records, gen_records = create_test_statuses(
+        { :user => @username,
+          :status => {
+            :created_at   => Time.at(1).to_s,
+            :text         => shortened_status,
+            :in_reply_to  => nil
+          }
+        }
+      )
+      RestClientWrapper.expects(:post) \
+          .with("#{@base_url}/statuses/update.json", {:status => shortened_status}) \
+          .returns(status_records[0].to_json)
+      @url_shortener.expects(:shorten).with(long_urls.first).returns(short_urls.first)
+      @url_shortener.expects(:shorten).with(long_urls.last).returns(short_urls.last)
+      @io.expects(:show_status_preview).with(shortened_status)
+      @io.expects(:confirm).with("Really send?").returns(true)
+      @io.expects(:info).with("Sent status update.\n\n")
+      @io.expects(:show_record).with(gen_records[0])
+      @client.update(long_status)
     end
   end
 end
