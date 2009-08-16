@@ -147,8 +147,8 @@ module Tweetwine
           status.dup
         end
         status.strip!
-        truncate!(status) if status.length > MAX_STATUS_LENGTH
         shorten_urls!(status) if @url_shortener
+        truncate!(status) if status.length > MAX_STATUS_LENGTH
         status
       end
 
