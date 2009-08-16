@@ -1,9 +1,6 @@
 require "json"
-require "rest_client"
 
 module Tweetwine
-  class ClientError < RuntimeError; end
-
   class Client
     attr_reader :num_statuses, :page_num
 
@@ -13,13 +10,14 @@ module Tweetwine
     DEFAULT_PAGE_NUM = 1
     MAX_STATUS_LENGTH = 140
 
-    def initialize(options)
+    def initialize(io, options)
+      @io = io
       @username = options[:username].to_s
       raise ArgumentError, "No authentication data given" if @username.empty?
       @base_url = "https://#{@username}:#{options[:password]}@twitter.com/"
       @num_statuses = parse_int_gt_option(options[:num_statuses], DEFAULT_NUM_STATUSES, 1, "number of statuses_to_show")
       @page_num = parse_int_gt_option(options[:page_num], DEFAULT_PAGE_NUM, 1, "page number")
-      @io = IO.new(options)
+      @status_update_factory = StatusUpdateFactory.new(@io)
     end
 
     def home
@@ -35,17 +33,12 @@ module Tweetwine
     end
 
     def update(new_status = nil)
-      new_status = @io.prompt("Status update") unless new_status
-      new_status = new_status.strip
-      if new_status.length > MAX_STATUS_LENGTH
-        new_status = new_status[0...MAX_STATUS_LENGTH]
-        @io.warn("Status will be truncated.")
-      end
+      new_status = @status_update_factory.prepare(new_status)
       completed = false
-      if !new_status.empty?
+      unless new_status.empty?
         @io.show_status_preview(new_status)
         if @io.confirm("Really send?")
-          status = JSON.parse(post("statuses/update.json", {:status => new_status}))
+          status = JSON.parse(post("statuses/update.json", {:status => new_status.to_s}))
           @io.info "Sent status update.\n\n"
           show_statuses([status])
           completed = true
@@ -124,17 +117,50 @@ module Tweetwine
     end
 
     def get(body_url)
-      rest_client_action(:get, @base_url + body_url)
+      RestClientWrapper.get @base_url + body_url
     end
 
     def post(body_url, body)
-      rest_client_action(:post, @base_url + body_url, body)
+      RestClientWrapper.post @base_url + body_url, body
     end
 
-    def rest_client_action(action, *args)
-      RestClient.send(action, *args)
-    rescue RestClient::Exception, SystemCallError => e
-      raise ClientError, e.message
+    class StatusUpdateFactory
+      def initialize(io)
+        @io = io
+      end
+
+      def prepare(status)
+        StatusUpdate.new(status, @io).to_s
+      end
+    end
+
+    class StatusUpdate
+      def initialize(status, io)
+        @io = io
+        @text = prepare(status)
+      end
+
+      def to_s
+        @text.to_s
+      end
+
+      private
+
+      def prepare(status)
+        status = unless status
+          @io.prompt("Status update")
+        else
+          status.dup
+        end
+        status.strip!
+        truncate!(status) if status.length > MAX_STATUS_LENGTH
+        status
+      end
+
+      def truncate!(status)
+        status.replace status[0...MAX_STATUS_LENGTH]
+        @io.warn("Status will be truncated.")
+      end
     end
   end
 end

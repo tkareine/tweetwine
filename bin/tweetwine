@@ -52,7 +52,8 @@ Usage: tweetwine [options...] [command]
     end
     options
   end
-  client = Client.new(config.options)
+  io = Tweetwine::IO.new(config.options)
+  client = Client.new(io, config.options)
   client.send(config.command, *config.args)
 rescue ArgumentError, ClientError => e
   puts "Error: #{e.message}"
