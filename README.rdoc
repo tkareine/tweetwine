@@ -46,8 +46,8 @@ For all the options, see:
 === URL shortening for status update
 
 Before actually sending a status update, it is possible for the software to
-shorten the URLs in the update. This can be enabled via the configuration
-file; for example:
+shorten the URLs in the update via an external web service. This can be
+enabled via the configuration file; for example:
 
   username: spoonman
   password: withyourhands
