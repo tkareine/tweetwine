@@ -23,6 +23,35 @@ class UtilTest < Test::Unit::TestCase
       assert_equal [2,  "days"],  Util.humanize_time_diff(Time.parse("2009-01-01 01:00").to_s, Time.parse("2009-01-03 03:00"))
     end
   end
+
+  should "symbolize hash keys" do
+    given = {
+      "alpha"   => "A",
+      :beta     => "B",
+      "charlie" => "C",
+      "delta"   => {
+        "echelon" => "E",
+        "fox"     => "F"
+      }
+    }
+    expected = {
+      :alpha    => "A",
+      :beta     => "B",
+      :charlie  => "C",
+      :delta    => {
+        :echelon => "E",
+        :fox     => "F"
+      }
+    }
+    assert_equal expected, Util.symbolize_hash_keys(given)
+  end
+
+  should "parse integers from strings, with minimum and default values, and naming parameter" do
+    assert_equal 6, Util.parse_int_gt("6", 8, 4, "ethical working hours per day")
+    assert_equal 8, Util.parse_int_gt(nil, 8, 4, "ethical working hours per day")
+    assert_equal 8, Util.parse_int_gt(false, 8, 4, "ethical working hours per day")
+    assert_raises(ArgumentError) { Util.parse_int_gt(3, 8, 4, "ethical working hours per day") }
+  end
 end
 
 end

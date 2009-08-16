@@ -18,6 +18,28 @@ module Tweetwine
       [value, pluralize_unit(value, unit)]
     end
 
+    def self.symbolize_hash_keys(hash)
+      hash.inject({}) do |result, pair|
+        value = pair.last
+        value = symbolize_hash_keys(value) if value.is_a? Hash
+        result[pair.first.to_sym] = value
+        result
+      end
+    end
+
+    def self.parse_int_gt(value, default, min, name_for_error)
+      if value
+        value = value.to_i
+        if value >= min
+          value
+        else
+          raise ArgumentError, "Invalid #{name_for_error} -- must be greater than or equal to #{min}"
+        end
+      else
+        default
+      end
+    end
+
     private
 
     def self.pluralize_unit(value, unit)

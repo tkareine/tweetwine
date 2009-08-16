@@ -78,8 +78,8 @@ class ClientTest < Test::Unit::TestCase
         }
       )
       RestClientWrapper.expects(:get) \
-                .with("#{@base_url}/statuses/friends_timeline.json?#{@statuses_query_params}") \
-                .returns(status_records.to_json)
+          .with("#{@base_url}/statuses/friends_timeline.json?#{@statuses_query_params}") \
+          .returns(status_records.to_json)
       @io.expects(:show_record).with(gen_records[0])
       @io.expects(:show_record).with(gen_records[1])
       @client.home
@@ -105,8 +105,8 @@ class ClientTest < Test::Unit::TestCase
         }
       )
       RestClientWrapper.expects(:get) \
-                .with("#{@base_url}/statuses/mentions.json?#{@statuses_query_params}") \
-                .returns(status_records.to_json)
+          .with("#{@base_url}/statuses/mentions.json?#{@statuses_query_params}") \
+          .returns(status_records.to_json)
       @io.expects(:show_record).with(gen_records[0])
       @io.expects(:show_record).with(gen_records[1])
       @client.mentions
@@ -125,8 +125,8 @@ class ClientTest < Test::Unit::TestCase
         }
       )
       RestClientWrapper.expects(:get) \
-                .with("#{@base_url}/statuses/user_timeline/#{user}.json?#{@statuses_query_params}") \
-                .returns(status_records.to_json)
+          .with("#{@base_url}/statuses/user_timeline/#{user}.json?#{@statuses_query_params}") \
+          .returns(status_records.to_json)
       @io.expects(:show_record).with(gen_records[0])
       @client.user(user)
     end
@@ -143,8 +143,8 @@ class ClientTest < Test::Unit::TestCase
         }
       )
       RestClientWrapper.expects(:get) \
-                .with("#{@base_url}/statuses/user_timeline/#{@username}.json?#{@statuses_query_params}") \
-                .returns(status_records.to_json)
+          .with("#{@base_url}/statuses/user_timeline/#{@username}.json?#{@statuses_query_params}") \
+          .returns(status_records.to_json)
       @io.expects(:show_record).with(gen_records[0])
       @client.user
     end
@@ -162,8 +162,8 @@ class ClientTest < Test::Unit::TestCase
         }
       )
       RestClientWrapper.expects(:post) \
-                .with("#{@base_url}/statuses/update.json", {:status => status}) \
-                .returns(status_records[0].to_json)
+          .with("#{@base_url}/statuses/update.json", {:status => status}) \
+          .returns(status_records[0].to_json)
       @io.expects(:confirm).with("Really send?").returns(true)
       @io.expects(:show_status_preview).with(status)
       @io.expects(:info).with("Sent status update.\n\n")
@@ -183,8 +183,8 @@ class ClientTest < Test::Unit::TestCase
         }
       )
       RestClientWrapper.expects(:post) \
-                .with("#{@base_url}/statuses/update.json", {:status => status}) \
-                .returns(status_records[0].to_json)
+          .with("#{@base_url}/statuses/update.json", {:status => status}) \
+          .returns(status_records[0].to_json)
       @io.expects(:prompt).with("Status update").returns(status)
       @io.expects(:show_status_preview).with(status)
       @io.expects(:confirm).with("Really send?").returns(true)
@@ -244,8 +244,8 @@ class ClientTest < Test::Unit::TestCase
         }
       )
       RestClientWrapper.expects(:post) \
-                .with("#{@base_url}/statuses/update.json", {:status => truncated_status}) \
-                .returns(status_records[0].to_json)
+          .with("#{@base_url}/statuses/update.json", {:status => truncated_status}) \
+          .returns(status_records[0].to_json)
       @io.expects(:warn).with("Status will be truncated.")
       @io.expects(:show_status_preview).with(truncated_status)
       @io.expects(:confirm).with("Really send?").returns(true)
@@ -267,8 +267,8 @@ class ClientTest < Test::Unit::TestCase
         }
       )
       RestClientWrapper.expects(:post) \
-                .with("#{@base_url}/statuses/update.json", {:status => stripped_status}) \
-                .returns(status_records[0].to_json)
+          .with("#{@base_url}/statuses/update.json", {:status => stripped_status}) \
+          .returns(status_records[0].to_json)
       @io.expects(:show_status_preview).with(stripped_status)
       @io.expects(:confirm).with("Really send?").returns(true)
       @io.expects(:info).with("Sent status update.\n\n")
@@ -296,8 +296,8 @@ class ClientTest < Test::Unit::TestCase
         }
       )
       RestClientWrapper.expects(:get) \
-                .with("#{@base_url}/statuses/friends/#{@username}.json?#{@users_query_params}") \
-                .returns(user_records.to_json)
+          .with("#{@base_url}/statuses/friends/#{@username}.json?#{@users_query_params}") \
+          .returns(user_records.to_json)
       @io.expects(:show_record).with(gen_records[0])
       @io.expects(:show_record).with(gen_records[1])
       @client.friends
@@ -318,8 +318,8 @@ class ClientTest < Test::Unit::TestCase
         }
       )
       RestClientWrapper.expects(:get) \
-                .with("#{@base_url}/statuses/followers/#{@username}.json?#{@users_query_params}") \
-                .returns(user_records.to_json)
+          .with("#{@base_url}/statuses/followers/#{@username}.json?#{@users_query_params}") \
+          .returns(user_records.to_json)
       @io.expects(:show_record).with(gen_records[0])
       @io.expects(:show_record).with(gen_records[1])
       @client.followers

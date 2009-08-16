@@ -15,9 +15,14 @@ module Tweetwine
       @username = options[:username].to_s
       raise ArgumentError, "No authentication data given" if @username.empty?
       @base_url = "https://#{@username}:#{options[:password]}@twitter.com/"
-      @num_statuses = parse_int_gt_option(options[:num_statuses], DEFAULT_NUM_STATUSES, 1, "number of statuses_to_show")
-      @page_num = parse_int_gt_option(options[:page_num], DEFAULT_PAGE_NUM, 1, "page number")
-      @status_update_factory = StatusUpdateFactory.new(@io)
+      @num_statuses = Util.parse_int_gt(options[:num_statuses], DEFAULT_NUM_STATUSES, 1, "number of statuses_to_show")
+      @page_num = Util.parse_int_gt(options[:page_num], DEFAULT_PAGE_NUM, 1, "page number")
+      @url_shortener = if options[:shorten_urls] && options[:shorten_urls][:enable]
+        UrlShortener.new(options[:shorten_urls])
+      else
+        nil
+      end
+      @status_update_factory = StatusUpdateFactory.new(@io, @url_shortener)
     end
 
     def home
@@ -56,19 +61,6 @@ module Tweetwine
     end
 
     private
-
-    def parse_int_gt_option(value, default, min, name_for_error)
-      if value
-        value = value.to_i
-        if value >= min
-          value
-        else
-          raise ArgumentError, "Invalid #{name_for_error} -- must be greater than or equal to #{min}"
-        end
-      else
-        default
-      end
-    end
 
     def get_response_as_json(url_body, *query_opts)
       url = url_body + ".json?#{parse_query_options(query_opts)}"
@@ -125,18 +117,20 @@ module Tweetwine
     end
 
     class StatusUpdateFactory
-      def initialize(io)
+      def initialize(io, url_shortener)
         @io = io
+        @url_shortener = url_shortener
       end
 
       def prepare(status)
-        StatusUpdate.new(status, @io).to_s
+        StatusUpdate.new(status, @io, @url_shortener).to_s
       end
     end
 
     class StatusUpdate
-      def initialize(status, io)
+      def initialize(status, io, url_shortener)
         @io = io
+        @url_shortener = url_shortener
         @text = prepare(status)
       end
 
@@ -154,12 +148,27 @@ module Tweetwine
         end
         status.strip!
         truncate!(status) if status.length > MAX_STATUS_LENGTH
+        shorten_urls!(status) if @url_shortener
         status
       end
 
       def truncate!(status)
         status.replace status[0...MAX_STATUS_LENGTH]
         @io.warn("Status will be truncated.")
+      end
+
+      def shorten_urls!(status)
+        url_pairs = URI.extract(status, ["http", "https"]).map do |url_to_be_shortened|
+          shortened_url = @url_shortener.shorten(url_to_be_shortened)
+          if shortened_url && !shortened_url.empty?
+            [url_to_be_shortened, shortened_url]
+          else
+            next
+          end
+        end
+        url_pairs.reject { |pair| !pair }.each do |url_pair|
+          status.sub!(url_pair.first, url_pair.last)
+        end
       end
     end
   end

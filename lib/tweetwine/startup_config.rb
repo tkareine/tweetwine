@@ -34,10 +34,7 @@ module Tweetwine
 
     def parse_config_file(config_file)
       options = YAML.load(File.read(config_file))
-      options.inject({}) do |result, pair|
-        result[pair.first.to_sym] = pair.last
-        result
-      end
+      Util.symbolize_hash_keys(options)
     end
   end
 end
