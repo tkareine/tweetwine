@@ -19,8 +19,8 @@ module Tweetwine
       rest = case @method
       when :get
         tmp = @extra_params.dup
-        tmp << @url_param_name + "=" + url
-        service_url = @service_url + "?" + tmp.join("&")
+        tmp << "#{@url_param_name}=#{url}"
+        service_url = "#{@service_url}?#{tmp.join('&')}"
         [service_url]
       when :post
         service_url = @service_url
