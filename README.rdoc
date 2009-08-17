@@ -69,7 +69,11 @@ in the HTTP request, respectively. Extra parameters can be given via
 The <tt>xpath_selector</tt> is needed to extract the shortened URL from the
 result.
 
-The command line option <tt>--no-url-shorten</tt> disables the feature.
+The feature can be disabled by
+
+* not defining <tt>shorten_urls</tt> key in the configuration file,
+* setting key <tt>enable</tt> to <tt>false</tt>, or
+* using the command line option <tt>--no-url-shorten</tt>.
 
 The use of the feature requires <b>nokogiri</b> gem to be installed.
 
