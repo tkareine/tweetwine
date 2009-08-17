@@ -160,14 +160,9 @@ module Tweetwine
 
       def shorten_urls!(status)
         url_pairs = URI.extract(status, ["http", "https"]).map do |url_to_be_shortened|
-          shortened_url = @url_shortener.shorten(url_to_be_shortened)
-          if shortened_url && !shortened_url.empty?
-            [url_to_be_shortened, shortened_url]
-          else
-            next
-          end
+          [url_to_be_shortened, @url_shortener.shorten(url_to_be_shortened)]
         end
-        url_pairs.reject { |pair| !pair }.each do |url_pair|
+        url_pairs.reject { |pair| pair.last.nil? || pair.last.empty? }.each do |url_pair|
           status.sub!(url_pair.first, url_pair.last)
         end
       end

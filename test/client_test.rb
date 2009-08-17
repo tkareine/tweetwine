@@ -318,6 +318,31 @@ class ClientTest < Test::Unit::TestCase
           @io.expects(:show_record).with(gen_records[0])
           @client.update(long_status)
         end
+
+        should "discard obviously invalid shortened URLs, using originals instead" do
+          long_urls = ["http://www.google.fi/", "http://www.w3.org/TR/1999/REC-xpath-19991116"]
+          status = long_urls.join(" and ")
+          short_urls = [nil, ""]
+          status_records, gen_records = create_test_statuses(
+            { :user => @username,
+              :status => {
+                :created_at   => Time.at(1).to_s,
+                :text         => status,
+                :in_reply_to  => nil
+              }
+            }
+          )
+          RestClientWrapper.expects(:post) \
+              .with("#{@base_url}/statuses/update.json", {:status => status}) \
+              .returns(status_records[0].to_json)
+          @url_shortener.expects(:shorten).with(long_urls.first).returns(short_urls.first)
+          @url_shortener.expects(:shorten).with(long_urls.last).returns(short_urls.last)
+          @io.expects(:show_status_preview).with(status)
+          @io.expects(:confirm).with("Really send?").returns(true)
+          @io.expects(:info).with("Sent status update.\n\n")
+          @io.expects(:show_record).with(gen_records[0])
+          @client.update(status)
+        end
       end
     end
 
