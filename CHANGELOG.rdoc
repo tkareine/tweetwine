@@ -1,3 +1,8 @@
+=== 0.2.1 released 2009-08-17
+
+* Command line option "-v" show version information.
+* Slight implementation code cleaning.
+
 === 0.2.0 released 2009-08-17
 
 * URL shortening by using an external web service.
