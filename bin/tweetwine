@@ -6,7 +6,7 @@ EXIT_SIGINT = 6
 EXIT_ERROR = 64
 
 trap("INT") do
-  puts "\nAbort."
+  puts "\nAbort"
   exit(EXIT_SIGINT)
 end
 
