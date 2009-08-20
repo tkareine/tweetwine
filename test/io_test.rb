@@ -63,7 +63,7 @@ fooman
     end
 
     should "output a record as status info when status is given, without in-reply info" do
-      status = "Hi, @barman! Lulz woo!"
+      status = "Hi, @barman! Lulz woo! #hellos"
       record = {
         :user   => "fooman",
         :status => {
@@ -153,14 +153,14 @@ Wondering the meaning of life.
         :user   => "barman",
         :status => {
           :created_at   => Time.at(1),
-          :text         => "Hi, @fooman! How are you doing?",
+          :text         => "Hi, @fooman! How are you doing? #hellos",
           :in_reply_to  => "fooman"
         }
       }
       Util.expects(:humanize_time_diff).returns([2, "secs"])
       @output.expects(:puts).with(<<-END
 \033[32mbarman\033[0m, in reply to \033[32mfooman\033[0m, 2 secs ago:
-Hi, \033[33m@fooman\033[0m! How are you doing?
+Hi, \033[33m@fooman\033[0m! How are you doing? \033[35m#hellos\033[0m
 
       END
       )
@@ -196,7 +196,7 @@ Three links: \033[36mhttp://bit.ly/18rU_Vx\033[0m \033[36mhttp://is.gd/1qLk3\033
       @io.show_record(record)
     end
 
-    should "highlight nicks in a status" do
+    should "highlight usernames in a status" do
       record = {
         :user   => "barman",
         :status => {
@@ -215,16 +215,35 @@ I salute you \033[33m@fooman\033[0m, \033[33m@barbaz\033[0m, and \033[33m@spoonm
     end
   end
 
-  context "Nick regex" do
-    should "match a proper nick reference" do
-      assert_full_match IO::NICK_REGEX, "@nick"
-      assert_full_match IO::NICK_REGEX, "@nick_man"
+  context "Username regex" do
+    should "match a proper username reference" do
+      assert_full_match IO::USERNAME_REGEX, "@nick"
+      assert_full_match IO::USERNAME_REGEX, "@nick_man"
     end
 
-    should "not match an inproper nick reference" do
-      assert_no_full_match IO::NICK_REGEX, "@"
-      assert_no_full_match IO::NICK_REGEX, "nick"
-      assert_no_full_match IO::NICK_REGEX, "@nick-man"
+    should "not match an inproper username reference" do
+      assert_no_full_match IO::USERNAME_REGEX, "@"
+      assert_no_full_match IO::USERNAME_REGEX, "nick"
+      assert_no_full_match IO::USERNAME_REGEX, "@nick-man"
+      assert_no_full_match IO::USERNAME_REGEX, " @nick"
+      assert_no_full_match IO::USERNAME_REGEX, "@nick "
+      assert_no_full_match IO::USERNAME_REGEX, " @nick "
+    end
+  end
+
+  context "Hashtag regex" do
+    should "match a proper hashtag reference" do
+      assert_full_match IO::HASHTAG_REGEX, "#mayhem"
+      assert_full_match IO::HASHTAG_REGEX, "#friday_mayhem"
+      assert_full_match IO::HASHTAG_REGEX, "#friday-mayhem"
+    end
+
+    should "not match an inproper hashtag reference" do
+      assert_no_full_match IO::USERNAME_REGEX, "#"
+      assert_no_full_match IO::USERNAME_REGEX, "mayhem"
+      assert_no_full_match IO::USERNAME_REGEX, " #mayhem"
+      assert_no_full_match IO::USERNAME_REGEX, "#mayhem "
+      assert_no_full_match IO::USERNAME_REGEX, " #mayhem "
     end
   end
 end

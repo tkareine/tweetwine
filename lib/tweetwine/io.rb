@@ -9,7 +9,8 @@ module Tweetwine
       :yellow   => 33
     }
 
-    NICK_REGEX = /@\w+/
+    HASHTAG_REGEX = /#[\w-]+/
+    USERNAME_REGEX = /@\w+/
 
     def initialize(options)
       @input = options[:input] || $stdin
@@ -78,7 +79,8 @@ module Tweetwine
     def format_status(status)
       status = status.dup
       if @colorize
-        colorize_all!(:yellow, status, NICK_REGEX)
+        colorize_all!(:yellow, status, USERNAME_REGEX)
+        colorize_all!(:magenta, status, HASHTAG_REGEX)
         URI.extract(status, ["http", "https"]).each do |url|
           colorize_first!(:cyan, status, url)
         end
