@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) << "/test_helper"
+require "test_helper"
 require "json"
 
 Mocha::Configuration.allow(:stubbing_non_existent_method)

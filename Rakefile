@@ -64,10 +64,11 @@ end
 
 require "rake/testtask"
 desc "Run tests"
-Rake::TestTask.new do |t|
-  t.test_files = FileList["test/*_test.rb"]
+Rake::TestTask.new(:test) do |t|
+  t.test_files = FileList["test/**/*_test.rb"]
   t.verbose = true
   t.warning = true
+  t.libs << "test"
 end
 
 desc "Find code smells"
