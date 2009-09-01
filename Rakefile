@@ -19,13 +19,13 @@ spec = Gem::Specification.new do |s|
   s.email = "tkareine@gmail.com"
 
   s.platform = Gem::Platform::RUBY
-  s.files = FileList["Rakefile", "*.rdoc", "bin/**/*", "lib/**/*", "test/**/*"].to_a
+  s.files = FileList["Rakefile", "MIT-LICENSE.txt", "*.rdoc", "bin/**/*", "lib/**/*", "test/**/*"].to_a
   s.executables = ["tweetwine"]
 
   s.add_dependency("rest-client", ">= 1.0.0")
 
   s.has_rdoc = true
-  s.extra_rdoc_files = FileList["*.rdoc"].to_a
+  s.extra_rdoc_files = FileList["MIT-LICENSE.txt", "*.rdoc"].to_a
   s.rdoc_options << "--title"   << "#{full_name} #{version}" \
                  << "--main"    << "README.rdoc" \
                  << "--exclude" << "test" \
@@ -58,7 +58,7 @@ Rake::RDocTask.new(:rdoc) do |rd|
   rd.rdoc_dir = "rdoc"
   rd.title = "#{full_name} #{version}"
   rd.main = "README.rdoc"
-  rd.rdoc_files.include("*.rdoc", "lib/**/*.rb")
+  rd.rdoc_files.include("MIT-LICENSE.txt", "*.rdoc", "lib/**/*.rb")
   rd.options << "--line-numbers"
 end
 
