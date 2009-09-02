@@ -50,7 +50,7 @@ class UtilTest < Test::Unit::TestCase
     assert_equal 6, Util.parse_int_gt("6", 8, 4, "ethical working hours per day")
     assert_equal 8, Util.parse_int_gt(nil, 8, 4, "ethical working hours per day")
     assert_equal 8, Util.parse_int_gt(false, 8, 4, "ethical working hours per day")
-    assert_raises(ArgumentError) { Util.parse_int_gt(3, 8, 4, "ethical working hours per day") }
+    assert_raise(ArgumentError) { Util.parse_int_gt(3, 8, 4, "ethical working hours per day") }
   end
 end
 

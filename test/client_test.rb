@@ -12,9 +12,9 @@ class ClientTest < Test::Unit::TestCase
     end
 
     should "raise exception when no authentication data is given" do
-      assert_raises(ArgumentError) { Client.new(@io, {}) }
-      assert_raises(ArgumentError) { Client.new(@io, { :password => "bar" }) }
-      assert_raises(ArgumentError) { Client.new(@io, { :username => "", :password => "bar" }) }
+      assert_raise(ArgumentError) { Client.new(@io, {}) }
+      assert_raise(ArgumentError) { Client.new(@io, { :password => "bar" }) }
+      assert_raise(ArgumentError) { Client.new(@io, { :username => "", :password => "bar" }) }
       assert_nothing_raised { Client.new(@io, { :username => "foo", :password => "bar" }) }
     end
 
@@ -29,7 +29,7 @@ class ClientTest < Test::Unit::TestCase
     end
 
     should "raise an exception for configured number of statuses if not in allowed range" do
-      assert_raises(ArgumentError) { Client.new(@io, { :username => "foo", :password => "bar", :num_statuses => 0 }) }
+      assert_raise(ArgumentError) { Client.new(@io, { :username => "foo", :password => "bar", :num_statuses => 0 }) }
     end
 
     should "use default page number if not configured otherwise" do
@@ -43,7 +43,7 @@ class ClientTest < Test::Unit::TestCase
     end
 
     should "raise an exception for configured page number if not in allowed range" do
-      assert_raises(ArgumentError) { Client.new(@io, { :username => "foo", :password => "bar", :page_num => 0 }) }
+      assert_raise(ArgumentError) { Client.new(@io, { :username => "foo", :password => "bar", :page_num => 0 }) }
     end
   end
 

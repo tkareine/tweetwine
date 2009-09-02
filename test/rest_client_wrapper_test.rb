@@ -9,21 +9,21 @@ class RestClientWrapperTest < Test::Unit::TestCase
       RestClient.expects(:get) \
                 .with("https://secret:agent@hushhush.net") \
                 .raises(RestClient::Unauthorized)
-      assert_raises(ClientError) { RestClientWrapper.get("https://secret:agent@hushhush.net") }
+      assert_raise(ClientError) { RestClientWrapper.get("https://secret:agent@hushhush.net") }
     end
 
     should "raise ClientError when connection cannot be established" do
       RestClient.expects(:get) \
                 .with("http://www.invalid.net") \
                 .raises(Errno::ECONNRESET)
-      assert_raises(ClientError) { RestClientWrapper.get("http://www.invalid.net") }
+      assert_raise(ClientError) { RestClientWrapper.get("http://www.invalid.net") }
     end
 
     should "raise ClientError when host cannot be resolved" do
       RestClient.expects(:get) \
                 .with("http://unknown.net") \
                 .raises(SocketError)
-      assert_raises(ClientError) { RestClientWrapper.get("http://unknown.net") }
+      assert_raise(ClientError) { RestClientWrapper.get("http://unknown.net") }
     end
   end
 end

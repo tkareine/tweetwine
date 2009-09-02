@@ -5,7 +5,7 @@ module Tweetwine
 class UrlShortenerTest < Test::Unit::TestCase
   context "Upon initialization, an URL shortener" do
     should "raise exception if service URL is not given" do
-      assert_raises(ArgumentError) do
+      assert_raise(ArgumentError) do
         UrlShortener.new({
           :service_url      => nil,
           :url_param_name   => "url",
@@ -15,7 +15,7 @@ class UrlShortenerTest < Test::Unit::TestCase
     end
 
     should "raise exception if URL parameter name is not given" do
-      assert_raises(ArgumentError) do
+      assert_raise(ArgumentError) do
         UrlShortener.new({
           :service_url      => "http://shorten.it/create",
           :url_param_name   => nil,
@@ -25,7 +25,7 @@ class UrlShortenerTest < Test::Unit::TestCase
     end
 
     should "raise exception if XPath selector is not given" do
-      assert_raises(ArgumentError) do
+      assert_raise(ArgumentError) do
         UrlShortener.new({
           :service_url      => "http://shorten.it/create",
           :url_param_name   => "url",
@@ -119,7 +119,7 @@ class UrlShortenerTest < Test::Unit::TestCase
               :url   => "http://www.ruby-doc.org/core/"
             }) \
             .raises(ClientError, "connection error")
-        assert_raises(ClientError) { url_shortener.shorten("http://www.ruby-doc.org/core/") }
+        assert_raise(ClientError) { url_shortener.shorten("http://www.ruby-doc.org/core/") }
       end
     end
   end

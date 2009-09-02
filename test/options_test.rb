@@ -12,7 +12,7 @@ class OptionsTest < Test::Unit::TestCase
     context "for requiring options" do
       should "raise ArgumentError if there's no value for the required option (a value that is nil)" do
         assert_equal "alpha", Options.new({:a => "alpha"}).require(:a)
-        assert_raises(ArgumentError) { Options.new({}).require(:a) }
+        assert_raise(ArgumentError) { Options.new({}).require(:a) }
       end
 
       should "indicate the required option upon failure" do
