@@ -1,7 +1,6 @@
 module Tweetwine
   class UrlShortener
     def initialize(options)
-      require "nokogiri"
       options = Options.new(options)
       @method = options[:method].to_sym || :get
       @service_url = options.require :service_url
@@ -16,6 +15,7 @@ module Tweetwine
     end
 
     def shorten(url)
+      require "nokogiri"
       rest = case @method
       when :get
         tmp = @extra_params.dup

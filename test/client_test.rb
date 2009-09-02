@@ -343,6 +343,30 @@ class ClientTest < Test::Unit::TestCase
           @io.expects(:show_record).with(gen_records[0])
           @client.update(status)
         end
+
+        should "skip shortening URLs if required libraries are not found" do
+          url = "http://www.w3.org/TR/1999/REC-xpath-19991116"
+          status = "skimming through #{url}"
+          status_records, gen_records = create_test_statuses(
+            { :user => @username,
+              :status => {
+                :created_at   => Time.at(1).to_s,
+                :text         => status,
+                :in_reply_to  => nil
+              }
+            }
+          )
+          RestClientWrapper.expects(:post) \
+              .with("#{@base_url}/statuses/update.json", {:status => status}) \
+              .returns(status_records[0].to_json)
+          @url_shortener.expects(:shorten).with(url).raises(LoadError, "gem not found")
+          @io.expects(:warn)
+          @io.expects(:show_status_preview).with(status)
+          @io.expects(:confirm).with("Really send?").returns(true)
+          @io.expects(:info).with("Sent status update.\n\n")
+          @io.expects(:show_record).with(gen_records[0])
+          @client.update(status)
+        end
       end
     end
 
