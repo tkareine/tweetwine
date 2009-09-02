@@ -344,6 +344,31 @@ class ClientTest < Test::Unit::TestCase
           @client.update(status)
         end
 
+        should "reuse a shortened URL for duplicate long URLs" do
+          long_urls = ["http://www.w3.org/TR/1999/REC-xpath-19991116"] * 2
+          long_status = long_urls.join(" and ")
+          short_url = "http://shorten.it/2k7mk"
+          short_status = ([short_url] * 2).join(" and ")
+          status_records, gen_records = create_test_statuses(
+            { :user => @username,
+              :status => {
+                :created_at   => Time.at(1).to_s,
+                :text         => short_status,
+                :in_reply_to  => nil
+              }
+            }
+          )
+          RestClientWrapper.expects(:post) \
+              .with("#{@base_url}/statuses/update.json", {:status => short_status}) \
+              .returns(status_records[0].to_json)
+          @url_shortener.expects(:shorten).with(long_urls.first).returns(short_url)
+          @io.expects(:show_status_preview).with(short_status)
+          @io.expects(:confirm).with("Really send?").returns(true)
+          @io.expects(:info).with("Sent status update.\n\n")
+          @io.expects(:show_record).with(gen_records[0])
+          @client.update(long_status)
+        end
+
         context "in erroneous situations" do
           setup do
             @url = "http://www.w3.org/TR/1999/REC-xpath-19991116"
