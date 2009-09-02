@@ -63,6 +63,23 @@ class UrlShortenerTest < Test::Unit::TestCase
       url_shortener.shorten("http://www.ruby-doc.org/core/")
     end
   end
+
+  context "An URL shortener in erroenous situations" do
+    should "raise ClientError upon connection error" do
+      url_shortener = UrlShortener.new({
+        :method           => "post",
+        :service_url      => "http://shorten.it/create",
+        :url_param_name   => "url",
+        :xpath_selector   => "//input[@id='short_url']/@value"
+      })
+      RestClientWrapper.expects(:post) \
+          .with("http://shorten.it/create", {
+            :url   => "http://www.ruby-doc.org/core/"
+          }) \
+          .raises(ClientError, "connection error")
+      assert_raises(ClientError) { url_shortener.shorten("http://www.ruby-doc.org/core/") }
+    end
+  end
 end
 
 end

@@ -165,8 +165,8 @@ module Tweetwine
         url_pairs.reject { |pair| pair.last.nil? || pair.last.empty? }.each do |url_pair|
           status.sub!(url_pair.first, url_pair.last)
         end
-      rescue LoadError
-        @io.warn "URL shortening requires \"nokogiri\" library to be installed. Skipping URL shortening..."
+      rescue ClientError, LoadError => e
+        @io.warn "#{e}. Skipping URL shortening..."
       end
     end
   end

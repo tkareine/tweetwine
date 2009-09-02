@@ -18,6 +18,13 @@ class RestClientWrapperTest < Test::Unit::TestCase
                 .raises(Errno::ECONNRESET)
       assert_raises(ClientError) { RestClientWrapper.get("http://www.invalid.net") }
     end
+
+    should "raise ClientError when host cannot be resolved" do
+      RestClient.expects(:get) \
+                .with("http://unknown.net") \
+                .raises(SocketError)
+      assert_raises(ClientError) { RestClientWrapper.get("http://unknown.net") }
+    end
   end
 end
 

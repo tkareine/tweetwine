@@ -10,7 +10,7 @@ module Tweetwine
 
     def self.method_missing(name, *args, &block)
       RestClient.send(name, *args, &block)
-    rescue RestClient::Exception, SystemCallError => e
+    rescue RestClient::Exception, SocketError, SystemCallError => e
       raise ClientError, e.message
     end
   end
