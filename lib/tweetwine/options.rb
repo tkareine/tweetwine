@@ -10,7 +10,7 @@ module Tweetwine
 
     def require(key)
       value = @hash[key]
-      raise RuntimeError, "Option #{key} is required" if value.nil?
+      raise ArgumentError, "Option #{key} is required" if value.nil?
       value
     end
   end

@@ -11,7 +11,7 @@ class OptionsTest < Test::Unit::TestCase
 
     should "require missing value (a value that is nil)" do
       assert_equal "alpha", Options.new({:a => "alpha"}).require(:a)
-      assert_raises(RuntimeError) { Options.new({}).require(:a) }
+      assert_raises(ArgumentError) { Options.new({}).require(:a) }
     end
   end
 end
