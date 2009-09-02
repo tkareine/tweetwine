@@ -1,15 +1,14 @@
 require "rubygems"
 
-package_name = "tweetwine"
-require "lib/#{package_name}"
-full_name = Tweetwine::Meta::NAME
-version = Tweetwine::Meta::VERSION
+name = "tweetwine"
+require "lib/#{name}"
+version = Tweetwine::VERSION
 
 require "rake/clean"
 
 require "rake/gempackagetask"
 spec = Gem::Specification.new do |s|
-  s.name = package_name
+  s.name = name
   s.version = version
   s.homepage = "http://github.com/tuomas/tweetwine"
   s.summary = "A simple Twitter agent for command line use"
@@ -26,7 +25,7 @@ spec = Gem::Specification.new do |s|
 
   s.has_rdoc = true
   s.extra_rdoc_files = FileList["MIT-LICENSE.txt", "*.rdoc"].to_a
-  s.rdoc_options << "--title"   << "#{full_name} #{version}" \
+  s.rdoc_options << "--title"   << "#{name} #{version}" \
                  << "--main"    << "README.rdoc" \
                  << "--exclude" << "test" \
                  << "--line-numbers"
@@ -45,18 +44,18 @@ task :gemspec do
 end
 
 task :install => [:package] do
-  sh %{sudo gem install pkg/#{package_name}-#{version}.gem}
+  sh %{sudo gem install pkg/#{name}-#{version}.gem}
 end
 
 task :uninstall => [:clean] do
-  sh %{sudo gem uninstall #{package_name}}
+  sh %{sudo gem uninstall #{name}}
 end
 
 require "rake/rdoctask"
 desc "Create documentation"
 Rake::RDocTask.new(:rdoc) do |rd|
   rd.rdoc_dir = "rdoc"
-  rd.title = "#{full_name} #{version}"
+  rd.title = "#{name} #{version}"
   rd.main = "README.rdoc"
   rd.rdoc_files.include("MIT-LICENSE.txt", "*.rdoc", "lib/**/*.rb")
   rd.options << "--line-numbers"
