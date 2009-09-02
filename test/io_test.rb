@@ -177,7 +177,7 @@ Hi, \033[33m@fooman\033[0m! How are you doing? \033[35m#hellos\033[0m
       @io.show_status_preview(status)
     end
 
-    should "highlight HTTP and HTTPS URIs in a status" do
+    should "highlight HTTP and HTTPS URLs in a status" do
       record = {
         :user   => "barman",
         :status => {
@@ -195,7 +195,7 @@ Three links: \033[36mhttp://bit.ly/18rU_Vx\033[0m \033[36mhttp://is.gd/1qLk3\033
       @io.show_record(record)
     end
 
-    should "highlight HTTP and HTTPS URIs in a status, even if duplicates" do
+    should "highlight HTTP and HTTPS URLs in a status, even if duplicates" do
       record = {
         :user   => "barman",
         :status => {
