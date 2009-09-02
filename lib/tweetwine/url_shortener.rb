@@ -1,7 +1,7 @@
 module Tweetwine
   class UrlShortener
     def initialize(options)
-      options = Options.new(options)
+      options = Options.new(options, "URL shortening")
       @method = (options[:method] || :get).to_sym
       @service_url = options.require :service_url
       @url_param_name = options.require :url_param_name

@@ -1,7 +1,8 @@
 module Tweetwine
   class Options
-    def initialize(options)
+    def initialize(options, source = nil)
       @hash = options.to_hash
+      @source = source
     end
 
     def [](key)
@@ -10,7 +11,11 @@ module Tweetwine
 
     def require(key)
       value = @hash[key]
-      raise ArgumentError, "Option #{key} is required" if value.nil?
+      if value.nil?
+        msg = "Option #{key} is required"
+        msg << " for #{@source}" if @source
+        raise ArgumentError, msg
+      end
       value
     end
   end
