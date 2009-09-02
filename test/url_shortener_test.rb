@@ -87,7 +87,7 @@ class UrlShortenerTest < Test::Unit::TestCase
         url_shortener.shorten("http://www.ruby-doc.org/core/")
       end
 
-      should "use parameters as payload, with just the URL parameter" do
+      should "use parameters as payload,with additional extra parameters" do
         url_shortener = UrlShortener.new({
           :method           => "post",
           :service_url      => "http://shorten.it/create",
