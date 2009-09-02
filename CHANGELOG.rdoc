@@ -1,3 +1,13 @@
+=== 0.2.2 released 2009-09-03
+
+* Highlight hashtags in statuses.
+* URL shortening step shortens only unique URLs.
+* URL shortening step is skipped if
+  - there is a connection error to the URL shortening service, or
+  - required libraries are not installed (nokogiri).
+* Fixed a colorization bug for duplicate URLs.
+* Removed dependencies to Rubygems.
+
 === 0.2.1 released 2009-08-17
 
 * Command line option "-v" show version information.
