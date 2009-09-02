@@ -81,8 +81,8 @@ module Tweetwine
       if @colorize
         colorize_all!(:yellow, status, USERNAME_REGEX)
         colorize_all!(:magenta, status, HASHTAG_REGEX)
-        URI.extract(status, ["http", "https"]).each do |url|
-          colorize_first!(:cyan, status, url)
+        URI.extract(status, ["http", "https"]).uniq.each do |url|
+          colorize_all!(:cyan, status, url)
         end
       end
       status
@@ -104,10 +104,6 @@ module Tweetwine
 
     def colorize_all!(color, str, pattern)
       str.gsub!(pattern) { |s| colorize_str(COLOR_CODES[color.to_sym], s) }
-    end
-
-    def colorize_first!(color, str, pattern)
-      str.sub!(pattern) { |s| colorize_str(COLOR_CODES[color.to_sym], s) }
     end
 
     def colorize!(color, str)
