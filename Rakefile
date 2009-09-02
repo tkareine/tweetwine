@@ -1,7 +1,9 @@
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), "lib"))
+
 require "rubygems"
 
 name = "tweetwine"
-require "lib/#{name}"
+require "#{name}"
 version = Tweetwine::VERSION
 
 require "rake/clean"

@@ -10,10 +10,8 @@ trap("INT") do
   exit(EXIT_SIGINT)
 end
 
-require "rubygems"
 require "optparse"
-
-require File.dirname(__FILE__) << "/../lib/tweetwine"
+require "tweetwine"
 
 include Tweetwine
 

@@ -1,4 +1,3 @@
-require "rubygems"
 require "tweetwine"
 require "test/unit"
 require "shoulda"

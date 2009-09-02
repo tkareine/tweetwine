@@ -8,5 +8,5 @@
   url_shortener
   client
 }.each do |f|
-  require File.dirname(__FILE__) << "/tweetwine/#{f}"
+  require "tweetwine/#{f}"
 end
