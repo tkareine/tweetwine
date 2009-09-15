@@ -1,3 +1,10 @@
+=== 0.2.4 released 2009-09-16
+
+* Retry connection upon connection reset, trying maximum of three times.
+* Display proper version info on Ruby 1.8 when using option "-v".
+* Minor code cleanups.
+* Release 0.2.3 is skipped due to my error in tagging the wrong commit.
+
 === 0.2.2 released 2009-09-03
 
 * Highlight hashtags in statuses.
