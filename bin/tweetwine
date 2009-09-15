@@ -43,7 +43,7 @@ Usage: tweetwine [options...] [command]
         options[:page_num] = arg
       end
       opt.on("-v", "--version", "Show version information and exit") do
-        puts "#{File.basename($0)} #{VERSION}"
+        puts "#{File.basename($0)} #{Tweetwine::VERSION}"
         exit(EXIT_VERSION)
       end
       opt.on_tail("-h", "--help", "Show this help message and exit") do
