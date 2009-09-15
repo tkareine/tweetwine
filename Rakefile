@@ -69,6 +69,7 @@ Rake::TestTask.new(:test) do |t|
   t.test_files = FileList["test/**/*_test.rb"]
   t.verbose = true
   t.warning = true
+  t.ruby_opts << "-rrubygems"
   t.libs << "test"
 end
 
