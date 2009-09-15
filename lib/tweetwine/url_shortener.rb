@@ -1,6 +1,7 @@
 module Tweetwine
   class UrlShortener
-    def initialize(options)
+    def initialize(rest_client, options)
+      @rest_client = rest_client
       options = Options.new(options, "URL shortening")
       @method = (options[:method] || :get).to_sym
       @service_url = options.require :service_url
@@ -29,7 +30,7 @@ module Tweetwine
       else
         raise "Unrecognized HTTP request method"
       end
-      response = RestClientWrapper.send(@method, *rest)
+      response = @rest_client.send(@method, *rest)
       doc = Nokogiri::HTML(response)
       doc.xpath(@xpath_selector).first.to_s
     end

@@ -15,6 +15,17 @@ require "tweetwine"
 
 include Tweetwine
 
+def create_dependencies(options)
+  io = Tweetwine::IO.new(options)
+  rest_client = RestClientWrapper.new(io)
+  url_shortener = lambda { |options| UrlShortener.new(rest_client, options) }
+  {
+    :io             => io,
+    :rest_client    => rest_client,
+    :url_shortener  => url_shortener
+  }
+end
+
 begin
   config = StartupConfig.new(Client::COMMANDS)
   config.parse(ARGV, ENV["HOME"] + "/.tweetwine") do |args|
@@ -58,8 +69,7 @@ Usage: tweetwine [options...] [command]
     end
     options
   end
-  io = Tweetwine::IO.new(config.options)
-  client = Client.new(io, config.options)
+  client = Client.new(create_dependencies(config.options), config.options)
   client.send(config.command, *config.args)
 rescue ArgumentError, ClientError => e
   puts "Error: #{e.message}"

@@ -6,12 +6,16 @@ module Tweetwine
   class RestClientWrapper
     instance_methods.each { |m| undef_method m unless m =~ /(^__|^send$|^object_id$)/ }
 
+    def initialize(io)
+      @io = io
+    end
+
     protected
 
-    def self.method_missing(name, *args, &block)
+    def method_missing(name, *args, &block)
       RestClient.send(name, *args, &block)
     rescue RestClient::Exception, SocketError, SystemCallError => e
-      raise ClientError, e.message
+      raise ClientError, e
     end
   end
 end

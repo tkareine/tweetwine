@@ -11,15 +11,16 @@ module Tweetwine
     DEFAULT_PAGE_NUM = 1
     MAX_STATUS_LENGTH = 140
 
-    def initialize(io, options)
-      @io = io
+    def initialize(dependencies, options)
+      @io = dependencies[:io]
+      @rest_client = dependencies[:rest_client]
       @username = options[:username].to_s
       raise ArgumentError, "No authentication data given" if @username.empty?
       @base_url = "https://#{@username}:#{options[:password]}@twitter.com/"
       @num_statuses = Util.parse_int_gt(options[:num_statuses], DEFAULT_NUM_STATUSES, 1, "number of statuses_to_show")
       @page_num = Util.parse_int_gt(options[:page_num], DEFAULT_PAGE_NUM, 1, "page number")
       @url_shortener = if options[:shorten_urls] && options[:shorten_urls][:enable]
-        UrlShortener.new(options[:shorten_urls])
+        dependencies[:url_shortener].call(options[:shorten_urls])
       else
         nil
       end
@@ -110,11 +111,11 @@ module Tweetwine
     end
 
     def get(body_url)
-      RestClientWrapper.get @base_url + body_url
+      @rest_client.get @base_url + body_url
     end
 
     def post(body_url, body)
-      RestClientWrapper.post @base_url + body_url, body
+      @rest_client.post @base_url + body_url, body
     end
 
     class StatusUpdateFactory
