@@ -60,7 +60,7 @@ end
 def create_dependencies(options)
   io = Tweetwine::IO.new(options)
   rest_client = RestClientWrapper.new(io)
-  url_shortener = lambda { |options| UrlShortener.new(rest_client, options) }
+  url_shortener = lambda { |opts| UrlShortener.new(rest_client, opts) }
   {
     :io             => io,
     :rest_client    => rest_client,
