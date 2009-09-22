@@ -12,11 +12,7 @@ class ClientTest < Test::Unit::TestCase
       @rest_client = mock()
       @url_shortener = mock()
       url_shortener = lambda { |options| @url_shortener }
-      @deps = {
-        :io             => @io,
-        :rest_client    => @rest_client,
-        :url_shortener  => url_shortener
-      }
+      @deps = Client::Dependencies.new @io, @rest_client, url_shortener
     end
 
     context "upon initialization" do

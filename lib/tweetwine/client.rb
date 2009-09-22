@@ -3,6 +3,8 @@ require "uri"
 
 module Tweetwine
   class Client
+    Dependencies = Struct.new :io, :rest_client, :url_shortener
+
     attr_reader :num_statuses, :page_num
 
     COMMANDS = [:home, :mentions, :user, :update, :friends, :followers]
@@ -12,15 +14,15 @@ module Tweetwine
     MAX_STATUS_LENGTH = 140
 
     def initialize(dependencies, options)
-      @io = dependencies[:io]
-      @rest_client = dependencies[:rest_client]
+      @io = dependencies.io
+      @rest_client = dependencies.rest_client
       @username = options[:username].to_s
       raise ArgumentError, "No authentication data given" if @username.empty?
       @base_url = "https://#{@username}:#{options[:password]}@twitter.com/"
       @num_statuses = Util.parse_int_gt(options[:num_statuses], DEFAULT_NUM_STATUSES, 1, "number of statuses_to_show")
       @page_num = Util.parse_int_gt(options[:page_num], DEFAULT_PAGE_NUM, 1, "page number")
       @url_shortener = if options[:shorten_urls] && options[:shorten_urls][:enable]
-        dependencies[:url_shortener].call(options[:shorten_urls])
+        dependencies.url_shortener.call(options[:shorten_urls])
       else
         nil
       end
