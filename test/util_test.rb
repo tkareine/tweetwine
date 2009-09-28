@@ -50,6 +50,37 @@ class UtilTest < Test::Unit::TestCase
     assert_equal 8, Util.parse_int_gt(false, 8, 4, "ethical working hours per day")
     assert_raise(ArgumentError) { Util.parse_int_gt(3, 8, 4, "ethical working hours per day") }
   end
+
+  context "for replacing the contents of a string with a regexp that uses group syntax" do
+    should "replace the contents by using the matching groups of the regexp" do
+      assert_equal "hello", Util.str_gsub_by_group("hello", /he(f)/) { |s| s.upcase }
+      assert_equal "", Util.str_gsub_by_group("", /.+([ai])/) { |s| s.upcase }
+      assert_equal "hello", Util.str_gsub_by_group("hello", /.+([ai])/) { |s| s.upcase }
+      assert_equal "hEllo", Util.str_gsub_by_group("hello", /.+(e)/) { |s| s.upcase }
+      assert_equal "hEllO", Util.str_gsub_by_group("hello", /([aeio])/) { |s| s.upcase }
+      assert_equal "hEEllOO", Util.str_gsub_by_group("hello", /([aeio])/) { |s| s.upcase * 2 }
+      assert_equal "hEllO", Util.str_gsub_by_group("hello", /([ae]).+([io])/) { |s| s.upcase }
+      assert_equal "hXEXllXOX", Util.str_gsub_by_group("hello", /([ae]).+([io])/) { |s| "X" + s.upcase + "X" }
+      assert_equal "hll", Util.str_gsub_by_group("hello", /.+([ae]).+([io])/) { |s| "" }
+      assert_equal "hll", Util.str_gsub_by_group("hello", /([ae]).+([io])/) { |s| "" }
+      assert_equal "hll", Util.str_gsub_by_group("hello", /([aeio])/) { |s| "" }
+      assert_equal "hell", Util.str_gsub_by_group("hello", /.+([io])/) { |s| "" }
+      assert_equal "hEllo", Util.str_gsub_by_group("hello", /^(a)|.+(e)/) { |s| s.upcase }
+    end
+
+    should "replace the contents by using the whole match if there are no groups in the regexp" do
+      assert_equal "", Util.str_gsub_by_group("", /el/) { |s| s.upcase }
+      assert_equal "hELlo", Util.str_gsub_by_group("hello", /el/) { |s| s.upcase }
+    end
+
+    should "return a new string as the result" do
+      org_str = "hello"
+      new_str = Util.str_gsub_by_group(org_str, /e/) { |s| s.upcase }
+      assert_not_same new_str, org_str
+      assert_equal "hello", org_str
+      assert_equal "hEllo", new_str
+    end
+  end
 end
 
 end

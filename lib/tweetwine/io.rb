@@ -10,7 +10,7 @@ module Tweetwine
     }
 
     HASHTAG_REGEX = /#[\w-]+/
-    USERNAME_REGEX = /@\w+/
+    USERNAME_REGEX = /^(@\w+)|\s+(@\w+)/
 
     def initialize(options)
       @input = options[:input] || $stdin
@@ -79,8 +79,8 @@ module Tweetwine
     def format_status(status)
       status = status.dup
       if @colorize
-        colorize_all!(:yellow, status, USERNAME_REGEX)
-        colorize_all!(:magenta, status, HASHTAG_REGEX)
+        colorize_all_by_group!(:yellow, status, USERNAME_REGEX)
+        colorize_all_by_group!(:magenta, status, HASHTAG_REGEX)
         URI.extract(status, ["http", "https"]).uniq.each do |url|
           colorize_all!(:cyan, status, url)
         end
@@ -104,6 +104,10 @@ module Tweetwine
 
     def colorize_all!(color, str, pattern)
       str.gsub!(pattern) { |s| colorize_str(COLOR_CODES[color.to_sym], s) }
+    end
+
+    def colorize_all_by_group!(color, str, pattern)
+      str.replace Util.str_gsub_by_group(str, pattern) { |s| colorize_str(COLOR_CODES[color.to_sym], s) }
     end
 
     def colorize!(color, str)

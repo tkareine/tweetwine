@@ -226,6 +226,24 @@ I salute you \033[33m@fooman\033[0m, \033[33m@barbaz\033[0m, and \033[33m@spoonm
         )
         @io.show_record(record)
       end
+
+      should "not highlight email addresses as usernames in a status" do
+        record = {
+          :user   => "barman",
+          :status => {
+            :created_at   => Time.at(1),
+            :text         => "Hi, @fooman! You should notify @barbaz, barbaz@foo.net",
+          }
+        }
+        Util.expects(:humanize_time_diff).returns([2, "secs"])
+        @output.expects(:puts).with(<<-END
+\033[32mbarman\033[0m, 2 secs ago:
+Hi, \033[33m@fooman\033[0m! You should notify \033[33m@barbaz\033[0m, barbaz@foo.net
+
+        END
+        )
+        @io.show_record(record)
+      end
     end
   end
 
@@ -233,15 +251,19 @@ I salute you \033[33m@fooman\033[0m, \033[33m@barbaz\033[0m, and \033[33m@spoonm
     should "match a proper username reference" do
       assert_full_match IO::USERNAME_REGEX, "@nick"
       assert_full_match IO::USERNAME_REGEX, "@nick_man"
+      assert_full_match IO::USERNAME_REGEX, "@nick"
+      assert_full_match IO::USERNAME_REGEX, " @nick"
     end
 
     should "not match an inproper username reference" do
       assert_no_full_match IO::USERNAME_REGEX, "@"
       assert_no_full_match IO::USERNAME_REGEX, "nick"
+      assert_no_full_match IO::USERNAME_REGEX, "-@nick"
       assert_no_full_match IO::USERNAME_REGEX, "@nick-man"
-      assert_no_full_match IO::USERNAME_REGEX, " @nick"
       assert_no_full_match IO::USERNAME_REGEX, "@nick "
       assert_no_full_match IO::USERNAME_REGEX, " @nick "
+      assert_no_full_match IO::USERNAME_REGEX, "man @nick"
+      assert_no_full_match IO::USERNAME_REGEX, "man@nick"
     end
   end
 

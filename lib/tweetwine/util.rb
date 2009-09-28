@@ -40,6 +40,25 @@ module Tweetwine
       end
     end
 
+    def self.str_gsub_by_group(str, regexp)
+      dup_str = str.dup
+      index, dup_index = 0, 0
+      while index < str.size && (match_data = regexp.match(str[index..-1]))
+        matching_group_indexes = indexes_of_filled_matches(match_data)
+
+        matching_group_indexes.each do |i|
+          replacement = (yield match_data[i]).to_s
+          dup_str[dup_index + match_data.begin(i), match_data[i].size] = replacement
+          replacement_delta = replacement.size - match_data[i].size
+          dup_index += replacement_delta
+        end
+        skip_delta = match_data.end(0)
+        index += skip_delta
+        dup_index += skip_delta
+      end
+      dup_str
+    end
+
     private
 
     def self.pluralize_unit(value, unit)
@@ -47,6 +66,14 @@ module Tweetwine
         unit = unit + "s"
       end
       unit
+    end
+
+    def self.indexes_of_filled_matches(match_data)
+      if match_data.size > 1
+        (1...match_data.size).to_a.reject { |i| match_data[i].nil? }
+      else
+        [0]
+      end
     end
   end
 end
