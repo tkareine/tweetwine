@@ -115,7 +115,7 @@ module Tweetwine
     end
 
     def colorize_str(color_code, str)
-      "\033[#{color_code}m#{str}\033[0m"
+      "\e[#{color_code}m#{str}\e[0m"
     end
   end
 end

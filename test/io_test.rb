@@ -118,7 +118,7 @@ barman, in reply to fooman, 2 secs ago:
       should "output a record as user info when no status is given" do
         record = { :user => "fooman" }
         @output.expects(:puts).with(<<-END
-\033[32mfooman\033[0m
+\e[32mfooman\e[0m
 
         END
         )
@@ -135,7 +135,7 @@ barman, in reply to fooman, 2 secs ago:
         }
         Util.expects(:humanize_time_diff).returns([2, "secs"])
         @output.expects(:puts).with(<<-END
-\033[32mfooman\033[0m, 2 secs ago:
+\e[32mfooman\e[0m, 2 secs ago:
 Wondering the meaning of life.
 
         END
@@ -154,8 +154,8 @@ Wondering the meaning of life.
         }
         Util.expects(:humanize_time_diff).returns([2, "secs"])
         @output.expects(:puts).with(<<-END
-\033[32mbarman\033[0m, in reply to \033[32mfooman\033[0m, 2 secs ago:
-Hi, \033[33m@fooman\033[0m! How are you doing? \033[35m#hellos\033[0m
+\e[32mbarman\e[0m, in reply to \e[32mfooman\e[0m, 2 secs ago:
+Hi, \e[33m@fooman\e[0m! How are you doing? \e[35m#hellos\e[0m
 
         END
         )
@@ -166,7 +166,7 @@ Hi, \033[33m@fooman\033[0m! How are you doing? \033[35m#hellos\033[0m
         status = "@nick, check http://bit.ly/18rU_Vx"
         @output.expects(:puts).with(<<-END
 
-\033[33m@nick\033[0m, check \033[36mhttp://bit.ly/18rU_Vx\033[0m
+\e[33m@nick\e[0m, check \e[36mhttp://bit.ly/18rU_Vx\e[0m
 
         END
         )
@@ -183,8 +183,8 @@ Hi, \033[33m@fooman\033[0m! How are you doing? \033[35m#hellos\033[0m
         }
         Util.expects(:humanize_time_diff).returns([2, "secs"])
         @output.expects(:puts).with(<<-END
-\033[32mbarman\033[0m, 2 secs ago:
-Three links: \033[36mhttp://bit.ly/18rU_Vx\033[0m \033[36mhttp://is.gd/1qLk3\033[0m and \033[36mhttps://is.gd/2rLk4\033[0m
+\e[32mbarman\e[0m, 2 secs ago:
+Three links: \e[36mhttp://bit.ly/18rU_Vx\e[0m \e[36mhttp://is.gd/1qLk3\e[0m and \e[36mhttps://is.gd/2rLk4\e[0m
 
         END
         )
@@ -201,8 +201,8 @@ Three links: \033[36mhttp://bit.ly/18rU_Vx\033[0m \033[36mhttp://is.gd/1qLk3\033
         }
         Util.expects(:humanize_time_diff).returns([2, "secs"])
         @output.expects(:puts).with(<<-END
-\033[32mbarman\033[0m, 2 secs ago:
-Duplicate links: \033[36mhttp://is.gd/1qLk3\033[0m and \033[36mhttp://is.gd/1qLk3\033[0m
+\e[32mbarman\e[0m, 2 secs ago:
+Duplicate links: \e[36mhttp://is.gd/1qLk3\e[0m and \e[36mhttp://is.gd/1qLk3\e[0m
 
         END
         )
@@ -219,8 +219,8 @@ Duplicate links: \033[36mhttp://is.gd/1qLk3\033[0m and \033[36mhttp://is.gd/1qLk
         }
         Util.expects(:humanize_time_diff).returns([2, "secs"])
         @output.expects(:puts).with(<<-END
-\033[32mbarman\033[0m, 2 secs ago:
-I salute you \033[33m@fooman\033[0m, \033[33m@barbaz\033[0m, and \033[33m@spoonman\033[0m!
+\e[32mbarman\e[0m, 2 secs ago:
+I salute you \e[33m@fooman\e[0m, \e[33m@barbaz\e[0m, and \e[33m@spoonman\e[0m!
 
         END
         )
@@ -237,8 +237,8 @@ I salute you \033[33m@fooman\033[0m, \033[33m@barbaz\033[0m, and \033[33m@spoonm
         }
         Util.expects(:humanize_time_diff).returns([2, "secs"])
         @output.expects(:puts).with(<<-END
-\033[32mbarman\033[0m, 2 secs ago:
-Hi, \033[33m@fooman\033[0m! You should notify \033[33m@barbaz\033[0m, barbaz@foo.net
+\e[32mbarman\e[0m, 2 secs ago:
+Hi, \e[33m@fooman\e[0m! You should notify \e[33m@barbaz\e[0m, barbaz@foo.net
 
         END
         )
