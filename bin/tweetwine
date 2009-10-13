@@ -38,6 +38,9 @@ Usage: #{executable_name} [options...] [command]
       opt.on("-n", "--num N", Integer, "The number of statuses to fetch, defaults to #{Client::DEFAULT_NUM_STATUSES}") do |arg|
         options[:num_statuses] = arg
       end
+      opt.on("--no-colorize", "Do not colorize output with ANSI escape codes") do
+        options[:colorize] = false
+      end
       opt.on("--no-url-shorten", "Do not shorten URLs for status update") do
         options[:shorten_urls] = { :enable => false }
       end
