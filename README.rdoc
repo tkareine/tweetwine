@@ -4,12 +4,13 @@ A simple but tasty Twitter agent for command line use, made for fun.
 
 == Installation
 
-Install Tweetwine as a RubyGem from GitHub:
+Install Tweetwine as a RubyGem from Gemcutter:
 
-  $ sudo gem install tuomas-tweetwine --source http://gems.github.com
+  $ sudo gem install tweetwine --source http://gemcutter.org
 
-The program is compatible with Ruby 1.9.1, and it requires <b>rest_client</b>
-gem to be installed. In addition, <b>json</b> gem is needed for Ruby 1.8.6.
+The program is compatible with both Ruby 1.8 and 1.9.
+
+The program requires <b>rest_client</b> gem to be installed. In addition, the program needs <b>json</b> gem on Ruby 1.8.
 
 == Usage
 
