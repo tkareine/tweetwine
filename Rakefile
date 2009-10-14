@@ -73,6 +73,14 @@ Rake::TestTask.new(:test) do |t|
   t.libs << "test"
 end
 
+Rake::TestTask.new(:example) do |t|
+  t.test_files = FileList["example/**/*_example.rb"]
+  t.verbose = true
+  t.warning = false
+  t.ruby_opts << "-rrubygems"
+  t.libs << "example"
+end
+
 desc "Find code smells"
 task :roodi do
   sh %{roodi "**/*.rb"}
@@ -83,4 +91,4 @@ task :todo do
   FileList["**/*.rb", "**/*.rdoc", "**/*.txt"].egrep /(TODO|FIXME)/
 end
 
-task :default => :test
+task :default => [:test, :example]
