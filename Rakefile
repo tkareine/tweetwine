@@ -20,7 +20,7 @@ spec = Gem::Specification.new do |s|
   s.email = "tkareine@gmail.com"
 
   s.platform = Gem::Platform::RUBY
-  s.files = FileList["Rakefile", "MIT-LICENSE.txt", "*.rdoc", "bin/**/*", "lib/**/*", "test/**/*"].to_a
+  s.files = FileList["Rakefile", "MIT-LICENSE.txt", "*.rdoc", "bin/**/*", "example/**/*", "lib/**/*", "test/**/*"].to_a
   s.executables = ["tweetwine"]
 
   s.add_dependency("rest-client", ">= 1.0.0")
