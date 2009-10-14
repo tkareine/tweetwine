@@ -2,19 +2,19 @@
 
 Gem::Specification.new do |s|
   s.name = %q{tweetwine}
-  s.version = "0.2.4"
+  s.version = "0.2.5"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Tuomas Kareinen"]
-  s.date = %q{2009-09-16}
+  s.date = %q{2009-10-14}
   s.default_executable = %q{tweetwine}
   s.description = %q{A simple but tasty Twitter agent for command line use, made for fun.}
   s.email = %q{tkareine@gmail.com}
   s.executables = ["tweetwine"]
   s.extra_rdoc_files = ["MIT-LICENSE.txt", "CHANGELOG.rdoc", "README.rdoc"]
-  s.files = ["Rakefile", "MIT-LICENSE.txt", "CHANGELOG.rdoc", "README.rdoc", "bin/tweetwine", "lib/tweetwine", "lib/tweetwine/client.rb", "lib/tweetwine/io.rb", "lib/tweetwine/meta.rb", "lib/tweetwine/options.rb", "lib/tweetwine/rest_client_wrapper.rb", "lib/tweetwine/startup_config.rb", "lib/tweetwine/url_shortener.rb", "lib/tweetwine/util.rb", "lib/tweetwine.rb", "test/client_test.rb", "test/io_test.rb", "test/options_test.rb", "test/rest_client_wrapper_test.rb", "test/startup_config_test.rb", "test/test_config.yaml", "test/test_helper.rb", "test/url_shortener_test.rb", "test/util_test.rb"]
+  s.files = ["Rakefile", "MIT-LICENSE.txt", "CHANGELOG.rdoc", "README.rdoc", "bin/tweetwine", "example/example_helper.rb", "example/fixtures", "example/fixtures/statuses.json", "example/show_latest_statuses_example.rb", "example/show_metadata_example.rb", "lib/tweetwine", "lib/tweetwine/client.rb", "lib/tweetwine/io.rb", "lib/tweetwine/meta.rb", "lib/tweetwine/options.rb", "lib/tweetwine/rest_client_wrapper.rb", "lib/tweetwine/startup_config.rb", "lib/tweetwine/url_shortener.rb", "lib/tweetwine/util.rb", "lib/tweetwine.rb", "test/client_test.rb", "test/fixtures", "test/fixtures/test_config.yaml", "test/io_test.rb", "test/options_test.rb", "test/rest_client_wrapper_test.rb", "test/startup_config_test.rb", "test/test_helper.rb", "test/url_shortener_test.rb", "test/util_test.rb"]
   s.homepage = %q{http://github.com/tuomas/tweetwine}
-  s.rdoc_options = ["--title", "tweetwine 0.2.4", "--main", "README.rdoc", "--exclude", "test", "--line-numbers"]
+  s.rdoc_options = ["--title", "tweetwine 0.2.5", "--main", "README.rdoc", "--exclude", "test", "--line-numbers"]
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.5}
   s.summary = %q{A simple Twitter agent for command line use}

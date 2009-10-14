@@ -1,3 +1,11 @@
+=== 0.2.5 released 2009-10-14
+
+* Improved username highlighting for colorization. For example, email
+  addresses are not highlighted as usernames anymore.
+* Command line option "--no-colorize" to (temporarily) disable colors from the
+  output.
+* Added first set of acceptance tests under "example" directory.
+
 === 0.2.4 released 2009-09-16
 
 * Retry connection upon connection reset, trying maximum of three times.
