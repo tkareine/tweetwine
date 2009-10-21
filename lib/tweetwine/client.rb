@@ -3,7 +3,7 @@ require "uri"
 
 module Tweetwine
   class Client
-    Dependencies = Struct.new :io, :rest_client, :url_shortener
+    Dependencies = Struct.new :io, :http_client, :url_shortener
 
     attr_reader :num_statuses, :page_num
 
@@ -15,10 +15,9 @@ module Tweetwine
 
     def initialize(dependencies, options)
       @io = dependencies.io
-      @rest_client = dependencies.rest_client
       @username = options[:username].to_s
       raise ArgumentError, "No authentication data given" if @username.empty?
-      @base_url = "https://#{@username}:#{options[:password]}@twitter.com/"
+      @http_resource = dependencies.http_client.as_resource("https://twitter.com", :user => @username, :password => options[:password])
       @num_statuses = Util.parse_int_gt(options[:num_statuses], DEFAULT_NUM_STATUSES, 1, "number of statuses_to_show")
       @page_num = Util.parse_int_gt(options[:page_num], DEFAULT_PAGE_NUM, 1, "page number")
       @url_shortener = if options[:shorten_urls] && options[:shorten_urls][:enable]
@@ -30,24 +29,24 @@ module Tweetwine
     end
 
     def home
-      show_statuses(get_response_as_json("statuses/friends_timeline", :num_statuses, :page))
+      show_statuses(send_get_request("statuses/friends_timeline", :num_statuses, :page))
     end
 
     def mentions
-      show_statuses(get_response_as_json("statuses/mentions", :num_statuses, :page))
+      show_statuses(send_get_request("statuses/mentions", :num_statuses, :page))
     end
 
     def user(user = @username)
-      show_statuses(get_response_as_json("statuses/user_timeline/#{user}", :num_statuses, :page))
+      show_statuses(send_get_request("statuses/user_timeline/#{user}", :num_statuses, :page))
     end
 
     def update(new_status = nil)
-      new_status = @status_update_factory.prepare(new_status)
+      new_status = @status_update_factory.create(new_status)
       completed = false
       unless new_status.empty?
         @io.show_status_preview(new_status)
         if @io.confirm("Really send?")
-          status = JSON.parse(post("statuses/update.json", {:status => new_status.to_s}))
+          status = send_post_request("statuses/update", { :status => new_status.to_s })
           @io.info "Sent status update.\n\n"
           show_statuses([status])
           completed = true
@@ -57,21 +56,24 @@ module Tweetwine
     end
 
     def friends
-      show_users(get_response_as_json("statuses/friends/#{@username}", :page))
+      show_users(send_get_request("statuses/friends/#{@username}", :page))
     end
 
     def followers
-      show_users(get_response_as_json("statuses/followers/#{@username}", :page))
+      show_users(send_get_request("statuses/followers/#{@username}", :page))
     end
 
     private
 
-    def get_response_as_json(url_body, *query_opts)
-      url = url_body + ".json?#{parse_query_options(query_opts)}"
-      JSON.parse(get(url))
+    def send_get_request(sub_url, *query_opts)
+      JSON.parse(@http_resource[sub_url + ".json?#{create_query_string(query_opts)}"].get)
     end
 
-    def parse_query_options(query_opts)
+    def send_post_request(sub_url, payload)
+      JSON.parse(@http_resource[sub_url + ".json"].post(payload))
+    end
+
+    def create_query_string(query_opts)
       str = []
       query_opts.each do |opt|
         case opt
@@ -112,21 +114,13 @@ module Tweetwine
       record
     end
 
-    def get(body_url)
-      @rest_client.get @base_url + body_url
-    end
-
-    def post(body_url, body)
-      @rest_client.post @base_url + body_url, body
-    end
-
     class StatusUpdateFactory
       def initialize(io, url_shortener)
         @io = io
         @url_shortener = url_shortener
       end
 
-      def prepare(status)
+      def create(status)
         StatusUpdate.new(status, @io, @url_shortener).to_s
       end
     end
@@ -168,7 +162,7 @@ module Tweetwine
         url_pairs.reject { |pair| pair.last.nil? || pair.last.empty? }.each do |url_pair|
           status.gsub!(url_pair.first, url_pair.last)
         end
-      rescue ClientError, LoadError => e
+      rescue HttpError, LoadError => e
         @io.warn "#{e}. Skipping URL shortening..."
       end
     end

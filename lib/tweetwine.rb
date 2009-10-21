@@ -4,7 +4,7 @@
   options
   startup_config
   io
-  rest_client_wrapper
+  retrying_http
   url_shortener
   client
 }.each do |f|

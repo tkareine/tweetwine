@@ -5,14 +5,14 @@ module Tweetwine
 class UrlShortenerTest < Test::Unit::TestCase
   context "An UrlShortener instance" do
     setup do
-      @rest_client = mock()
+      @http_client = mock()
     end
 
     context "upon initialization" do
       should "raise exception if service URL is not given" do
         assert_raise(ArgumentError) do
           UrlShortener.new(
-            @rest_client,
+            @http_client,
             {
               :service_url      => nil,
               :url_param_name   => "url",
@@ -25,7 +25,7 @@ class UrlShortenerTest < Test::Unit::TestCase
       should "raise exception if URL parameter name is not given" do
         assert_raise(ArgumentError) do
           UrlShortener.new(
-            @rest_client,
+            @http_client,
             {
               :service_url      => "http://shorten.it/create",
               :url_param_name   => nil,
@@ -38,7 +38,7 @@ class UrlShortenerTest < Test::Unit::TestCase
       should "raise exception if XPath selector is not given" do
         assert_raise(ArgumentError) do
           UrlShortener.new(
-            @rest_client,
+            @http_client,
             {
               :service_url      => "http://shorten.it/create",
               :url_param_name   => "url",
@@ -50,7 +50,7 @@ class UrlShortenerTest < Test::Unit::TestCase
 
       should "fallback to use GET method if not given explicitly" do
         url_shortener = UrlShortener.new(
-          @rest_client,
+          @http_client,
           {
             :service_url      => "http://shorten.it/create",
             :url_param_name   => "url",
@@ -65,7 +65,7 @@ class UrlShortenerTest < Test::Unit::TestCase
       context "configured for HTTP GET" do
         should "use parameters as URL query parameters, with just the URL parameter" do
           url_shortener = UrlShortener.new(
-            @rest_client,
+            @http_client,
             {
               :method           => "get",
               :service_url      => "http://shorten.it/create",
@@ -73,14 +73,14 @@ class UrlShortenerTest < Test::Unit::TestCase
               :xpath_selector   => "//input[@id='short_url']/@value"
             }
           )
-          @rest_client.expects(:get) \
+          @http_client.expects(:get) \
               .with("http://shorten.it/create?url=http://www.ruby-doc.org/core/")
           url_shortener.shorten("http://www.ruby-doc.org/core/")
         end
 
         should "use parameters as URL query parameters, with additional extra parameters" do
           url_shortener = UrlShortener.new(
-            @rest_client,
+            @http_client,
             {
               :method           => "get",
               :service_url      => "http://shorten.it/create",
@@ -91,7 +91,7 @@ class UrlShortenerTest < Test::Unit::TestCase
               :xpath_selector   => "//input[@id='short_url']/@value"
             }
           )
-          @rest_client.expects(:get) \
+          @http_client.expects(:get) \
               .with("http://shorten.it/create?token=xyz&url=http://www.ruby-doc.org/core/")
           url_shortener.shorten("http://www.ruby-doc.org/core/")
         end
@@ -100,7 +100,7 @@ class UrlShortenerTest < Test::Unit::TestCase
       context "configured for HTTP POST" do
         should "use parameters as payload, with just the URL parameter" do
           url_shortener = UrlShortener.new(
-            @rest_client,
+            @http_client,
             {
               :method           => "post",
               :service_url      => "http://shorten.it/create",
@@ -108,14 +108,14 @@ class UrlShortenerTest < Test::Unit::TestCase
               :xpath_selector   => "//input[@id='short_url']/@value"
             }
           )
-          @rest_client.expects(:post) \
+          @http_client.expects(:post) \
               .with("http://shorten.it/create", {:url => "http://www.ruby-doc.org/core/"})
           url_shortener.shorten("http://www.ruby-doc.org/core/")
         end
 
         should "use parameters as payload, with additional extra parameters" do
           url_shortener = UrlShortener.new(
-            @rest_client,
+            @http_client,
             {
               :method           => "post",
               :service_url      => "http://shorten.it/create",
@@ -126,7 +126,7 @@ class UrlShortenerTest < Test::Unit::TestCase
               :xpath_selector   => "//input[@id='short_url']/@value"
             }
           )
-          @rest_client.expects(:post) \
+          @http_client.expects(:post) \
               .with("http://shorten.it/create", {
                 :token => "xyz",
                 :url   => "http://www.ruby-doc.org/core/"
@@ -136,9 +136,9 @@ class UrlShortenerTest < Test::Unit::TestCase
       end
 
       context "in erroenous situations" do
-        should "raise ClientError upon connection error" do
+        should "raise HttpError upon connection error" do
           url_shortener = UrlShortener.new(
-            @rest_client,
+            @http_client,
             {
               :method           => "post",
               :service_url      => "http://shorten.it/create",
@@ -146,12 +146,12 @@ class UrlShortenerTest < Test::Unit::TestCase
               :xpath_selector   => "//input[@id='short_url']/@value"
             }
           )
-          @rest_client.expects(:post) \
+          @http_client.expects(:post) \
               .with("http://shorten.it/create", {
                 :url   => "http://www.ruby-doc.org/core/"
               }) \
-              .raises(ClientError, "connection error")
-          assert_raise(ClientError) { url_shortener.shorten("http://www.ruby-doc.org/core/") }
+              .raises(HttpError, "connection error")
+          assert_raise(HttpError) { url_shortener.shorten("http://www.ruby-doc.org/core/") }
         end
       end
     end

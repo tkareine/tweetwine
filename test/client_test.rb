@@ -1,18 +1,17 @@
 require "test_helper"
 require "json"
 
-Mocha::Configuration.allow(:stubbing_non_existent_method)
-
 module Tweetwine
 
 class ClientTest < Test::Unit::TestCase
   context "A client instance" do
     setup do
       @io = mock()
-      @rest_client = mock()
+      @http_resource = mock()
+      http_client = stub({ :as_resource => @http_resource })
       @url_shortener = mock()
-      url_shortener = lambda { |options| @url_shortener }
-      @deps = Client::Dependencies.new @io, @rest_client, url_shortener
+      @url_shortener_block = lambda { |options| @url_shortener }
+      @deps = Client::Dependencies.new @io, http_client, @url_shortener_block
     end
 
     context "upon initialization" do
@@ -50,6 +49,13 @@ class ClientTest < Test::Unit::TestCase
       should "raise an exception for configured page number if not in allowed range" do
         assert_raise(ArgumentError) { Client.new(@deps, { :username => "foo", :password => "bar", :page_num => 0 }) }
       end
+
+      should "user proper base URL and authentication information for HTTP requests" do
+        http_client = mock()
+        http_client.expects(:as_resource).with("https://twitter.com", :user => "foo", :password => "bar")
+        deps = Client::Dependencies.new @io, http_client, @url_shortener_block
+        Client.new(deps, { :username => "foo", :password => "bar" })
+      end
     end
 
     context "at runtime" do
@@ -57,9 +63,8 @@ class ClientTest < Test::Unit::TestCase
         @username = "spiky"
         @password = "lullaby"
         @client = Client.new(@deps, { :username => @username, :password => @password })
-        @base_url = "https://#{@username}:#{@password}@twitter.com"
-        @statuses_query_params = "count=#{Client::DEFAULT_NUM_STATUSES}&page=#{Client::DEFAULT_PAGE_NUM}"
-        @users_query_params = "page=#{Client::DEFAULT_PAGE_NUM}"
+        @statuses_query_string = "count=#{Client::DEFAULT_NUM_STATUSES}&page=#{Client::DEFAULT_PAGE_NUM}"
+        @users_query_string = "page=#{Client::DEFAULT_PAGE_NUM}"
       end
 
       should "fetch friends' statuses (home view)" do
@@ -81,9 +86,9 @@ class ClientTest < Test::Unit::TestCase
             }
           }
         )
-        @rest_client.expects(:get) \
-            .with("#{@base_url}/statuses/friends_timeline.json?#{@statuses_query_params}") \
-            .returns(status_records.to_json)
+        @http_resource.expects(:[]) \
+                      .with("statuses/friends_timeline.json?#{@statuses_query_string}") \
+                      .returns(stub(:get => status_records.to_json))
         @io.expects(:show_record).with(gen_records[0])
         @io.expects(:show_record).with(gen_records[1])
         @client.home
@@ -108,9 +113,9 @@ class ClientTest < Test::Unit::TestCase
             }
           }
         )
-        @rest_client.expects(:get) \
-            .with("#{@base_url}/statuses/mentions.json?#{@statuses_query_params}") \
-            .returns(status_records.to_json)
+        @http_resource.expects(:[]) \
+                      .with("statuses/mentions.json?#{@statuses_query_string}") \
+                      .returns(stub(:get => status_records.to_json))
         @io.expects(:show_record).with(gen_records[0])
         @io.expects(:show_record).with(gen_records[1])
         @client.mentions
@@ -128,9 +133,9 @@ class ClientTest < Test::Unit::TestCase
             }
           }
         )
-        @rest_client.expects(:get) \
-            .with("#{@base_url}/statuses/user_timeline/#{user}.json?#{@statuses_query_params}") \
-            .returns(status_records.to_json)
+        @http_resource.expects(:[]) \
+                      .with("statuses/user_timeline/#{user}.json?#{@statuses_query_string}") \
+                      .returns(stub(:get => status_records.to_json))
         @io.expects(:show_record).with(gen_records[0])
         @client.user(user)
       end
@@ -146,9 +151,9 @@ class ClientTest < Test::Unit::TestCase
             }
           }
         )
-        @rest_client.expects(:get) \
-            .with("#{@base_url}/statuses/user_timeline/#{@username}.json?#{@statuses_query_params}") \
-            .returns(status_records.to_json)
+        @http_resource.expects(:[]) \
+                      .with("statuses/user_timeline/#{@username}.json?#{@statuses_query_string}") \
+                      .returns(stub(:get => status_records.to_json))
         @io.expects(:show_record).with(gen_records[0])
         @client.user
       end
@@ -166,9 +171,13 @@ class ClientTest < Test::Unit::TestCase
               }
             }
           )
-          @rest_client.expects(:post) \
-              .with("#{@base_url}/statuses/update.json", {:status => status}) \
-              .returns(status_records[0].to_json)
+          http_subresource = mock()
+          http_subresource.expects(:post) \
+                          .with({ :status => status }) \
+                          .returns(status_records[0].to_json)
+          @http_resource.expects(:[]) \
+                        .with("statuses/update.json") \
+                        .returns(http_subresource)
           @io.expects(:confirm).with("Really send?").returns(true)
           @io.expects(:show_status_preview).with(status)
           @io.expects(:info).with("Sent status update.\n\n")
@@ -187,9 +196,13 @@ class ClientTest < Test::Unit::TestCase
               }
             }
           )
-          @rest_client.expects(:post) \
-              .with("#{@base_url}/statuses/update.json", {:status => status}) \
-              .returns(status_records[0].to_json)
+          http_subresource = mock()
+          http_subresource.expects(:post) \
+                          .with({ :status => status }) \
+                          .returns(status_records[0].to_json)
+          @http_resource.expects(:[]) \
+                        .with("statuses/update.json") \
+                        .returns(http_subresource)
           @io.expects(:prompt).with("Status update").returns(status)
           @io.expects(:show_status_preview).with(status)
           @io.expects(:confirm).with("Really send?").returns(true)
@@ -200,7 +213,7 @@ class ClientTest < Test::Unit::TestCase
 
         should "cancel a status update via argument, when negative confirmation" do
           status = "wondering around"
-          @rest_client.expects(:post).never
+          @http_resource.expects(:[]).never
           @io.expects(:show_status_preview).with(status)
           @io.expects(:confirm).with("Really send?").returns(false)
           @io.expects(:info).with("Cancelled.")
@@ -210,7 +223,7 @@ class ClientTest < Test::Unit::TestCase
 
         should "cancel a status update via prompt, when negative confirmation" do
           status = "wondering around"
-          @rest_client.expects(:post).never
+          @http_resource.expects(:[]).never
           @io.expects(:prompt).with("Status update").returns(status)
           @io.expects(:show_status_preview).with(status)
           @io.expects(:confirm).with("Really send?").returns(false)
@@ -220,7 +233,7 @@ class ClientTest < Test::Unit::TestCase
         end
 
         should "cancel a status update via argument, when empty status" do
-          @rest_client.expects(:post).never
+          @http_resource.expects(:[]).never
           @io.expects(:confirm).never
           @io.expects(:info).with("Cancelled.")
           @io.expects(:show_record).never
@@ -228,7 +241,7 @@ class ClientTest < Test::Unit::TestCase
         end
 
         should "cancel a status update via prompt, when empty status" do
-          @rest_client.expects(:post).never
+          @http_resource.expects(:[]).never
           @io.expects(:prompt).with("Status update").returns("")
           @io.expects(:confirm).never
           @io.expects(:info).with("Cancelled.")
@@ -248,9 +261,13 @@ class ClientTest < Test::Unit::TestCase
               }
             }
           )
-          @rest_client.expects(:post) \
-              .with("#{@base_url}/statuses/update.json", {:status => stripped_status}) \
-              .returns(status_records[0].to_json)
+          http_subresource = mock()
+          http_subresource.expects(:post) \
+                          .with({ :status => stripped_status }) \
+                          .returns(status_records[0].to_json)
+          @http_resource.expects(:[]) \
+                        .with("statuses/update.json") \
+                        .returns(http_subresource)
           @io.expects(:show_status_preview).with(stripped_status)
           @io.expects(:confirm).with("Really send?").returns(true)
           @io.expects(:info).with("Sent status update.\n\n")
@@ -270,9 +287,13 @@ class ClientTest < Test::Unit::TestCase
               }
             }
           )
-          @rest_client.expects(:post) \
-              .with("#{@base_url}/statuses/update.json", {:status => truncated_status}) \
-              .returns(status_records[0].to_json)
+          http_subresource = mock()
+          http_subresource.expects(:post) \
+                          .with({ :status => truncated_status }) \
+                          .returns(status_records[0].to_json)
+          @http_resource.expects(:[]) \
+                        .with("statuses/update.json") \
+                        .returns(http_subresource)
           @io.expects(:warn).with("Status will be truncated.")
           @io.expects(:show_status_preview).with(truncated_status)
           @io.expects(:confirm).with("Really send?").returns(true)
@@ -310,9 +331,13 @@ class ClientTest < Test::Unit::TestCase
                 }
               }
             )
-            @rest_client.expects(:post) \
-                .with("#{@base_url}/statuses/update.json", {:status => shortened_status}) \
-                .returns(status_records[0].to_json)
+            http_subresource = mock()
+            http_subresource.expects(:post) \
+                            .with({ :status => shortened_status }) \
+                            .returns(status_records[0].to_json)
+            @http_resource.expects(:[]) \
+                          .with("statuses/update.json") \
+                          .returns(http_subresource)
             @url_shortener.expects(:shorten).with(long_urls.first).returns(short_urls.first)
             @url_shortener.expects(:shorten).with(long_urls.last).returns(short_urls.last)
             @io.expects(:show_status_preview).with(shortened_status)
@@ -335,9 +360,13 @@ class ClientTest < Test::Unit::TestCase
                 }
               }
             )
-            @rest_client.expects(:post) \
-                .with("#{@base_url}/statuses/update.json", {:status => status}) \
-                .returns(status_records[0].to_json)
+            http_subresource = mock()
+            http_subresource.expects(:post) \
+                            .with({ :status => status }) \
+                            .returns(status_records[0].to_json)
+            @http_resource.expects(:[]) \
+                          .with("statuses/update.json") \
+                          .returns(http_subresource)
             @url_shortener.expects(:shorten).with(long_urls.first).returns(short_urls.first)
             @url_shortener.expects(:shorten).with(long_urls.last).returns(short_urls.last)
             @io.expects(:show_status_preview).with(status)
@@ -361,9 +390,13 @@ class ClientTest < Test::Unit::TestCase
                 }
               }
             )
-            @rest_client.expects(:post) \
-                .with("#{@base_url}/statuses/update.json", {:status => short_status}) \
-                .returns(status_records[0].to_json)
+            http_subresource = mock()
+            http_subresource.expects(:post) \
+                            .with({ :status => short_status }) \
+                            .returns(status_records[0].to_json)
+            @http_resource.expects(:[]) \
+                          .with("statuses/update.json") \
+                          .returns(http_subresource)
             @url_shortener.expects(:shorten).with(long_urls.first).returns(short_url)
             @io.expects(:show_status_preview).with(short_status)
             @io.expects(:confirm).with("Really send?").returns(true)
@@ -388,9 +421,13 @@ class ClientTest < Test::Unit::TestCase
             end
 
             should "skip shortening URLs if required libraries are not found" do
-              @rest_client.expects(:post) \
-                  .with("#{@base_url}/statuses/update.json", {:status => @status}) \
-                  .returns(@status_records[0].to_json)
+              http_subresource = mock()
+              http_subresource.expects(:post) \
+                              .with({ :status => @status }) \
+                              .returns(@status_records[0].to_json)
+              @http_resource.expects(:[]) \
+                            .with("statuses/update.json") \
+                            .returns(http_subresource)
               @url_shortener.expects(:shorten).with(@url).raises(LoadError, "gem not found")
               @io.expects(:warn)
               @io.expects(:show_status_preview).with(@status)
@@ -401,10 +438,14 @@ class ClientTest < Test::Unit::TestCase
             end
 
             should "skip shortening URLs upon connection error to the URL shortening service" do
-              @rest_client.expects(:post) \
-                  .with("#{@base_url}/statuses/update.json", {:status => @status}) \
-                  .returns(@status_records[0].to_json)
-              @url_shortener.expects(:shorten).with(@url).raises(ClientError, "connection error")
+              http_subresource = mock()
+              http_subresource.expects(:post) \
+                              .with({ :status => @status }) \
+                              .returns(@status_records[0].to_json)
+              @http_resource.expects(:[]) \
+                            .with("statuses/update.json") \
+                            .returns(http_subresource)
+              @url_shortener.expects(:shorten).with(@url).raises(HttpError, "connection error")
               @io.expects(:warn)
               @io.expects(:show_status_preview).with(@status)
               @io.expects(:confirm).with("Really send?").returns(true)
@@ -435,9 +476,9 @@ class ClientTest < Test::Unit::TestCase
             }
           }
         )
-        @rest_client.expects(:get) \
-            .with("#{@base_url}/statuses/friends/#{@username}.json?#{@users_query_params}") \
-            .returns(user_records.to_json)
+        @http_resource.expects(:[]) \
+                      .with("statuses/friends/#{@username}.json?#{@users_query_string}") \
+                      .returns(stub(:get => user_records.to_json))
         @io.expects(:show_record).with(gen_records[0])
         @io.expects(:show_record).with(gen_records[1])
         @client.friends
@@ -457,9 +498,9 @@ class ClientTest < Test::Unit::TestCase
             :user => "lulzwoo"
           }
         )
-        @rest_client.expects(:get) \
-            .with("#{@base_url}/statuses/followers/#{@username}.json?#{@users_query_params}") \
-            .returns(user_records.to_json)
+        @http_resource.expects(:[]) \
+                      .with("statuses/followers/#{@username}.json?#{@users_query_string}") \
+                      .returns(stub(:get => user_records.to_json))
         @io.expects(:show_record).with(gen_records[0])
         @io.expects(:show_record).with(gen_records[1])
         @client.followers

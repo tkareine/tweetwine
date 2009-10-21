@@ -64,9 +64,9 @@ end
 
 def create_dependencies(options)
   io = Tweetwine::IO.new(options)
-  rest_client = RestClientWrapper.new(io)
-  url_shortener = lambda { |opts| UrlShortener.new(rest_client, opts) }
-  Client::Dependencies.new io, rest_client, url_shortener
+  http_client = RetryingHttp::Client.new(io)
+  url_shortener = lambda { |opts| UrlShortener.new(http_client, opts) }
+  Client::Dependencies.new(io, http_client, url_shortener)
 end
 
 begin
@@ -74,7 +74,7 @@ begin
   config.parse(ARGV, ENV["HOME"] + "/.tweetwine", &cmd_parser)
   client = Client.new(create_dependencies(config.options), config.options)
   client.send(config.command, *config.args)
-rescue ArgumentError, ClientError => e
+rescue ArgumentError, HttpError => e
   puts "Error: #{e.message}"
   exit(EXIT_ERROR)
 end
