@@ -109,6 +109,34 @@ class UtilTest < Test::Unit::TestCase
       assert_equal "hEllo", new_str
     end
   end
+
+  context "for percent-encoding strings" do
+    should "not encode safe characters" do
+      assert_equal "a", Util.percent_encode("a")
+      assert_equal "B", Util.percent_encode("B")
+      assert_equal "3", Util.percent_encode("3")
+      assert_equal ".", Util.percent_encode(".")
+      assert_equal "-", Util.percent_encode("-")
+      assert_equal "_", Util.percent_encode("_")
+    end
+
+    should "encode space character with precent-encoding, not with '+' character" do
+      assert_equal "%20", Util.percent_encode(" ")
+    end
+
+    should "encode unsafe characters that URI.encode leaves by default unencoded" do
+      assert_equal "&",   URI.encode("&")
+      assert_equal "%26", Util.percent_encode("&")
+      assert_equal "?",   URI.encode("?")
+      assert_equal "%3F", Util.percent_encode("?")
+      assert_equal "/",   URI.encode("/")
+      assert_equal "%2F", Util.percent_encode("/")
+      assert_equal ":",   URI.encode(":")
+      assert_equal "%3A", Util.percent_encode(":")
+      assert_equal ",",   URI.encode(",")
+      assert_equal "%2C", Util.percent_encode(",")
+    end
+  end
 end
 
 end

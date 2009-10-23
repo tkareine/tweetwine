@@ -1,4 +1,5 @@
 require "time"
+require "uri"
 
 module Tweetwine
   module Util
@@ -57,6 +58,10 @@ module Tweetwine
         dup_index += skip_delta
       end
       dup_str
+    end
+
+    def self.percent_encode(str)
+      URI.escape(str.to_s, /[^#{URI::PATTERN::UNRESERVED}]/)
     end
 
     private
