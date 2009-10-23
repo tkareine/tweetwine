@@ -64,6 +64,15 @@ module Tweetwine
       URI.escape(str.to_s, /[^#{URI::PATTERN::UNRESERVED}]/)
     end
 
+    def self.find_hash_path(hash, path)
+      return nil if hash.nil?
+      path = [path] if !path.is_a? Array
+      path.inject(hash) do |result, key|
+        return hash.default if key.nil? || result.nil?
+        result[key]
+      end
+    end
+
     private
 
     def self.pluralize_unit(value, unit)

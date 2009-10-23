@@ -137,6 +137,48 @@ class UtilTest < Test::Unit::TestCase
       assert_equal "%2C", Util.percent_encode(",")
     end
   end
+
+  context "for traversing a hash with a path expression for finding a value" do
+    setup do
+      @inner_hash = {
+        :salmon => "slick"
+      }
+      @inner_hash.default = "no such element in inner hash"
+      @outer_hash = {
+        :simple => "beautiful",
+        :inner  => @inner_hash,
+        :fishy  => nil
+      }
+      @outer_hash.default = "no such element in outer hash"
+    end
+
+    should "support both a non-array and a single element array path for finding the value" do
+      assert_equal "beautiful", Util.find_hash_path(@outer_hash, :simple)
+      assert_equal "beautiful", Util.find_hash_path(@outer_hash, [:simple])
+    end
+
+    should "find a nested value with an array path" do
+      assert_equal "slick", Util.find_hash_path(@outer_hash, [:inner, :salmon])
+    end
+
+    should "return the default value of the hash if the value cannot be found" do
+      assert_equal @outer_hash.default, Util.find_hash_path(@outer_hash, :difficult)
+      assert_equal @inner_hash.default, Util.find_hash_path(@outer_hash, [:inner, :cucumber])
+      assert_equal @outer_hash.default, Util.find_hash_path(@outer_hash, [:fishy, :no_such])
+    end
+
+    should "return the default value of the hash if invalid path value" do
+      assert_equal @outer_hash.default, Util.find_hash_path(@outer_hash, nil)
+      assert_equal @outer_hash.default, Util.find_hash_path(@outer_hash, [:no_such, nil])
+      assert_equal @outer_hash.default, Util.find_hash_path(@outer_hash, [:simple, nil])
+      assert_equal @outer_hash.default, Util.find_hash_path(@outer_hash, [:inner, nil])
+      assert_equal @outer_hash.default, Util.find_hash_path(@outer_hash, [:inner, :salmon, nil])
+    end
+
+    should "return nil if nil hash value" do
+      assert_equal nil, Util.find_hash_path(nil, nil)
+    end
+  end
 end
 
 end
