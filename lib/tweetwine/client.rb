@@ -5,19 +5,20 @@ module Tweetwine
   class Client
     Dependencies = Struct.new :io, :http_client, :url_shortener
 
-    attr_reader :num_statuses, :page_num
-
-    COMMANDS = [:home, :mentions, :user, :update, :friends, :followers]
+    COMMANDS = [:home, :mentions, :user, :update, :friends, :followers, :search]
 
     DEFAULT_NUM_STATUSES = 20
     DEFAULT_PAGE_NUM = 1
     MAX_STATUS_LENGTH = 140
 
+    attr_reader :num_statuses, :page_num
+
     def initialize(dependencies, options)
       @io = dependencies.io
       @username = options[:username].to_s
       raise ArgumentError, "No authentication data given" if @username.empty?
-      @http_resource = dependencies.http_client.as_resource("https://twitter.com", :user => @username, :password => options[:password])
+      @http_client = dependencies.http_client
+      @http_resource = @http_client.as_resource("https://twitter.com", :user => @username, :password => options[:password])
       @num_statuses = Util.parse_int_gt(options[:num_statuses], DEFAULT_NUM_STATUSES, 1, "number of statuses_to_show")
       @page_num = Util.parse_int_gt(options[:page_num], DEFAULT_PAGE_NUM, 1, "page number")
       @url_shortener = if options[:shorten_urls] && options[:shorten_urls][:enable]
@@ -29,15 +30,18 @@ module Tweetwine
     end
 
     def home
-      show_statuses(send_get_request("statuses/friends_timeline", :num_statuses, :page))
+      response = get_from_rest_api("statuses/friends_timeline", :num_statuses, :page)
+      show_statuses_from_rest_api(*response)
     end
 
     def mentions
-      show_statuses(send_get_request("statuses/mentions", :num_statuses, :page))
+      response = get_from_rest_api("statuses/mentions", :num_statuses, :page)
+      show_statuses_from_rest_api(*response)
     end
 
     def user(user = @username)
-      show_statuses(send_get_request("statuses/user_timeline/#{user}", :num_statuses, :page))
+      response = get_from_rest_api("statuses/user_timeline/#{user}", :num_statuses, :page)
+      show_statuses_from_rest_api(*response)
     end
 
     def update(new_status = nil)
@@ -46,9 +50,9 @@ module Tweetwine
       unless new_status.empty?
         @io.show_status_preview(new_status)
         if @io.confirm("Really send?")
-          status = send_post_request("statuses/update", { :status => new_status.to_s })
+          response = post_to_rest_api("statuses/update", :status => new_status.to_s)
           @io.info "Sent status update.\n\n"
-          show_statuses([status])
+          show_statuses_from_rest_api(response)
           completed = true
         end
       end
@@ -56,62 +60,95 @@ module Tweetwine
     end
 
     def friends
-      show_users(send_get_request("statuses/friends/#{@username}", :page))
+      response = get_from_rest_api("statuses/friends/#{@username}", :page)
+      show_users_from_rest_api(*response)
     end
 
     def followers
-      show_users(send_get_request("statuses/followers/#{@username}", :page))
+      response = get_from_rest_api("statuses/followers/#{@username}", :page)
+      show_users_from_rest_api(*response)
+    end
+
+    def search(query)
+      response = get_from_search_api(query, :num_statuses, :page)
+      show_statuses_from_search_api(*response["results"])
     end
 
     private
 
-    def send_get_request(sub_url, *query_opts)
-      JSON.parse(@http_resource[sub_url + ".json?#{create_query_string(query_opts)}"].get)
+    def get_from_rest_api(sub_url, *query_opts)
+      query_str = query_options_to_string(query_opts, :page => "page", :num_statuses => "count")
+      JSON.parse(@http_resource[sub_url + ".json?#{query_str}"].get)
     end
 
-    def send_post_request(sub_url, payload)
+    def post_to_rest_api(sub_url, payload)
       JSON.parse(@http_resource[sub_url + ".json"].post(payload))
     end
 
-    def create_query_string(query_opts)
-      str = []
+    def get_from_search_api(query, *query_opts)
+      query_str = "q=#{Util.percent_encode(query)}&" \
+                << query_options_to_string(query_opts, :page => "page", :num_statuses => "rpp")
+      JSON.parse(@http_client.get("http://search.twitter.com/search.json?#{query_str}"))
+    end
+
+    def query_options_to_string(query_opts, key_mappings)
+      pairs = []
       query_opts.each do |opt|
         case opt
         when :page
-          str << "page=#{@page_num}"
+          pairs << "#{key_mappings[:page]}=#{@page_num}"
         when :num_statuses
-          str << "count=#{@num_statuses}"
-        # do nothing on else
+          pairs << "#{key_mappings[:num_statuses]}=#{@num_statuses}"
+        # else: ignore unknown query options
         end
       end
-      str.join("&")
+      pairs.join("&")
     end
 
-    def show_statuses(data)
-      show_responses(data) { |entry| [entry["user"], entry] }
-    end
-
-    def show_users(data)
-      show_responses(data) { |entry| [entry, entry["status"]] }
-    end
-
-    def show_responses(data)
-      data.each do |entry|
-        user_data, status_data = yield entry
-        @io.show_record(parse_response(user_data, status_data))
-      end
-    end
-
-    def parse_response(user_data, status_data)
-      record = { :user => user_data["screen_name"] }
-      if status_data
-        record[:status] = {
-          :created_at  => status_data["created_at"],
-          :in_reply_to => status_data["in_reply_to_screen_name"],
-          :text        => status_data["text"]
+    def show_statuses_from_rest_api(*responses)
+      show_records(
+        responses,
+        {
+          :from_user  => ["user", "screen_name"],
+          :to_user    => "in_reply_to_screen_name",
+          :created_at => "created_at",
+          :status     => "text"
         }
+      )
+    end
+
+    def show_users_from_rest_api(*responses)
+      show_records(
+        responses,
+        {
+          :from_user  => "screen_name",
+          :to_user    => ["status", "in_reply_to_screen_name"],
+          :created_at => ["status", "created_at"],
+          :status     => ["status", "text"]
+        }
+      )
+    end
+
+    def show_statuses_from_search_api(*responses)
+      show_records(
+        responses,
+        {
+          :from_user  => "from_user",
+          :to_user    => "to_user",
+          :created_at => "created_at",
+          :status     => "text"
+        }
+      )
+    end
+
+    def show_records(twitter_records, paths)
+      twitter_records.each do |twitter_record|
+        internal_record = [ :from_user, :to_user, :created_at, :status ].inject({}) do |result, key|
+          result[key] = Util.find_hash_path(twitter_record, paths[key])
+          result
+        end
+        @io.show_record(internal_record)
       end
-      record
     end
 
     class StatusUpdateFactory

@@ -50,9 +50,10 @@ class IOTest < Test::Unit::TestCase
       end
 
       should "output a record as user info when no status is given" do
-        record = { :user => "fooman" }
+        from_user = "fooman"
+        record = { :from_user => from_user }
         @output.expects(:puts).with(<<-END
-fooman
+#{from_user}
 
         END
         )
@@ -60,17 +61,17 @@ fooman
       end
 
       should "output a record as status info when status is given, without in-reply info" do
+        from_user = "fooman"
         status = "Hi, @barman! Lulz woo! #hellos"
         record = {
-          :user   => "fooman",
-          :status => {
-            :created_at => Time.at(1),
-            :text       => status
-          }
+          :from_user  => from_user,
+          :status     => status,
+          :created_at => Time.at(1),
+          :to_user    => nil
         }
         Util.expects(:humanize_time_diff).returns([2, "secs"])
         @output.expects(:puts).with(<<-END
-fooman, 2 secs ago:
+#{from_user}, 2 secs ago:
 #{status}
 
         END
@@ -79,18 +80,18 @@ fooman, 2 secs ago:
       end
 
       should "output a record as status info when status is given, with in-reply info" do
+        from_user = "barman"
+        to_user = "fooman"
         status = "Hi, @fooman! How are you doing?"
         record = {
-          :user   => "barman",
-          :status => {
-            :created_at   => Time.at(1),
-            :text         => status,
-            :in_reply_to  => "fooman"
-          }
+          :from_user  => from_user,
+          :status     => status,
+          :created_at => Time.at(1),
+          :to_user    => to_user
         }
         Util.expects(:humanize_time_diff).returns([2, "secs"])
         @output.expects(:puts).with(<<-END
-barman, in reply to fooman, 2 secs ago:
+#{from_user}, in reply to #{to_user}, 2 secs ago:
 #{status}
 
         END
@@ -116,9 +117,10 @@ barman, in reply to fooman, 2 secs ago:
       end
 
       should "output a record as user info when no status is given" do
-        record = { :user => "fooman" }
+        from_user = "fooman"
+        record = { :from_user => from_user }
         @output.expects(:puts).with(<<-END
-\e[32mfooman\e[0m
+\e[32m#{from_user}\e[0m
 
         END
         )
@@ -126,17 +128,18 @@ barman, in reply to fooman, 2 secs ago:
       end
 
       should "output a record as status info when status is given, without in-reply info" do
+        from_user = "fooman"
+        status = "Wondering about the meaning of life."
         record = {
-          :user   => "fooman",
-          :status => {
-            :created_at => Time.at(1),
-            :text       => "Wondering the meaning of life."
-          }
+          :from_user  => from_user,
+          :status     => status,
+          :created_at => Time.at(1),
+          :to_user    => nil
         }
         Util.expects(:humanize_time_diff).returns([2, "secs"])
         @output.expects(:puts).with(<<-END
-\e[32mfooman\e[0m, 2 secs ago:
-Wondering the meaning of life.
+\e[32m#{from_user}\e[0m, 2 secs ago:
+#{status}
 
         END
         )
@@ -144,18 +147,18 @@ Wondering the meaning of life.
       end
 
       should "output a record as status info when status is given, with in-reply info" do
+        from_user = "barman"
+        to_user = "fooman"
         record = {
-          :user   => "barman",
-          :status => {
-            :created_at   => Time.at(1),
-            :text         => "Hi, @fooman! How are you doing? #hellos",
-            :in_reply_to  => "fooman"
-          }
+          :from_user  => from_user,
+          :status     => "@#{to_user}! How are you doing?",
+          :created_at => Time.at(1),
+          :to_user    => to_user
         }
         Util.expects(:humanize_time_diff).returns([2, "secs"])
         @output.expects(:puts).with(<<-END
-\e[32mbarman\e[0m, in reply to \e[32mfooman\e[0m, 2 secs ago:
-Hi, \e[33m@fooman\e[0m! How are you doing? \e[35m#hellos\e[0m
+\e[32m#{from_user}\e[0m, in reply to \e[32m#{to_user}\e[0m, 2 secs ago:
+\e[33m@#{to_user}\e[0m! How are you doing?
 
         END
         )
@@ -173,18 +176,38 @@ Hi, \e[33m@fooman\e[0m! How are you doing? \e[35m#hellos\e[0m
         @io.show_status_preview(status)
       end
 
-      should "highlight HTTP and HTTPS URLs in a status" do
+      should "highlight hashtags in a status" do
+        from_user = "barman"
+        hashtags = %w{#slang #beignHappy}
         record = {
-          :user   => "barman",
-          :status => {
-            :created_at   => Time.at(1),
-            :text         => "Three links: http://bit.ly/18rU_Vx http://is.gd/1qLk3 and https://is.gd/2rLk4",
-          }
+          :from_user  => from_user,
+          :status     => "Lulz, so happy! #{hashtags[0]} #{hashtags[1]}",
+          :created_at => Time.at(1),
+          :to_user    => nil
         }
         Util.expects(:humanize_time_diff).returns([2, "secs"])
         @output.expects(:puts).with(<<-END
-\e[32mbarman\e[0m, 2 secs ago:
-Three links: \e[36mhttp://bit.ly/18rU_Vx\e[0m \e[36mhttp://is.gd/1qLk3\e[0m and \e[36mhttps://is.gd/2rLk4\e[0m
+\e[32m#{from_user}\e[0m, 2 secs ago:
+Lulz, so happy! \e[35m#{hashtags[0]}\e[0m \e[35m#{hashtags[1]}\e[0m
+
+        END
+        )
+        @io.show_record(record)
+      end
+
+      should "highlight HTTP and HTTPS URLs in a status" do
+        from_user = "barman"
+        links = %w{http://bit.ly/18rU_Vx http://is.gd/1qLk3 https://is.gd/2rLk4}
+        record = {
+          :from_user  => from_user,
+          :status     => "Three links: #{links[0]} #{links[1]} and #{links[2]}",
+          :created_at => Time.at(1),
+          :to_user    => nil
+        }
+        Util.expects(:humanize_time_diff).returns([2, "secs"])
+        @output.expects(:puts).with(<<-END
+\e[32m#{from_user}\e[0m, 2 secs ago:
+Three links: \e[36m#{links[0]}\e[0m \e[36m#{links[1]}\e[0m and \e[36m#{links[2]}\e[0m
 
         END
         )
@@ -192,17 +215,18 @@ Three links: \e[36mhttp://bit.ly/18rU_Vx\e[0m \e[36mhttp://is.gd/1qLk3\e[0m and 
       end
 
       should "highlight HTTP and HTTPS URLs in a status, even if duplicates" do
+        from_user = "barman"
+        link = "http://is.gd/1qLk3"
         record = {
-          :user   => "barman",
-          :status => {
-            :created_at   => Time.at(1),
-            :text         => "Duplicate links: http://is.gd/1qLk3 and http://is.gd/1qLk3",
-          }
+          :from_user  => from_user,
+          :status     => "Duplicate links: #{link} and #{link}",
+          :created_at => Time.at(1),
+          :to_user    => nil
         }
         Util.expects(:humanize_time_diff).returns([2, "secs"])
         @output.expects(:puts).with(<<-END
-\e[32mbarman\e[0m, 2 secs ago:
-Duplicate links: \e[36mhttp://is.gd/1qLk3\e[0m and \e[36mhttp://is.gd/1qLk3\e[0m
+\e[32m#{from_user}\e[0m, 2 secs ago:
+Duplicate links: \e[36m#{link}\e[0m and \e[36m#{link}\e[0m
 
         END
         )
@@ -210,17 +234,18 @@ Duplicate links: \e[36mhttp://is.gd/1qLk3\e[0m and \e[36mhttp://is.gd/1qLk3\e[0m
       end
 
       should "highlight usernames in a status" do
+        from_user = "barman"
+        users = %w{@fooman @barbaz @spoonman}
         record = {
-          :user   => "barman",
-          :status => {
-            :created_at   => Time.at(1),
-            :text         => "I salute you @fooman, @barbaz, and @spoonman!",
-          }
+          :from_user  => from_user,
+          :status     => "I salute you #{users[0]}, #{users[1]}, and #{users[2]}!",
+          :created_at => Time.at(1),
+          :to_user    => nil
         }
         Util.expects(:humanize_time_diff).returns([2, "secs"])
         @output.expects(:puts).with(<<-END
-\e[32mbarman\e[0m, 2 secs ago:
-I salute you \e[33m@fooman\e[0m, \e[33m@barbaz\e[0m, and \e[33m@spoonman\e[0m!
+\e[32m#{from_user}\e[0m, 2 secs ago:
+I salute you \e[33m#{users[0]}\e[0m, \e[33m#{users[1]}\e[0m, and \e[33m#{users[2]}\e[0m!
 
         END
         )
@@ -228,17 +253,19 @@ I salute you \e[33m@fooman\e[0m, \e[33m@barbaz\e[0m, and \e[33m@spoonman\e[0m!
       end
 
       should "not highlight email addresses as usernames in a status" do
+        from_user = "barman"
+        users = %w{@fooman @barbaz}
+        email = "barbaz@foo.net"
         record = {
-          :user   => "barman",
-          :status => {
-            :created_at   => Time.at(1),
-            :text         => "Hi, @fooman! You should notify @barbaz, barbaz@foo.net",
-          }
+          :from_user  => from_user,
+          :status     => "Hi, #{users[0]}! You should notify #{users[1]}, #{email}",
+          :created_at => Time.at(1),
+          :to_user    => nil
         }
         Util.expects(:humanize_time_diff).returns([2, "secs"])
         @output.expects(:puts).with(<<-END
-\e[32mbarman\e[0m, 2 secs ago:
-Hi, \e[33m@fooman\e[0m! You should notify \e[33m@barbaz\e[0m, barbaz@foo.net
+\e[32m#{from_user}\e[0m, 2 secs ago:
+Hi, \e[33m#{users[0]}\e[0m! You should notify \e[33m#{users[1]}\e[0m, #{email}
 
         END
         )

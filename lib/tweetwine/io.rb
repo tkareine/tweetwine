@@ -34,7 +34,7 @@ module Tweetwine
     def confirm(msg)
       @output.print "#{msg} [yN] "
       confirmation = @input.gets.strip
-      confirmation.downcase[0,1] == "y"
+      confirmation.downcase[0, 1] == "y"
     end
 
     def show_status_preview(status)
@@ -46,6 +46,7 @@ module Tweetwine
     end
 
     def show_record(record)
+      clean_record!(record)
       if record[:status]
         show_record_as_user_with_status(record)
       else
@@ -55,63 +56,73 @@ module Tweetwine
 
     private
 
+    def clean_record!(record)
+      record.each_pair do |key, value|
+        if value.is_a? Hash
+          clean_record!(value)
+        else
+          unless value.nil?
+            value = value.to_s
+            record[key] = value.empty? ? nil : value
+          end
+        end
+      end
+    end
+
     def show_record_as_user(record)
       @output.puts <<-END
-#{format_user(record[:user])}
+#{format_user(record[:from_user])}
 
       END
     end
 
     def show_record_as_user_with_status(record)
       @output.puts <<-END
-#{format_record_header(record)}
-#{format_status(record[:status][:text])}
+#{format_record_header(record[:from_user], record[:to_user], record[:created_at])}
+#{format_status(record[:status])}
 
       END
     end
 
     def format_user(user)
-      user = user.dup
-      colorize!(:green, user) if @colorize
+      user = colorize(:green, user) if @colorize
       user
     end
 
     def format_status(status)
-      status = status.dup
       if @colorize
-        colorize_all_by_group!(:yellow, status, USERNAME_REGEX)
-        colorize_all_by_group!(:magenta, status, HASHTAG_REGEX)
+        status = colorize_all_by_group(:yellow, status, USERNAME_REGEX)
+        status = colorize_all_by_group(:magenta, status, HASHTAG_REGEX)
         URI.extract(status, ["http", "https"]).uniq.each do |url|
-          colorize_all!(:cyan, status, url)
+          status = colorize_all(:cyan, status, url)
         end
       end
       status
     end
 
-    def format_record_header(record)
-      time_diff_value, time_diff_unit = Util.humanize_time_diff(record[:status][:created_at], Time.now)
-      from_user = record[:user].dup
-      colorize!(:green, from_user) if @colorize
-      in_reply_to = record[:status][:in_reply_to]
-      in_reply_to = if in_reply_to && !in_reply_to.empty?
-        in_reply_to = colorize!(:green, in_reply_to.dup) if @colorize
-        "in reply to #{in_reply_to}, "
-      else
-        ""
+    def format_record_header(from_user, to_user, created_at)
+      time_diff_value, time_diff_unit = Util.humanize_time_diff(created_at, Time.now)
+      if @colorize
+        from_user = colorize(:green, from_user)
+        to_user = colorize(:green, to_user) if to_user
       end
-      "#{from_user}, #{in_reply_to}#{time_diff_value} #{time_diff_unit} ago:"
+      if to_user
+        "#{from_user}, in reply to #{to_user}, #{time_diff_value} #{time_diff_unit} ago:"
+      else
+        "#{from_user}, #{time_diff_value} #{time_diff_unit} ago:"
+      end
     end
 
-    def colorize_all!(color, str, pattern)
-      str.gsub!(pattern) { |s| colorize_str(COLOR_CODES[color.to_sym], s) }
+    def colorize_all(color, str, pattern)
+      str.gsub(pattern) { |s| colorize_str(COLOR_CODES[color.to_sym], s) }
     end
 
-    def colorize_all_by_group!(color, str, pattern)
-      str.replace Util.str_gsub_by_group(str, pattern) { |s| colorize_str(COLOR_CODES[color.to_sym], s) }
+    def colorize_all_by_group(color, str, pattern)
+      Util.str_gsub_by_group(str, pattern) { |s| colorize_str(COLOR_CODES[color.to_sym], s) }
     end
 
-    def colorize!(color, str)
-      str.replace colorize_str(COLOR_CODES[color.to_sym], str)
+    def colorize(color, str)
+      colorize_str(COLOR_CODES[color.to_sym], str)
     end
 
     def colorize_str(color_code, str)

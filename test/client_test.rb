@@ -8,10 +8,10 @@ class ClientTest < Test::Unit::TestCase
     setup do
       @io = mock()
       @http_resource = mock()
-      http_client = stub({ :as_resource => @http_resource })
+      @http_client = stub({ :as_resource => @http_resource })
       @url_shortener = mock()
       @url_shortener_block = lambda { |options| @url_shortener }
-      @deps = Client::Dependencies.new @io, http_client, @url_shortener_block
+      @deps = Client::Dependencies.new @io, @http_client, @url_shortener_block
     end
 
     context "upon initialization" do
@@ -63,143 +63,130 @@ class ClientTest < Test::Unit::TestCase
         @username = "spiky"
         @password = "lullaby"
         @client = Client.new(@deps, { :username => @username, :password => @password })
-        @statuses_query_string = "count=#{Client::DEFAULT_NUM_STATUSES}&page=#{Client::DEFAULT_PAGE_NUM}"
-        @users_query_string = "page=#{Client::DEFAULT_PAGE_NUM}"
+        @rest_api_status_query_str = "count=#{Client::DEFAULT_NUM_STATUSES}&page=#{Client::DEFAULT_PAGE_NUM}"
+        @rest_api_user_query_str = "page=#{Client::DEFAULT_PAGE_NUM}"
+        @search_api_base_url = "http://search.twitter.com/search.json"
+        @search_api_query_str = "rpp=#{Client::DEFAULT_NUM_STATUSES}&page=#{Client::DEFAULT_PAGE_NUM}"
       end
 
       should "fetch friends' statuses (home view)" do
-        status_records, gen_records = create_test_statuses(
+        twitter_records, internal_records = create_test_twitter_status_records_from_rest_api(
           {
-            :user => "zanzibar",
-            :status => {
-              :created_at   => Time.at(1).to_s,
-              :text         => "wassup?",
-              :in_reply_to  => nil
-            }
+            :from_user  => "zanzibar",
+            :status     => "wassup?",
+            :created_at => Time.at(1).to_s,
+            :to_user    => nil
           },
           {
-            :user => "lulzwoo",
-            :status => {
-              :created_at   => Time.at(1).to_s,
-              :text         => "nuttin'",
-              :in_reply_to  => nil
-            }
+            :from_user  => "lulzwoo",
+            :status     => "nuttin'",
+            :created_at => Time.at(1).to_s,
+            :to_user    => nil
           }
         )
         @http_resource.expects(:[]) \
-                      .with("statuses/friends_timeline.json?#{@statuses_query_string}") \
-                      .returns(stub(:get => status_records.to_json))
-        @io.expects(:show_record).with(gen_records[0])
-        @io.expects(:show_record).with(gen_records[1])
+                      .with("statuses/friends_timeline.json?#{@rest_api_status_query_str}") \
+                      .returns(stub(:get => twitter_records.to_json))
+        @io.expects(:show_record).with(internal_records[0])
+        @io.expects(:show_record).with(internal_records[1])
         @client.home
       end
 
       should "fetch mentions" do
-        status_records, gen_records = create_test_statuses(
+        twitter_records, internal_records = create_test_twitter_status_records_from_rest_api(
           {
-            :user => "zanzibar",
-            :status => {
-              :created_at   => Time.at(1).to_s,
-              :text         => "wassup, @#{@username}?",
-              :in_reply_to  => @username
-            }
+            :from_user  => "zanzibar",
+            :status     => "wassup, @#{@username}?",
+            :created_at => Time.at(1).to_s,
+            :to_user    => @username
           },
           {
-            :user => "lulzwoo",
-            :status => {
-              :created_at   => Time.at(1).to_s,
-              :text         => "@#{@username}, doing nuttin'",
-              :in_reply_to  => @username
-            }
+            :from_user  => "lulzwoo",
+            :status     => "@#{@username}, doing nuttin'",
+            :created_at => Time.at(1).to_s,
+            :to_user    => @username
           }
         )
         @http_resource.expects(:[]) \
-                      .with("statuses/mentions.json?#{@statuses_query_string}") \
-                      .returns(stub(:get => status_records.to_json))
-        @io.expects(:show_record).with(gen_records[0])
-        @io.expects(:show_record).with(gen_records[1])
+                      .with("statuses/mentions.json?#{@rest_api_status_query_str}") \
+                      .returns(stub(:get => twitter_records.to_json))
+        @io.expects(:show_record).with(internal_records[0])
+        @io.expects(:show_record).with(internal_records[1])
         @client.mentions
       end
 
       should "fetch a specific user's statuses, when the user identified by given argument" do
         user = "spoonman"
-        status_records, gen_records = create_test_statuses(
+        twitter_records, internal_records = create_test_twitter_status_records_from_rest_api(
           {
-            :user => user,
-            :status => {
-              :created_at   => Time.at(1).to_s,
-              :text         => "wassup?",
-              :in_reply_to  => nil
-            }
+            :from_user  => user,
+            :status     => "wassup?",
+            :created_at => Time.at(1).to_s,
+            :to_user    => nil
           }
         )
         @http_resource.expects(:[]) \
-                      .with("statuses/user_timeline/#{user}.json?#{@statuses_query_string}") \
-                      .returns(stub(:get => status_records.to_json))
-        @io.expects(:show_record).with(gen_records[0])
+                      .with("statuses/user_timeline/#{user}.json?#{@rest_api_status_query_str}") \
+                      .returns(stub(:get => twitter_records.to_json))
+        @io.expects(:show_record).with(internal_records[0])
         @client.user(user)
       end
 
       should "fetch a specific user's statuses, with the user being the authenticated user itself when given no argument" do
-        status_records, gen_records = create_test_statuses(
+        twitter_records, internal_records = create_test_twitter_status_records_from_rest_api(
           {
-            :user => @username,
-            :status => {
-              :created_at   => Time.at(1).to_s,
-              :text         => "wassup?",
-              :in_reply_to  => nil
-            }
+            :from_user  => @username,
+            :status     => "wassup?",
+            :created_at => Time.at(1).to_s,
+            :to_user    => nil
           }
         )
         @http_resource.expects(:[]) \
-                      .with("statuses/user_timeline/#{@username}.json?#{@statuses_query_string}") \
-                      .returns(stub(:get => status_records.to_json))
-        @io.expects(:show_record).with(gen_records[0])
+                      .with("statuses/user_timeline/#{@username}.json?#{@rest_api_status_query_str}") \
+                      .returns(stub(:get => twitter_records.to_json))
+        @io.expects(:show_record).with(internal_records[0])
         @client.user
       end
 
       context "for posting status updates" do
         should "post a status update via argument, when positive confirmation" do
           status = "wondering around"
-          status_records, gen_records = create_test_statuses(
+          twitter_records, internal_records = create_test_twitter_status_records_from_rest_api(
             {
-              :user => @username,
-              :status => {
-                :created_at   => Time.at(1).to_s,
-                :text         => status,
-                :in_reply_to  => nil
-              }
+              :from_user  => @username,
+              :status     => status,
+              :created_at => Time.at(1).to_s,
+              :to_user    => nil
             }
           )
           http_subresource = mock()
           http_subresource.expects(:post) \
                           .with({ :status => status }) \
-                          .returns(status_records[0].to_json)
+                          .returns(twitter_records[0].to_json)
           @http_resource.expects(:[]) \
                         .with("statuses/update.json") \
                         .returns(http_subresource)
           @io.expects(:confirm).with("Really send?").returns(true)
           @io.expects(:show_status_preview).with(status)
           @io.expects(:info).with("Sent status update.\n\n")
-          @io.expects(:show_record).with(gen_records[0])
+          @io.expects(:show_record).with(internal_records[0])
           @client.update(status)
         end
 
         should "post a status update via prompt, when positive confirmation" do
           status = "wondering around"
-          status_records, gen_records = create_test_statuses(
-            { :user => @username,
-              :status => {
-                :created_at   => Time.at(1).to_s,
-                :text         => status,
-                :in_reply_to  => nil
-              }
+          twitter_records, internal_records = create_test_twitter_status_records_from_rest_api(
+            {
+              :from_user  => @username,
+              :status     => status,
+              :created_at => Time.at(1).to_s,
+              :to_user    => nil
             }
           )
           http_subresource = mock()
           http_subresource.expects(:post) \
                           .with({ :status => status }) \
-                          .returns(status_records[0].to_json)
+                          .returns(twitter_records[0].to_json)
           @http_resource.expects(:[]) \
                         .with("statuses/update.json") \
                         .returns(http_subresource)
@@ -207,7 +194,7 @@ class ClientTest < Test::Unit::TestCase
           @io.expects(:show_status_preview).with(status)
           @io.expects(:confirm).with("Really send?").returns(true)
           @io.expects(:info).with("Sent status update.\n\n")
-          @io.expects(:show_record).with(gen_records[0])
+          @io.expects(:show_record).with(internal_records[0])
           @client.update
         end
 
@@ -252,45 +239,43 @@ class ClientTest < Test::Unit::TestCase
         should "remove excess whitespace around a status update" do
           whitespaced_status = "  oh, i was sloppy \t   "
           stripped_status = "oh, i was sloppy"
-          status_records, gen_records = create_test_statuses(
-            { :user => @username,
-              :status => {
-                :created_at   => Time.at(1).to_s,
-                :text         => stripped_status,
-                :in_reply_to  => nil
-              }
+          twitter_records, internal_records = create_test_twitter_status_records_from_rest_api(
+            {
+              :from_user  => @username,
+              :status     => stripped_status,
+              :created_at => Time.at(1).to_s,
+              :to_user    => nil
             }
           )
           http_subresource = mock()
           http_subresource.expects(:post) \
                           .with({ :status => stripped_status }) \
-                          .returns(status_records[0].to_json)
+                          .returns(twitter_records[0].to_json)
           @http_resource.expects(:[]) \
                         .with("statuses/update.json") \
                         .returns(http_subresource)
           @io.expects(:show_status_preview).with(stripped_status)
           @io.expects(:confirm).with("Really send?").returns(true)
           @io.expects(:info).with("Sent status update.\n\n")
-          @io.expects(:show_record).with(gen_records[0])
+          @io.expects(:show_record).with(internal_records[0])
           @client.update(whitespaced_status)
         end
 
         should "truncate a status update with too long argument and warn the user" do
           long_status = "x aaa bbb ccc ddd eee fff ggg hhh iii jjj kkk lll mmm nnn ooo ppp qqq rrr sss ttt uuu vvv www xxx yyy zzz 111 222 333 444 555 666 777 888 999 000"
           truncated_status = "x aaa bbb ccc ddd eee fff ggg hhh iii jjj kkk lll mmm nnn ooo ppp qqq rrr sss ttt uuu vvv www xxx yyy zzz 111 222 333 444 555 666 777 888 99"
-          status_records, gen_records = create_test_statuses(
-            { :user => @username,
-              :status => {
-                :created_at   => Time.at(1).to_s,
-                :text         => truncated_status,
-                :in_reply_to  => nil
-              }
+          twitter_records, internal_records = create_test_twitter_status_records_from_rest_api(
+            {
+              :from_user  => @username,
+              :status     => truncated_status,
+              :created_at => Time.at(1).to_s,
+              :to_user    => nil
             }
           )
           http_subresource = mock()
           http_subresource.expects(:post) \
                           .with({ :status => truncated_status }) \
-                          .returns(status_records[0].to_json)
+                          .returns(twitter_records[0].to_json)
           @http_resource.expects(:[]) \
                         .with("statuses/update.json") \
                         .returns(http_subresource)
@@ -298,7 +283,7 @@ class ClientTest < Test::Unit::TestCase
           @io.expects(:show_status_preview).with(truncated_status)
           @io.expects(:confirm).with("Really send?").returns(true)
           @io.expects(:info).with("Sent status update.\n\n")
-          @io.expects(:show_record).with(gen_records[0])
+          @io.expects(:show_record).with(internal_records[0])
           @client.update(long_status)
         end
 
@@ -322,19 +307,18 @@ class ClientTest < Test::Unit::TestCase
             long_status = long_urls.join(" and ")
             short_urls = ["http://shorten.it/2k7i8", "http://shorten.it/2k7mk"]
             shortened_status = short_urls.join(" and ")
-            status_records, gen_records = create_test_statuses(
-              { :user => @username,
-                :status => {
-                  :created_at   => Time.at(1).to_s,
-                  :text         => shortened_status,
-                  :in_reply_to  => nil
-                }
+            twitter_records, internal_records = create_test_twitter_status_records_from_rest_api(
+              {
+                :from_user  => @username,
+                :status     => shortened_status,
+                :created_at => Time.at(1).to_s,
+                :to_user    => nil
               }
             )
             http_subresource = mock()
             http_subresource.expects(:post) \
                             .with({ :status => shortened_status }) \
-                            .returns(status_records[0].to_json)
+                            .returns(twitter_records[0].to_json)
             @http_resource.expects(:[]) \
                           .with("statuses/update.json") \
                           .returns(http_subresource)
@@ -343,7 +327,7 @@ class ClientTest < Test::Unit::TestCase
             @io.expects(:show_status_preview).with(shortened_status)
             @io.expects(:confirm).with("Really send?").returns(true)
             @io.expects(:info).with("Sent status update.\n\n")
-            @io.expects(:show_record).with(gen_records[0])
+            @io.expects(:show_record).with(internal_records[0])
             @client.update(long_status)
           end
 
@@ -351,19 +335,18 @@ class ClientTest < Test::Unit::TestCase
             long_urls = ["http://www.google.fi/", "http://www.w3.org/TR/1999/REC-xpath-19991116"]
             status = long_urls.join(" and ")
             short_urls = [nil, ""]
-            status_records, gen_records = create_test_statuses(
-              { :user => @username,
-                :status => {
-                  :created_at   => Time.at(1).to_s,
-                  :text         => status,
-                  :in_reply_to  => nil
-                }
+            twitter_records, internal_records = create_test_twitter_status_records_from_rest_api(
+              {
+                :from_user  => @username,
+                :status     => status,
+                :created_at => Time.at(1).to_s,
+                :to_user    => nil
               }
             )
             http_subresource = mock()
             http_subresource.expects(:post) \
                             .with({ :status => status }) \
-                            .returns(status_records[0].to_json)
+                            .returns(twitter_records[0].to_json)
             @http_resource.expects(:[]) \
                           .with("statuses/update.json") \
                           .returns(http_subresource)
@@ -372,7 +355,7 @@ class ClientTest < Test::Unit::TestCase
             @io.expects(:show_status_preview).with(status)
             @io.expects(:confirm).with("Really send?").returns(true)
             @io.expects(:info).with("Sent status update.\n\n")
-            @io.expects(:show_record).with(gen_records[0])
+            @io.expects(:show_record).with(internal_records[0])
             @client.update(status)
           end
 
@@ -381,19 +364,18 @@ class ClientTest < Test::Unit::TestCase
             long_status = long_urls.join(" and ")
             short_url = "http://shorten.it/2k7mk"
             short_status = ([short_url] * 2).join(" and ")
-            status_records, gen_records = create_test_statuses(
-              { :user => @username,
-                :status => {
-                  :created_at   => Time.at(1).to_s,
-                  :text         => short_status,
-                  :in_reply_to  => nil
-                }
+            twitter_records, internal_records = create_test_twitter_status_records_from_rest_api(
+              {
+                :from_user  => @username,
+                :status     => short_status,
+                :created_at => Time.at(1).to_s,
+                :to_user    => nil
               }
             )
             http_subresource = mock()
             http_subresource.expects(:post) \
                             .with({ :status => short_status }) \
-                            .returns(status_records[0].to_json)
+                            .returns(twitter_records[0].to_json)
             @http_resource.expects(:[]) \
                           .with("statuses/update.json") \
                           .returns(http_subresource)
@@ -401,7 +383,7 @@ class ClientTest < Test::Unit::TestCase
             @io.expects(:show_status_preview).with(short_status)
             @io.expects(:confirm).with("Really send?").returns(true)
             @io.expects(:info).with("Sent status update.\n\n")
-            @io.expects(:show_record).with(gen_records[0])
+            @io.expects(:show_record).with(internal_records[0])
             @client.update(long_status)
           end
 
@@ -409,13 +391,12 @@ class ClientTest < Test::Unit::TestCase
             setup do
               @url = "http://www.w3.org/TR/1999/REC-xpath-19991116"
               @status = "skimming through #{@url}"
-              @status_records, @gen_records = create_test_statuses(
-                { :user => @username,
-                  :status => {
-                    :created_at   => Time.at(1).to_s,
-                    :text         => @status,
-                    :in_reply_to  => nil
-                  }
+              @twitter_records, @internal_records = create_test_twitter_status_records_from_rest_api(
+                {
+                  :from_user  => @username,
+                  :status     => @status,
+                  :created_at => Time.at(1).to_s,
+                  :to_user    => nil
                 }
               )
             end
@@ -424,7 +405,7 @@ class ClientTest < Test::Unit::TestCase
               http_subresource = mock()
               http_subresource.expects(:post) \
                               .with({ :status => @status }) \
-                              .returns(@status_records[0].to_json)
+                              .returns(@twitter_records[0].to_json)
               @http_resource.expects(:[]) \
                             .with("statuses/update.json") \
                             .returns(http_subresource)
@@ -433,7 +414,7 @@ class ClientTest < Test::Unit::TestCase
               @io.expects(:show_status_preview).with(@status)
               @io.expects(:confirm).with("Really send?").returns(true)
               @io.expects(:info).with("Sent status update.\n\n")
-              @io.expects(:show_record).with(@gen_records[0])
+              @io.expects(:show_record).with(@internal_records[0])
               @client.update(@status)
             end
 
@@ -441,7 +422,7 @@ class ClientTest < Test::Unit::TestCase
               http_subresource = mock()
               http_subresource.expects(:post) \
                               .with({ :status => @status }) \
-                              .returns(@status_records[0].to_json)
+                              .returns(@twitter_records[0].to_json)
               @http_resource.expects(:[]) \
                             .with("statuses/update.json") \
                             .returns(http_subresource)
@@ -450,7 +431,7 @@ class ClientTest < Test::Unit::TestCase
               @io.expects(:show_status_preview).with(@status)
               @io.expects(:confirm).with("Really send?").returns(true)
               @io.expects(:info).with("Sent status update.\n\n")
-              @io.expects(:show_record).with(@gen_records[0])
+              @io.expects(:show_record).with(@internal_records[0])
               @client.update(@status)
             end
           end
@@ -458,52 +439,72 @@ class ClientTest < Test::Unit::TestCase
       end
 
       should "fetch friends" do
-        user_records, gen_records = create_test_users(
+        twitter_records, internal_records = create_test_twitter_user_records_from_rest_api(
           {
-            :user => "zanzibar",
-            :status => {
-              :created_at   => Time.at(1).to_s,
-              :text         => "wassup, @foo?",
-              :in_reply_to  => "foo"
-            }
+            :from_user  => "zanzibar",
+            :status     => "wassup, @foo?",
+            :created_at => Time.at(1).to_s,
+            :to_user    => "foo"
           },
           {
-            :user => "lulzwoo",
-            :status => {
-              :created_at   => Time.at(1).to_s,
-              :text         => "@foo, doing nuttin'",
-              :in_reply_to  => "foo"
-            }
+            :from_user  => "lulzwoo",
+            :status     => "@foo, doing nuttin'",
+            :created_at => Time.at(1).to_s,
+            :to_user    => "foo"
           }
         )
         @http_resource.expects(:[]) \
-                      .with("statuses/friends/#{@username}.json?#{@users_query_string}") \
-                      .returns(stub(:get => user_records.to_json))
-        @io.expects(:show_record).with(gen_records[0])
-        @io.expects(:show_record).with(gen_records[1])
+                      .with("statuses/friends/#{@username}.json?#{@rest_api_user_query_str}") \
+                      .returns(stub(:get => twitter_records.to_json))
+        @io.expects(:show_record).with(internal_records[0])
+        @io.expects(:show_record).with(internal_records[1])
         @client.friends
       end
 
       should "fetch followers" do
-        user_records, gen_records = create_test_users(
+        twitter_records, internal_records = create_test_twitter_user_records_from_rest_api(
           {
-            :user => "zanzibar",
-            :status => {
-              :created_at   => Time.at(1).to_s,
-              :text         => "wassup, @foo?",
-              :in_reply_to  => "foo"
-            }
+            :from_user  => "zanzibar",
+            :status     => "wassup, @foo?",
+            :created_at => Time.at(1).to_s,
+            :to_user    => "foo"
           },
           {
-            :user => "lulzwoo"
+            :from_user  => "lulzwoo",
+            :status     => nil,
+            :created_at => nil,
+            :to_user    => nil
           }
         )
         @http_resource.expects(:[]) \
-                      .with("statuses/followers/#{@username}.json?#{@users_query_string}") \
-                      .returns(stub(:get => user_records.to_json))
-        @io.expects(:show_record).with(gen_records[0])
-        @io.expects(:show_record).with(gen_records[1])
+                      .with("statuses/followers/#{@username}.json?#{@rest_api_user_query_str}") \
+                      .returns(stub(:get => twitter_records.to_json))
+        @io.expects(:show_record).with(internal_records[0])
+        @io.expects(:show_record).with(internal_records[1])
         @client.followers
+      end
+
+      should "search based on a query string" do
+        twitter_response, internal_records = create_test_twitter_records_from_search_api(
+          {
+            :from_user  => "zanzibar",
+            :status     => "wassup, @foo? #greets",
+            :created_at => Time.at(1).to_s,
+            :to_user    => "foo"
+          },
+          {
+            :from_user  => "spoonman",
+            :status     => "@manman long time no see #greets",
+            :created_at => Time.at(1).to_s,
+            :to_user    => "manman"
+          }
+        )
+        @http_client.expects(:get) \
+                    .with("#{@search_api_base_url}?q=%23greets&#{@search_api_query_str}") \
+                    .returns(twitter_response.to_json)
+        @io.expects(:show_record).with(internal_records[0])
+        @io.expects(:show_record).with(internal_records[1])
+        @client.search("#greets")
       end
     end
   end

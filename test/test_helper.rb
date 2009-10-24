@@ -5,33 +5,48 @@ require "mocha"
 
 module Tweetwine
   module TestHelpers
-    def create_test_statuses(*gen_records)
-      status_records = gen_records.map do |gen_record|
+    def create_test_twitter_status_records_from_rest_api(*internal_records)
+      twitter_records = internal_records.map do |internal_record|
         {
-          "user"                    => { "screen_name" => gen_record[:user] },
-          "created_at"              => gen_record[:status][:created_at],
-          "text"                    => gen_record[:status][:text],
-          "in_reply_to_screen_name" => gen_record[:status][:in_reply_to]
+          "user"                    => { "screen_name" => internal_record[:from_user] },
+          "created_at"              => internal_record[:created_at],
+          "text"                    => internal_record[:status],
+          "in_reply_to_screen_name" => internal_record[:to_user]
         }
       end
-      [status_records, gen_records]
+      [twitter_records, internal_records]
     end
 
-    def create_test_users(*gen_records)
-      user_records = gen_records.map do |gen_record|
-        user_record = { "screen_name" => gen_record[:user] }
-        if gen_record[:status]
-          user_record.merge!({
+    def create_test_twitter_user_records_from_rest_api(*internal_records)
+      twitter_records = internal_records.map do |internal_record|
+        twitter_record = { "screen_name" => internal_record[:from_user] }
+        if internal_record[:status]
+          twitter_record.merge!({
             "status" => {
-              "created_at"              => gen_record[:status][:created_at],
-              "text"                    => gen_record[:status][:text],
-              "in_reply_to_screen_name" => gen_record[:status][:in_reply_to],
+              "created_at"              => internal_record[:created_at],
+              "text"                    => internal_record[:status],
+              "in_reply_to_screen_name" => internal_record[:to_user],
             }
           })
         end
-        user_record
+        twitter_record
       end
-      [user_records, gen_records]
+      [twitter_records, internal_records]
+    end
+
+    def create_test_twitter_records_from_search_api(*internal_records)
+      twitter_search_records = internal_records.map do |internal_record|
+        {
+          "from_user"   => internal_record[:from_user],
+          "created_at"  => internal_record[:created_at],
+          "text"        => internal_record[:status],
+          "to_user"     => internal_record[:to_user]
+        }
+      end
+      twitter_records = {
+        "results" => twitter_search_records
+      }
+      [twitter_records, internal_records]
     end
   end
 end
