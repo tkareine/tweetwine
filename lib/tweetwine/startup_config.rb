@@ -5,10 +5,9 @@ module Tweetwine
     attr_reader :options, :command, :args, :supported_commands
 
     def initialize(supported_commands)
-      @supported_commands = supported_commands.to_a
+      @supported_commands = supported_commands
       raise ArgumentError, "Must give at least one supported command" if @supported_commands.empty?
       @options = {}
-      @command = @supported_commands.first
       @args = []
     end
 

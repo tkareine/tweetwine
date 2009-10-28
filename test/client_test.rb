@@ -129,7 +129,7 @@ class ClientTest < Test::Unit::TestCase
                       .with("statuses/user_timeline/#{user}.json?#{@rest_api_status_query_str}") \
                       .returns(stub(:get => twitter_records.to_json))
         @io.expects(:show_record).with(internal_records[0])
-        @client.user(user)
+        @client.user([user])
       end
 
       should "fetch a specific user's statuses, with the user being the authenticated user itself when given no argument" do
@@ -170,7 +170,7 @@ class ClientTest < Test::Unit::TestCase
           @io.expects(:show_status_preview).with(status)
           @io.expects(:info).with("Sent status update.\n\n")
           @io.expects(:show_record).with(internal_records[0])
-          @client.update(status)
+          @client.update([status])
         end
 
         should "post a status update via prompt, when positive confirmation" do
@@ -205,7 +205,7 @@ class ClientTest < Test::Unit::TestCase
           @io.expects(:confirm).with("Really send?").returns(false)
           @io.expects(:info).with("Cancelled.")
           @io.expects(:show_record).never
-          @client.update(status)
+          @client.update([status])
         end
 
         should "cancel a status update via prompt, when negative confirmation" do
@@ -224,7 +224,7 @@ class ClientTest < Test::Unit::TestCase
           @io.expects(:confirm).never
           @io.expects(:info).with("Cancelled.")
           @io.expects(:show_record).never
-          @client.update("")
+          @client.update([""])
         end
 
         should "cancel a status update via prompt, when empty status" do
@@ -258,7 +258,7 @@ class ClientTest < Test::Unit::TestCase
           @io.expects(:confirm).with("Really send?").returns(true)
           @io.expects(:info).with("Sent status update.\n\n")
           @io.expects(:show_record).with(internal_records[0])
-          @client.update(whitespaced_status)
+          @client.update([whitespaced_status])
         end
 
         should "truncate a status update with too long argument and warn the user" do
@@ -284,7 +284,7 @@ class ClientTest < Test::Unit::TestCase
           @io.expects(:confirm).with("Really send?").returns(true)
           @io.expects(:info).with("Sent status update.\n\n")
           @io.expects(:show_record).with(internal_records[0])
-          @client.update(long_status)
+          @client.update([long_status])
         end
 
         context "with URL shortening enabled" do
@@ -328,7 +328,7 @@ class ClientTest < Test::Unit::TestCase
             @io.expects(:confirm).with("Really send?").returns(true)
             @io.expects(:info).with("Sent status update.\n\n")
             @io.expects(:show_record).with(internal_records[0])
-            @client.update(long_status)
+            @client.update([long_status])
           end
 
           should "discard obviously invalid shortened URLs, using originals instead" do
@@ -356,7 +356,7 @@ class ClientTest < Test::Unit::TestCase
             @io.expects(:confirm).with("Really send?").returns(true)
             @io.expects(:info).with("Sent status update.\n\n")
             @io.expects(:show_record).with(internal_records[0])
-            @client.update(status)
+            @client.update([status])
           end
 
           should "reuse a shortened URL for duplicate long URLs" do
@@ -384,7 +384,7 @@ class ClientTest < Test::Unit::TestCase
             @io.expects(:confirm).with("Really send?").returns(true)
             @io.expects(:info).with("Sent status update.\n\n")
             @io.expects(:show_record).with(internal_records[0])
-            @client.update(long_status)
+            @client.update([long_status])
           end
 
           context "in erroneous situations" do
@@ -415,7 +415,7 @@ class ClientTest < Test::Unit::TestCase
               @io.expects(:confirm).with("Really send?").returns(true)
               @io.expects(:info).with("Sent status update.\n\n")
               @io.expects(:show_record).with(@internal_records[0])
-              @client.update(@status)
+              @client.update([@status])
             end
 
             should "skip shortening URLs upon connection error to the URL shortening service" do
@@ -432,7 +432,7 @@ class ClientTest < Test::Unit::TestCase
               @io.expects(:confirm).with("Really send?").returns(true)
               @io.expects(:info).with("Sent status update.\n\n")
               @io.expects(:show_record).with(@internal_records[0])
-              @client.update(@status)
+              @client.update([@status])
             end
           end
         end

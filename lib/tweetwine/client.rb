@@ -29,22 +29,24 @@ module Tweetwine
       @status_update_factory = StatusUpdateFactory.new(@io, @url_shortener)
     end
 
-    def home
+    def home(args = [], options = nil)
       response = get_from_rest_api("statuses/friends_timeline", :num_statuses, :page)
       show_statuses_from_rest_api(*response)
     end
 
-    def mentions
+    def mentions(args = [], options = nil)
       response = get_from_rest_api("statuses/mentions", :num_statuses, :page)
       show_statuses_from_rest_api(*response)
     end
 
-    def user(user = @username)
+    def user(args = [], options = nil)
+      user = if args.empty? then @username else args.first end
       response = get_from_rest_api("statuses/user_timeline/#{user}", :num_statuses, :page)
       show_statuses_from_rest_api(*response)
     end
 
-    def update(new_status = nil)
+    def update(args = [], options = nil)
+      new_status = if args.empty? then nil else args.join(" ") end
       new_status = @status_update_factory.create(new_status)
       completed = false
       unless new_status.empty?
@@ -59,12 +61,12 @@ module Tweetwine
       @io.info "Cancelled." unless completed
     end
 
-    def friends
+    def friends(args = [], options = nil)
       response = get_from_rest_api("statuses/friends/#{@username}", :page)
       show_users_from_rest_api(*response)
     end
 
-    def followers
+    def followers(args = [], options = nil)
       response = get_from_rest_api("statuses/followers/#{@username}", :page)
       show_users_from_rest_api(*response)
     end

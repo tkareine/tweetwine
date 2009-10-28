@@ -7,6 +7,7 @@
   retrying_http
   url_shortener
   client
+  cli
 }.each do |f|
   require "tweetwine/#{f}"
 end

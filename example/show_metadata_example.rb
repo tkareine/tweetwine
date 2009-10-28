@@ -26,9 +26,10 @@ Feature "show metadata" do
     end
 
     Then "help is shown" do
-      @output[0].should =~ /^Usage:.* \[options\.\.\.\] \[command\]/
-      @output[2].should =~ /Commands: #{Client::COMMANDS.join(", ")}/
-      @output[4].should =~ /Options:$/
+      @output[2].should =~ /^Usage:.* \[global_options\.\.\.\] \[command\] \[command_options\.\.\.\]/
+      @output[4].should =~ /\[command\] is one of \{#{Client::COMMANDS.join(", ")}\},/
+      @output[5].should =~ /defaulting to #{Client::DEFAULT_COMMAND}/
+      @output[7].should =~ /\[global_options\]:$/
       @status.exitstatus.should == 1
     end
   end

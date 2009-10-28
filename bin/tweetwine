@@ -1,80 +1,15 @@
 #!/usr/bin/env ruby
 
-EXIT_HELP = 1
-EXIT_VERSION = 2
 EXIT_SIGINT = 6
-EXIT_ERROR = 64
 
 trap("INT") do
   puts "\nAbort"
   exit(EXIT_SIGINT)
 end
 
-require "optparse"
 require "tweetwine"
 
-include Tweetwine
+exec_name = File.basename($0)
+config_file = ENV["HOME"] + "/.#{exec_name}"
 
-cmd_parser = lambda do |args|
-  options = {}
-  begin
-    OptionParser.new do |opt|
-      executable_name = File.basename($0)
-
-      opt.banner =<<-END
-Usage: #{executable_name} [options...] [command]
-
-  Commands: #{Client::COMMANDS.join(", ")}
-
-  Options:
-
-      END
-      opt.on("-a", "--auth USERNAME:PASSWORD", "Authentication") do |arg|
-        options[:username], options[:password] = arg.split(":", 2)
-      end
-      opt.on("-c", "--colorize", "Colorize output with ANSI escape codes") do
-        options[:colorize] = true
-      end
-      opt.on("-n", "--num N", Integer, "The number of statuses to fetch, defaults to #{Client::DEFAULT_NUM_STATUSES}") do |arg|
-        options[:num_statuses] = arg
-      end
-      opt.on("--no-colorize", "Do not colorize output with ANSI escape codes") do
-        options[:colorize] = false
-      end
-      opt.on("--no-url-shorten", "Do not shorten URLs for status update") do
-        options[:shorten_urls] = { :enable => false }
-      end
-      opt.on("-p", "--page N", Integer, "The page number of the statuses to fetch, defaults to #{Client::DEFAULT_PAGE_NUM}") do |arg|
-        options[:page_num] = arg
-      end
-      opt.on("-v", "--version", "Show version information and exit") do
-        puts "#{executable_name} #{Tweetwine::VERSION}"
-        exit(EXIT_VERSION)
-      end
-      opt.on_tail("-h", "--help", "Show this help message and exit") do
-        puts opt
-        exit(EXIT_HELP)
-      end
-    end.parse!(args)
-  rescue OptionParser::ParseError => e
-    raise ArgumentError, e.message
-  end
-  options
-end
-
-def create_dependencies(options)
-  io = Tweetwine::IO.new(options)
-  http_client = RetryingHttp::Client.new(io)
-  url_shortener = lambda { |opts| UrlShortener.new(http_client, opts) }
-  Client::Dependencies.new(io, http_client, url_shortener)
-end
-
-begin
-  config = StartupConfig.new(Client::COMMANDS)
-  config.parse(ARGV, ENV["HOME"] + "/.tweetwine", &cmd_parser)
-  client = Client.new(create_dependencies(config.options), config.options)
-  client.send(config.command, *config.args)
-rescue ArgumentError, HttpError => e
-  puts "Error: #{e.message}"
-  exit(EXIT_ERROR)
-end
+Tweetwine::CLI.launch(ARGV, exec_name, config_file)
