@@ -484,27 +484,52 @@ class ClientTest < Test::Unit::TestCase
         @client.followers
       end
 
-      should "search based on a query string" do
-        twitter_response, internal_records = create_test_twitter_records_from_search_api(
-          {
-            :from_user  => "zanzibar",
-            :status     => "wassup, @foo? #greets",
-            :created_at => Time.at(1).to_s,
-            :to_user    => "foo"
-          },
-          {
-            :from_user  => "spoonman",
-            :status     => "@manman long time no see #greets",
-            :created_at => Time.at(1).to_s,
-            :to_user    => "manman"
-          }
-        )
-        @http_client.expects(:get) \
-                    .with("#{@search_api_base_url}?q=%23greets&#{@search_api_query_str}") \
-                    .returns(twitter_response.to_json)
-        @io.expects(:show_record).with(internal_records[0])
-        @io.expects(:show_record).with(internal_records[1])
-        @client.search("#greets")
+      context "for searching tweets" do
+        should "allow searching for tweets that match all the given words" do
+          twitter_response, internal_records = create_test_twitter_records_from_search_api(
+            {
+              :from_user  => "zanzibar",
+              :status     => "@foo, wassup? #greets",
+              :created_at => Time.at(1).to_s,
+              :to_user    => "foo"
+            },
+            {
+              :from_user  => "spoonman",
+              :status     => "@foo long time no see #greets",
+              :created_at => Time.at(1).to_s,
+              :to_user    => "foo"
+            }
+          )
+          @http_client.expects(:get) \
+                      .with("#{@search_api_base_url}?q=%23greets%20%40foo&#{@search_api_query_str}") \
+                      .returns(twitter_response.to_json)
+          @io.expects(:show_record).with(internal_records[0])
+          @io.expects(:show_record).with(internal_records[1])
+          @client.search(["#greets", "@foo"])
+        end
+
+        should "allow searching for tweets that match any of the given words" do
+          twitter_response, internal_records = create_test_twitter_records_from_search_api(
+            {
+              :from_user  => "zanzibar",
+              :status     => "spinning around the floor #habits",
+              :created_at => Time.at(1).to_s,
+              :to_user    => "foo"
+            },
+            {
+              :from_user  => "spoonman",
+              :status     => "drinking coffee, again #neurotic",
+              :created_at => Time.at(1).to_s,
+              :to_user    => "foo"
+            }
+          )
+          @http_client.expects(:get) \
+                      .with("#{@search_api_base_url}?q=%23habits%20OR%20%23neurotic&#{@search_api_query_str}") \
+                      .returns(twitter_response.to_json)
+          @io.expects(:show_record).with(internal_records[0])
+          @io.expects(:show_record).with(internal_records[1])
+          @client.search(["#habits", "#neurotic"], {:or => true})
+        end
       end
     end
   end

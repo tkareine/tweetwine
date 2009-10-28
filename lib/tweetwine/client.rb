@@ -72,7 +72,8 @@ module Tweetwine
       show_users_from_rest_api(*response)
     end
 
-    def search(query)
+    def search(args = [], options = nil)
+      query = if options && options[:or] then args.join(" OR ") else args.join(" ") end
       response = get_from_search_api(query, :num_statuses, :page)
       show_statuses_from_search_api(*response["results"])
     end
