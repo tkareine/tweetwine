@@ -9,8 +9,8 @@ class CLITest < Test::Unit::TestCase
     end
   end
 
-  # Other unit tests are meaningless. See example/ directory for functional
-  # tests.
+  # Other unit tests are meaningless. See /example directory for tests
+  # about the functionality of the application.
 end
 
 end
