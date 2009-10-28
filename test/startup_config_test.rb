@@ -9,21 +9,26 @@ class StartupConfigTest < Test::Unit::TestCase
     context "upon initialization" do
       should "require at least one supported command" do
         assert_raise(ArgumentError) { StartupConfig.new([]) }
-        assert_nothing_raised { StartupConfig.new([:default_action]) }
+        assert_nothing_raised { StartupConfig.new([:cmd], :cmd) }
+      end
+
+      should "require the default command to be a supported command" do
+        assert_raise(ArgumentError) { StartupConfig.new([:cmd_a], :cmd_b) }
+        assert_nothing_raised { StartupConfig.new([:cmd_a], :cmd_a) }
       end
     end
 
     context "at runtime" do
       setup do
-        @config = StartupConfig.new([:default_action, :another_action])
+        @config = StartupConfig.new([:default_action, :another_action], :default_action)
       end
 
-      should "use the first supported command as a default command when given no command as a cmdline argument" do
+      should "use the default command when given no command as a cmdline argument" do
         @config.parse
         assert_equal :default_action, @config.command
       end
 
-      should "check that given command is supported" do
+      should "pass supported commands" do
         @config.parse(%w{default_action}) { |args| {} }
         assert_equal :default_action, @config.command
 
@@ -31,14 +36,21 @@ class StartupConfigTest < Test::Unit::TestCase
         assert_equal :another_action, @config.command
       end
 
-      should "parse cmdline args, command, and leftover args" do
-        @config.parse(%w{--opt foo another_action left overs}) do |args|
+      should "raise ArgumentError if given command is not supported" do
+        assert_raise(ArgumentError) do
+          @config.parse(%w{unknown_action}) { |args| {} }
+        end
+      end
+
+      should "allow parsing cmdline args before the command" do
+        cmd_args = %w{--opt foo another_action left overs}
+        @config.parse(cmd_args) do |args|
            args.slice!(0..1)
            {:opt => "foo"}
         end
         assert_equal({:opt => "foo"}, @config.options)
         assert_equal :another_action, @config.command
-        assert_equal %w{left overs},  @config.args
+        assert_equal %w{left overs},  cmd_args
       end
 
       context "when given no cmdline args and a config file" do

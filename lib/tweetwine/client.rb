@@ -6,6 +6,7 @@ module Tweetwine
     Dependencies = Struct.new :io, :http_client, :url_shortener
 
     COMMANDS = [:home, :mentions, :user, :update, :friends, :followers, :search]
+    DEFAULT_COMMAND = COMMANDS.first
 
     DEFAULT_NUM_STATUSES = 20
     DEFAULT_PAGE_NUM = 1
