@@ -130,12 +130,6 @@ Usage: #{exec_name} [global_options...] [command] [command_options...]
         },
 
         lambda { |opt, parsed|
-          opt.on("-n", "--num N", Integer, "The number of statuses to fetch, defaults to #{Client::DEFAULT_NUM_STATUSES}") { |arg|
-            parsed[:num_statuses] = arg
-          }
-        },
-
-        lambda { |opt, parsed|
           opt.on("-o", "--or", "Any word can match") { parsed[:or] = true }
         }
       ]
