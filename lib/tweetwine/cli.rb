@@ -212,9 +212,9 @@ Search the latest worldwide statuses with one or more terms.
 
         EOS
 
-        opt.on("-a", "--and", "All words must match") { parsed[:and] = true }
+        opt.on("-a", "--and", "All words must match") { parsed[:bin_op] = :and }
 
-        opt.on("-o", "--or", "Any word can match") { parsed[:or] = true }
+        opt.on("-o", "--or", "Any word can match") { parsed[:bin_op] = :or }
       end
     end
 

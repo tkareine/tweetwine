@@ -528,7 +528,7 @@ class ClientTest < Test::Unit::TestCase
                       .returns(twitter_response.to_json)
           @io.expects(:show_record).with(internal_records[0])
           @io.expects(:show_record).with(internal_records[1])
-          @client.search(["#habits", "#neurotic"], {:or => true})
+          @client.search(["#habits", "#neurotic"], {:bin_op => :or})
         end
       end
     end

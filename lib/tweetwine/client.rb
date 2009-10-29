@@ -73,7 +73,7 @@ module Tweetwine
     end
 
     def search(args = [], options = nil)
-      query = if options && options[:or] then args.join(" OR ") else args.join(" ") end
+      query = if options && options[:bin_op] == :or then args.join(" OR ") else args.join(" ") end
       response = get_from_search_api(query, :num_statuses, :page)
       show_statuses_from_search_api(*response["results"])
     end
