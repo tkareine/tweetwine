@@ -16,7 +16,7 @@ The program requires <b>rest_client</b> gem to be installed. In addition, the pr
 
 In the command line, run the program by entering
 
-  $ tweetwine [options...] [command]
+  $ tweetwine [global_options...] [command] [command_options...]
 
 The program needs the user's username and password for authentication. This
 information can be supplied either via a configuration file or as an option
@@ -30,21 +30,18 @@ program recognizes the following basic settings:
   password: <your_password>
   colorize: true|false 
 
-When invoking the program, the supported commands are
+The program supports showing the public timeline of the authenticated user,
+the latest statuses of friends and followers, and the latest statuses that
+mention the user. If that's not enough, statuses can be searched with
+arbitrary terms. In addition, new statuses can be sent.
 
-<tt>home</tt>:: Fetch friends' latest statuses (the contents of the authenticated user's home).
-<tt>mentions</tt>:: Fetch latest mentions for the authenticated user.
-<tt>user [name]</tt>:: Fetch a specific user's latest statuses, identified by the argument; if given no argument, fetch the statuses of the authenticated user.
-<tt>update [status]</tt>:: Send a status update, but confirm the action first before actually sending. The status update can either be given as an argument or via STDIN if no argument is given.
-<tt>friends</tt>:: Fetch friends and their latest statuses.
-<tt>followers</tt>:: Fetch followers and their latest statuses.
-<tt>search <query></tt>:: Search tweets based on <tt><query></tt>.
+For all the global options and commands, see:
 
-If no <tt>[command]</tt> is given, the default action is <tt>home</tt>.
+  $ tweetwine help
 
-For all the options, see:
+For information about a specific command and its options, use:
 
-  $ tweetwine -h
+  $ tweetwine help command
 
 === URL shortening for status update
 
