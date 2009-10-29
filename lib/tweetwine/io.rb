@@ -15,7 +15,7 @@ module Tweetwine
     def initialize(options)
       @input = options[:input] || $stdin
       @output = options[:output] || $stdout
-      @colorize = options[:colorize] || false
+      @colors = options[:colors] || false
     end
 
     def prompt(prompt)
@@ -85,12 +85,12 @@ module Tweetwine
     end
 
     def format_user(user)
-      user = colorize(:green, user) if @colorize
+      user = colorize(:green, user) if @colors
       user
     end
 
     def format_status(status)
-      if @colorize
+      if @colors
         status = colorize_all_by_group(:yellow, status, USERNAME_REGEX)
         status = colorize_all_by_group(:magenta, status, HASHTAG_REGEX)
         URI.extract(status, ["http", "https"]).uniq.each do |url|
@@ -102,7 +102,7 @@ module Tweetwine
 
     def format_record_header(from_user, to_user, created_at)
       time_diff_value, time_diff_unit = Util.humanize_time_diff(created_at, Time.now)
-      if @colorize
+      if @colors
         from_user = colorize(:green, from_user)
         to_user = colorize(:green, to_user) if to_user
       end

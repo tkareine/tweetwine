@@ -46,7 +46,7 @@ class IOTest < Test::Unit::TestCase
 
     context "with colorization disabled" do
       setup do
-        @io = IO.new({ :input => @input, :output => @output, :colorize => false })
+        @io = IO.new({ :input => @input, :output => @output, :colors => false })
       end
 
       should "output a record as user info when no status is given" do
@@ -113,7 +113,7 @@ class IOTest < Test::Unit::TestCase
 
     context "with colorization enabled" do
       setup do
-        @io = IO.new({ :input => @input, :output => @output, :colorize => true })
+        @io = IO.new({ :input => @input, :output => @output, :colors => true })
       end
 
       should "output a record as user info when no status is given" do

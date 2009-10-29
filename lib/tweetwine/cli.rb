@@ -89,16 +89,16 @@ Usage: #{exec_name} [global_options...] [command] [command_options...]
           parsed[:username], parsed[:password] = arg.split(":", 2)
         end
 
-        opt.on("-c", "--colorize", "Colorize output with ANSI escape codes") do
-          parsed[:colorize] = true
+        opt.on("-c", "--colors", "Colorize output with ANSI escape codes") do
+          parsed[:colors] = true
         end
 
         opt.on("-n", "--num N", Integer, "The number of statuses to fetch, defaults to #{Client::DEFAULT_NUM_STATUSES}") do |arg|
           parsed[:num_statuses] = arg
         end
 
-        opt.on("--no-colorize", "Do not colorize output with ANSI escape codes") do
-          parsed[:colorize] = false
+        opt.on("--no-colors", "Do not colorize output with ANSI escape codes") do
+          parsed[:colors] = false
         end
 
         opt.on("--no-url-shorten", "Do not shorten URLs for status update") do

@@ -9,7 +9,7 @@ Feature "show the latest statuses" do
 
   Scenario "see the latest statuses with colorization disabled" do
     When "application is launched with command 'home'" do
-      @status = launch_app("-a foouser:barpwd --no-colorize", INJECTION) do |pid, stdin, stdout|
+      @status = launch_app("-a foouser:barpwd --no-colors", INJECTION) do |pid, stdin, stdout|
         @output = stdout.readlines
       end
     end
@@ -27,7 +27,7 @@ Feature "show the latest statuses" do
 
   Scenario "see the latest statuses with colorization enabled" do
     When "application is launched with command 'home'" do
-      @status = launch_app("-a foouser:barpwd --colorize", INJECTION) do |pid, stdin, stdout|
+      @status = launch_app("-a foouser:barpwd --colors", INJECTION) do |pid, stdin, stdout|
         @output = stdout.readlines
       end
     end

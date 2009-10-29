@@ -59,7 +59,7 @@ class StartupConfigTest < Test::Unit::TestCase
         end
 
         should "have the parsed option defined" do
-          assert_equal false, @config.options[:colorize]
+          assert_equal false, @config.options[:colors]
         end
       end
 
@@ -78,14 +78,14 @@ class StartupConfigTest < Test::Unit::TestCase
 
       context "when given an option both as a cmdline option and in a config file" do
         setup do
-          @config.parse(%w{--colorize}, TEST_CONFIG_FILE) do |args|
+          @config.parse(%w{--colors}, TEST_CONFIG_FILE) do |args|
             args.clear
-            {:colorize => true}
+            {:colors => true}
           end
         end
 
         should "the command line option should override the config file option" do
-          assert_equal true, @config.options[:colorize]
+          assert_equal true, @config.options[:colors]
         end
 
         should "have nil for an undefined option" do

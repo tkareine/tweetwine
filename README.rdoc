@@ -28,7 +28,7 @@ program recognizes the following basic settings:
 
   username: <your_username>
   password: <your_password>
-  colorize: true|false 
+  colors: true|false
 
 The program supports showing the public timeline of the authenticated user,
 the latest statuses of friends and followers, and the latest statuses that
@@ -52,7 +52,7 @@ example:
 
   username: spoonman
   password: withyourhands
-  colorize: true
+  colors: true
   shorten_urls:
     enable: true
     service_url: http://is.gd/create.php
