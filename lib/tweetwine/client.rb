@@ -5,8 +5,8 @@ module Tweetwine
   class Client
     Dependencies = Struct.new :io, :http_client, :url_shortener
 
-    COMMANDS = [:home, :mentions, :user, :update, :friends, :followers, :search]
-    DEFAULT_COMMAND = COMMANDS.first
+    COMMANDS = [:followers, :friends, :home, :mentions, :search, :update, :user]
+    DEFAULT_COMMAND = :home
 
     DEFAULT_NUM_STATUSES = 20
     DEFAULT_PAGE_NUM = 1

@@ -40,20 +40,16 @@ module Tweetwine
       @client = Client.new(dependencies_blk.call(@config.options), @config.options) if @config.command != :help
     end
 
-    def parse_command_options(command, args)
-      COMMAND_OPTION_PARSERS[command.to_sym].call(args)
-    end
-
     def show_help_command_and_exit(args)
       help_about_cmd = args.shift
       if help_about_cmd
-        parse_command_options(help_about_cmd, ["-h"])
-      else
-        @global_option_parser.call(["-h"])
+        help_about_cmd = help_about_cmd.to_sym
+        parse_command_options(help_about_cmd, ["-h"]) if Client::COMMANDS.include?(help_about_cmd)
       end
+      @global_option_parser.call(["-h"])
     end
 
-    def self.create_option_parser(&schema_blk)
+    def self.create_option_parser
       lambda do |args|
         parsed_options = {}
         begin
@@ -62,7 +58,11 @@ module Tweetwine
               puts opt
               exit(EXIT_HELP)
             }
-            schema_blk.call(opt, parsed_options)
+            schema = yield parsed_options
+            opt.banner = schema[:help]
+            schema[:opts].each do |opt_schema|
+              opt.on(*option_schema_to_ary(opt_schema), &opt_schema[:action])
+            end if schema[:opts]
           end.order!(args)
         rescue OptionParser::ParseError => e
           raise ArgumentError, e.message
@@ -71,10 +71,18 @@ module Tweetwine
       end
     end
 
+    def self.option_schema_to_ary(opt_schema)
+      [:short, :long, :type, :desc].inject([]) do |result, key|
+        result << opt_schema[key] if opt_schema[key]
+        result
+      end
+    end
+
     def create_global_option_parser(exec_name)
-      self.class.create_option_parser do |opt, parsed|
-        opt.banner =<<-EOS
-A simple but tasty Twitter agent for command line use, made for fun.
+      self.class.create_option_parser do |parsed|
+        {
+          :help => \
+"A simple but tasty Twitter agent for command line use, made for fun.
 
 Usage: #{exec_name} [global_options...] [command] [command_options...]
 
@@ -82,145 +90,149 @@ Usage: #{exec_name} [global_options...] [command] [command_options...]
   defaulting to #{Client::DEFAULT_COMMAND}.
 
   [global_options]:
-
-        EOS
-
-        opt.on("-a", "--auth USERNAME:PASSWORD", "Authentication") do |arg|
-          parsed[:username], parsed[:password] = arg.split(":", 2)
-        end
-
-        opt.on("-c", "--colors", "Colorize output with ANSI escape codes") do
-          parsed[:colors] = true
-        end
-
-        opt.on("-n", "--num N", Integer, "The number of statuses to fetch, defaults to #{Client::DEFAULT_NUM_STATUSES}") do |arg|
-          parsed[:num_statuses] = arg
-        end
-
-        opt.on("--no-colors", "Do not colorize output with ANSI escape codes") do
-          parsed[:colors] = false
-        end
-
-        opt.on("--no-url-shorten", "Do not shorten URLs for status update") do
-          parsed[:shorten_urls] = { :enable => false }
-        end
-
-        opt.on("-p", "--page N", Integer, "The page number of the statuses to fetch, defaults to #{Client::DEFAULT_PAGE_NUM}") do |arg|
-          parsed[:page_num] = arg
-        end
-
-        opt.on("-v", "--version", "Show version information and exit") do
-          puts "#{exec_name} #{Tweetwine::VERSION}"
-          exit(EXIT_VERSION)
-        end
+",
+          :opts => [
+            {
+              :short  => "-a",
+              :long   => "--auth USERNAME:PASSWORD",
+              :desc   => "Authentication",
+              :action => lambda { |arg| parsed[:username], parsed[:password] = arg.split(":", 2) }
+            },
+            {
+              :short  => "-c",
+              :long   => "--colors",
+              :desc   => "Colorize output with ANSI escape codes",
+              :action => lambda { |arg| parsed[:colors] = true }
+            },
+            {
+              :short  => "-n",
+              :long   => "--num N",
+              :type   => Integer,
+              :desc   => "The number of statuses to fetch, defaults to #{Client::DEFAULT_NUM_STATUSES}",
+              :action => lambda { |arg| parsed[:num_statuses] = arg }
+            },
+            {
+              :long   => "--no-colors",
+              :desc   => "Do not colorize output with ANSI escape codes",
+              :action => lambda { |arg| parsed[:colors] = false }
+            },
+            {
+              :long   => "--no-url-shorten",
+              :desc   => "Do not shorten URLs for status update",
+              :action => lambda { |arg| parsed[:shorten_urls] = { :enable => false } }
+            },
+            {
+              :short  => "-p",
+              :long   => "--page N",
+              :type   => Integer,
+              :desc   => "The page number of the statuses to fetch, defaults to #{Client::DEFAULT_PAGE_NUM}",
+              :action => lambda { |arg| parsed[:page_num] = arg }
+            },
+            {
+              :short  => "-v",
+              :long   => "--version",
+              :desc   => "Show version information and exit",
+              :action => lambda do |arg|
+                puts "#{exec_name} #{Tweetwine::VERSION}"
+                exit(EXIT_VERSION)
+              end
+            }
+          ]
+        }
       end
     end
 
-    def self.create_home_option_parser
-      create_option_parser do |opt, parsed|
-        opt.banner =<<-EOS
-home [command_options...]
+    def self.create_command_option_parser(command_name, schema)
+      create_option_parser do |parsed|
+        {
+          :help => \
+"#{command_name} [command_options...] #{schema[:help][:rest_args]}
 
-Show the latest statuses of friends and own tweets (the public timeline of
-the authenticated user).
+#{schema[:help][:desc]}
 
   [command_options]:
-
-        EOS
+",
+          :opts => schema[:opts]
+        }
       end
     end
 
-    def self.create_mentions_option_parser
-      create_option_parser do |opt, parsed|
-        opt.banner =<<-EOS
-mentions [command_options...]
-
-Show the latest statuses that mention the authenticated user.
-
-  [command_options]:
-
-        EOS
-      end
-    end
-
-    def self.create_user_option_parser
-      create_option_parser do |opt, parsed|
-        opt.banner =<<-EOS
-user [command_options...] [username]
-
-Show a specific user's latest statuses. The user is identified with [username]
-argument; if the argument is absent [username] is the authenticated user
-itself.
-
-  [command_options]:
-
-        EOS
-      end
-    end
-
-    def self.create_update_option_parser
-      create_option_parser do |opt, parsed|
-        opt.banner =<<-EOS
-update [command_options...] [status...]
-
-Send a status update, but confirm the action first before actually sending.
+    command_parser_schemas = {
+      :followers => {
+        :help => {
+          :desc => \
+"Show the followers of the authenticated user, together with the latest status
+of each follower."
+        }
+      },
+      :friends => {
+        :help => {
+          :desc => \
+"Show the friends of the authenticated user, together with the latest status
+of each friend."
+        }
+      },
+      :home => {
+        :help => {
+          :desc => \
+"Show the latest statuses of friends and own tweets (the public timeline of
+the authenticated user)."
+        }
+      },
+      :mentions => {
+        :help => {
+          :desc => \
+"Show the latest statuses that mention the authenticated user."
+        }
+      },
+      :search => {
+        :help => {
+          :rest_args  => "word_1 [word_2...]",
+          :desc       => \
+"Search the latest public statuses with one or more words."
+        },
+        :opts => [
+          {
+            :short  => "-a",
+            :long   => "--and",
+            :desc   => "All words must match",
+            :action => lambda { |arg| parsed[:bin_op] = :and }
+          },
+          {
+            :short  => "-o",
+            :long   => "--or",
+            :desc   => "Any word matches",
+            :action => lambda { |arg| parsed[:bin_op] = :or }
+          }
+        ]
+      },
+      :update => {
+        :help => {
+          :rest_args  => "[status]",
+          :desc       => \
+"Send a status update, but confirm the action first before actually sending.
 The status update can either be given as an argument or via STDIN if no
-[status] is given.
-
-  [command_options]:
-
-        EOS
-      end
-    end
-
-    def self.create_friends_option_parser
-      create_option_parser do |opt, parsed|
-        opt.banner =<<-EOS
-friends [command_options...]
-
-Show the friends of the authenticated user, together with the latest status
-of each friend.
-
-  [command_options]:
-
-        EOS
-      end
-    end
-
-    def self.create_followers_option_parser
-      create_option_parser do |opt, parsed|
-        opt.banner =<<-EOS
-followers [command_options...]
-
-Show the followers of the authenticated user, together with the latest status
-of each follower.
-
-  [command_options]:
-
-        EOS
-      end
-    end
-
-    def self.create_search_option_parser
-      create_option_parser do |opt, parsed|
-        opt.banner =<<-EOS
-search [command_options...] term_1 [term_2...]
-
-Search the latest worldwide statuses with one or more terms.
-
-  [command_options]:
-
-        EOS
-
-        opt.on("-a", "--and", "All words must match") { parsed[:bin_op] = :and }
-
-        opt.on("-o", "--or", "Any word can match") { parsed[:bin_op] = :or }
-      end
-    end
+[status] is given."
+        }
+      },
+      :user => {
+        :help => {
+          :rest_args  => "[username]",
+          :desc       => \
+"Show a specific user's latest statuses. The user is identified with [username]
+argument; if the argument is absent, the authenticated user's statuses are
+shown."
+        }
+      }
+    }
 
     COMMAND_OPTION_PARSERS = Client::COMMANDS.inject({}) do |result, cmd|
-      result[cmd] = lambda { |args| send(:"create_#{cmd}_option_parser").call(args) }
+      result[cmd] = create_command_option_parser(cmd, command_parser_schemas[cmd])
       result
+    end
+
+    def parse_command_options(command, args)
+      COMMAND_OPTION_PARSERS[command].call(args)
     end
   end
 end
