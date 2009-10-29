@@ -5,7 +5,7 @@ Feature "show metadata" do
   as_a "user"
   i_want_to "see application metadata"
 
-  Scenario "see version" do
+  Scenario "see version with designated exit status" do
     When "application is launched with -v" do
       @status = launch_app("-v") do |pid, stdin, stdout|
         @output = stdout.gets
@@ -18,7 +18,7 @@ Feature "show metadata" do
     end
   end
 
-  Scenario "see help" do
+  Scenario "see help with designated exit status" do
     When "application is launched with -h" do
       @status = launch_app("-h") do |pid, stdin, stdout|
         @output = stdout.readlines
@@ -31,6 +31,30 @@ Feature "show metadata" do
       @output[5].should =~ /defaulting to #{Client::DEFAULT_COMMAND}/
       @output[7].should =~ /\[global_options\]:$/
       @status.exitstatus.should == CLI::EXIT_HELP
+    end
+  end
+
+  Scenario "upon invalid option, use designated exit status" do
+    When "application is launched with -X" do
+      @status = launch_app("-X") do |pid, stdin, stdout|
+        @output = stdout.readlines
+      end
+    end
+
+    Then "designated exit status is returned" do
+      @status.exitstatus.should == CLI::EXIT_ERROR
+    end
+  end
+
+  Scenario "upon invalid command, use designated exit status" do
+    When "application is launched with 'unknown'" do
+      @status = launch_app("unknown") do |pid, stdin, stdout|
+        @output = stdout.readlines
+      end
+    end
+
+    Then "designated exit status is returned" do
+      @status.exitstatus.should == CLI::EXIT_ERROR
     end
   end
 end

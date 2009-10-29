@@ -4,7 +4,7 @@ module Tweetwine
   class CLI
     EXIT_HELP = 1
     EXIT_VERSION = 2
-    EXIT_ERROR = -1
+    EXIT_ERROR = 255
 
     def self.launch(args, exec_name, config_file)
       new(args, exec_name, config_file, &default_dependencies).execute(args)
