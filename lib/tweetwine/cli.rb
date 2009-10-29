@@ -7,43 +7,41 @@ module Tweetwine
     EXIT_ERROR = -1
 
     def self.launch(args, exec_name, config_file)
-      new(args, exec_name, config_file)
-    end
-
-    private
-
-    private_class_method :new
-
-    def initialize(args, exec_name, config_file)
-      @global_option_parser = create_global_option_parser(exec_name)
-      config = StartupConfig.new(Client::COMMANDS + [:help], Client::DEFAULT_COMMAND)
-      config.parse(args, config_file, &@global_option_parser)
-      unless config.command == :help
-        cmd_options = parse_command_options(config.command, args)
-        client = Client.new(create_dependencies(config.options), config.options)
-        client.send(config.command, args, cmd_options)
-      else
-        show_help_command_and_exit(args)
-      end
+      new(args, exec_name, config_file, &default_dependencies).execute(args)
     rescue ArgumentError, HttpError => e
       puts "Error: #{e.message}"
       exit(EXIT_ERROR)
     end
 
-    def create_dependencies(options)
-      io = Tweetwine::IO.new(options)
-      http_client = RetryingHttp::Client.new(io)
-      url_shortener = lambda { |opts| UrlShortener.new(http_client, opts) }
-      Client::Dependencies.new(io, http_client, url_shortener)
+    def execute(args)
+      if @config.command != :help
+        cmd_options = parse_command_options(@config.command, args)
+        @client.send(@config.command, args, cmd_options)
+      else
+        show_help_command_and_exit(args)
+      end
+    end
+
+    private
+
+    def self.default_dependencies
+      lambda do |options|
+        io = Tweetwine::IO.new(options)
+        http_client = RetryingHttp::Client.new(io)
+        url_shortener = lambda { |opts| UrlShortener.new(http_client, opts) }
+        Client::Dependencies.new(io, http_client, url_shortener)
+      end
+    end
+
+    def initialize(args, exec_name, config_file, &dependencies_blk)
+      @global_option_parser = create_global_option_parser(exec_name)
+      @config = StartupConfig.new(Client::COMMANDS + [:help], Client::DEFAULT_COMMAND)
+      @config.parse(args, config_file, &@global_option_parser)
+      @client = Client.new(dependencies_blk.call(@config.options), @config.options) if @config.command != :help
     end
 
     def parse_command_options(command, args)
-      parser = COMMAND_OPTION_PARSERS[command.to_sym]
-      if parser
-        parser.call(args)
-      else
-        {}
-      end
+      COMMAND_OPTION_PARSERS[command.to_sym].call(args)
     end
 
     def show_help_command_and_exit(args)

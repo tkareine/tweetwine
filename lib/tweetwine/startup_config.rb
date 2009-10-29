@@ -15,7 +15,7 @@ module Tweetwine
       options = parse_options(args, config_file, &cmd_option_parser)
       command = if args.empty? then @default_command else args.shift.to_sym end
       raise ArgumentError, "Unknown command" unless @supported_commands.include? command
-      @options, @command = options, command, args
+      @options, @command = options, command
       self
     end
 
