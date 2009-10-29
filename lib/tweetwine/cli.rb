@@ -15,11 +15,16 @@ module Tweetwine
     private_class_method :new
 
     def initialize(args, exec_name, config_file)
-      config = StartupConfig.new(Client::COMMANDS, Client::DEFAULT_COMMAND)
-      config.parse(args, config_file, &create_global_option_parser(exec_name))
-      cmd_options = parse_command_options(config.command, args)
-      client = Client.new(create_dependencies(config.options), config.options)
-      client.send(config.command, args, cmd_options)
+      @global_option_parser = create_global_option_parser(exec_name)
+      config = StartupConfig.new(Client::COMMANDS + [:help], Client::DEFAULT_COMMAND)
+      config.parse(args, config_file, &@global_option_parser)
+      unless config.command == :help
+        cmd_options = parse_command_options(config.command, args)
+        client = Client.new(create_dependencies(config.options), config.options)
+        client.send(config.command, args, cmd_options)
+      else
+        show_help_command_and_exit(args)
+      end
     rescue ArgumentError, HttpError => e
       puts "Error: #{e.message}"
       exit(EXIT_ERROR)
@@ -33,7 +38,7 @@ module Tweetwine
     end
 
     def parse_command_options(command, args)
-      parser = COMMAND_OPTION_PARSERS[command]
+      parser = COMMAND_OPTION_PARSERS[command.to_sym]
       if parser
         parser.call(args)
       else
@@ -41,12 +46,25 @@ module Tweetwine
       end
     end
 
-    def self.create_option_parser(schema_opts)
+    def show_help_command_and_exit(args)
+      help_about_cmd = args.shift
+      if help_about_cmd
+        parse_command_options(help_about_cmd, ["-h"])
+      else
+        @global_option_parser.call(["-h"])
+      end
+    end
+
+    def self.create_option_parser(&schema_blk)
       lambda do |args|
         parsed_options = {}
         begin
-          OptionParser.new do |opt|
-            schema_opts.each { |schema_opt| schema_opt.call(opt, parsed_options) }
+          parser = OptionParser.new do |opt|
+            opt.on_tail("-h", "--help", "Show this help message and exit") {
+              puts opt
+              exit(EXIT_HELP)
+            }
+            schema_blk.call(opt, parsed_options)
           end.order!(args)
         rescue OptionParser::ParseError => e
           raise ArgumentError, e.message
@@ -56,9 +74,8 @@ module Tweetwine
     end
 
     def create_global_option_parser(exec_name)
-      self.class.create_option_parser [
-        lambda { |opt, parsed|
-          opt.banner =<<-EOS
+      self.class.create_option_parser do |opt, parsed|
+        opt.banner =<<-EOS
 A simple but tasty Twitter agent for command line use, made for fun.
 
 Usage: #{exec_name} [global_options...] [command] [command_options...]
@@ -68,75 +85,144 @@ Usage: #{exec_name} [global_options...] [command] [command_options...]
 
   [global_options]:
 
-          EOS
-        },
+        EOS
 
-        lambda { |opt, parsed|
-          opt.on("-a", "--auth USERNAME:PASSWORD", "Authentication") { |arg|
-            parsed[:username], parsed[:password] = arg.split(":", 2)
-          }
-        },
+        opt.on("-a", "--auth USERNAME:PASSWORD", "Authentication") do |arg|
+          parsed[:username], parsed[:password] = arg.split(":", 2)
+        end
 
-        lambda { |opt, parsed|
-          opt.on("-c", "--colorize", "Colorize output with ANSI escape codes") {
-            parsed[:colorize] = true
-          }
-        },
+        opt.on("-c", "--colorize", "Colorize output with ANSI escape codes") do
+          parsed[:colorize] = true
+        end
 
-        lambda { |opt, parsed|
-          opt.on("-n", "--num N", Integer, "The number of statuses to fetch, defaults to #{Client::DEFAULT_NUM_STATUSES}") { |arg|
-            parsed[:num_statuses] = arg
-          }
-        },
+        opt.on("-n", "--num N", Integer, "The number of statuses to fetch, defaults to #{Client::DEFAULT_NUM_STATUSES}") do |arg|
+          parsed[:num_statuses] = arg
+        end
 
-        lambda { |opt, parsed|
-          opt.on("--no-colorize", "Do not colorize output with ANSI escape codes") {
-            parsed[:colorize] = false
-          }
-        },
+        opt.on("--no-colorize", "Do not colorize output with ANSI escape codes") do
+          parsed[:colorize] = false
+        end
 
-        lambda { |opt, parsed|
-          opt.on("--no-url-shorten", "Do not shorten URLs for status update") {
-            parsed[:shorten_urls] = { :enable => false }
-          }
-        },
+        opt.on("--no-url-shorten", "Do not shorten URLs for status update") do
+          parsed[:shorten_urls] = { :enable => false }
+        end
 
-        lambda { |opt, parsed|
-          opt.on("-p", "--page N", Integer, "The page number of the statuses to fetch, defaults to #{Client::DEFAULT_PAGE_NUM}") { |arg|
-            parsed[:page_num] = arg
-          }
-        },
+        opt.on("-p", "--page N", Integer, "The page number of the statuses to fetch, defaults to #{Client::DEFAULT_PAGE_NUM}") do |arg|
+          parsed[:page_num] = arg
+        end
 
-        lambda { |opt, parsed|
-          opt.on("-v", "--version", "Show version information and exit") {
-            puts "#{exec_name} #{Tweetwine::VERSION}"
-            exit(EXIT_VERSION)
-          }
-        },
+        opt.on("-v", "--version", "Show version information and exit") do
+          puts "#{exec_name} #{Tweetwine::VERSION}"
+          exit(EXIT_VERSION)
+        end
+      end
+    end
 
-        lambda { |opt, parsed|
-          opt.on_tail("-h", "--help", "Show this help message and exit") {
-            puts opt
-            exit(EXIT_HELP)
-          }
-        }
-      ]
+    def self.create_home_option_parser
+      create_option_parser do |opt, parsed|
+        opt.banner =<<-EOS
+home [command_options...]
+
+Show the latest statuses of friends and own tweets (the public timeline of
+the authenticated user).
+
+  [command_options]:
+
+        EOS
+      end
+    end
+
+    def self.create_mentions_option_parser
+      create_option_parser do |opt, parsed|
+        opt.banner =<<-EOS
+mentions [command_options...]
+
+Show the latest statuses that mention the authenticated user.
+
+  [command_options]:
+
+        EOS
+      end
+    end
+
+    def self.create_user_option_parser
+      create_option_parser do |opt, parsed|
+        opt.banner =<<-EOS
+user [command_options...] [username]
+
+Show a specific user's latest statuses. The user is identified with [username]
+argument; if the argument is absent [username] is the authenticated user
+itself.
+
+  [command_options]:
+
+        EOS
+      end
+    end
+
+    def self.create_update_option_parser
+      create_option_parser do |opt, parsed|
+        opt.banner =<<-EOS
+update [command_options...] [status...]
+
+Send a status update, but confirm the action first before actually sending.
+The status update can either be given as an argument or via STDIN if no
+[status] is given.
+
+  [command_options]:
+
+        EOS
+      end
+    end
+
+    def self.create_friends_option_parser
+      create_option_parser do |opt, parsed|
+        opt.banner =<<-EOS
+friends [command_options...]
+
+Show the friends of the authenticated user, together with the latest status
+of each friend.
+
+  [command_options]:
+
+        EOS
+      end
+    end
+
+    def self.create_followers_option_parser
+      create_option_parser do |opt, parsed|
+        opt.banner =<<-EOS
+followers [command_options...]
+
+Show the followers of the authenticated user, together with the latest status
+of each follower.
+
+  [command_options]:
+
+        EOS
+      end
     end
 
     def self.create_search_option_parser
-      create_option_parser [
-        lambda { |opt, parsed|
-          opt.on("-a", "--and", "All words must match") { parsed[:and] = true }
-        },
+      create_option_parser do |opt, parsed|
+        opt.banner =<<-EOS
+search [command_options...] term_1 [term_2...]
 
-        lambda { |opt, parsed|
-          opt.on("-o", "--or", "Any word can match") { parsed[:or] = true }
-        }
-      ]
+Search the latest worldwide statuses with one or more terms.
+
+  [command_options]:
+
+        EOS
+
+        opt.on("-a", "--and", "All words must match") { parsed[:and] = true }
+
+        opt.on("-o", "--or", "Any word can match") { parsed[:or] = true }
+      end
     end
 
-    COMMAND_OPTION_PARSERS = {
-      :search => lambda { |args| create_search_option_parser.call(args) }
-    }
+    COMMAND_OPTION_PARSERS = Client::COMMANDS.inject({}) do |result, cmd|
+      result[cmd] = lambda { |args| send(:"create_#{cmd}_option_parser").call(args) }
+      result
+    end
   end
 end
