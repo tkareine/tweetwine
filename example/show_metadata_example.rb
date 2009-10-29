@@ -14,7 +14,7 @@ Feature "show metadata" do
 
     Then "version is shown" do
       @output.should =~ /\d\.\d\.\d$/
-      @status.exitstatus.should == 2
+      @status.exitstatus.should == CLI::EXIT_VERSION
     end
   end
 
@@ -30,7 +30,7 @@ Feature "show metadata" do
       @output[4].should =~ /\[command\] is one of \{#{Client::COMMANDS.join(", ")}\},/
       @output[5].should =~ /defaulting to #{Client::DEFAULT_COMMAND}/
       @output[7].should =~ /\[global_options\]:$/
-      @status.exitstatus.should == 1
+      @status.exitstatus.should == CLI::EXIT_HELP
     end
   end
 end
