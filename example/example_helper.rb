@@ -86,13 +86,6 @@ end
   end
 end
 
-module Test
-  module Unit
-    class TestCase
-      include Tweetwine::ExampleHelpers
-    end
-  end
-end
-
 include Coulda
 include Tweetwine
+include Tweetwine::ExampleHelpers
