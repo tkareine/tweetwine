@@ -5,6 +5,10 @@ require "tweetwine"
 
 module Tweetwine
   module ExampleHelpers
+    TEST_USER = "fooman"
+    TEST_PASSWD = "barpwd"
+    TEST_AUTH = "#{TEST_USER}:#{TEST_PASSWD}"
+
     EXIT_INJECTION_LOAD_ERROR = 41
     EXIT_INJECTION_OTHER_ERROR = 42
 

@@ -5,11 +5,11 @@ Feature "show the latest statuses" do
   as_a "user"
   i_want_to "see the latest statuses"
 
-  INJECTION = 'FakeWeb.register_uri(:get, "https://foouser:barpwd@twitter.com/statuses/friends_timeline.json?count=20&page=1", :body => fixture("statuses.json"))'
+  INJECTION = 'FakeWeb.register_uri(:get, "https://' + TEST_AUTH + '@twitter.com/statuses/friends_timeline.json?count=20&page=1", :body => fixture("statuses.json"))'
 
   Scenario "see the latest statuses with colorization disabled" do
     When "application is launched with no command" do
-      @status = launch_app("-a foouser:barpwd --no-colors", INJECTION) do |pid, stdin, stdout|
+      @status = launch_app("-a #{TEST_AUTH} --no-colors", INJECTION) do |pid, stdin, stdout|
         @output = stdout.readlines
       end
     end
@@ -27,7 +27,7 @@ Feature "show the latest statuses" do
 
   Scenario "see the latest statuses with colorization enabled" do
     When "application is launched with no command" do
-      @status = launch_app("-a foouser:barpwd --colors", INJECTION) do |pid, stdin, stdout|
+      @status = launch_app("-a #{TEST_AUTH} --colors", INJECTION) do |pid, stdin, stdout|
         @output = stdout.readlines
       end
     end
@@ -45,7 +45,7 @@ Feature "show the latest statuses" do
 
   Scenario "the command for showing the latest statuses is the default command" do
     When "application is launched with 'home' command" do
-      @status = launch_app("-a foouser:barpwd --no-colors home", INJECTION) do |pid, stdin, stdout|
+      @status = launch_app("-a #{TEST_AUTH} --no-colors home", INJECTION) do |pid, stdin, stdout|
         @output = stdout.readlines
       end
     end
