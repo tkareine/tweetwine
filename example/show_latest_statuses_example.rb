@@ -44,7 +44,7 @@ Feature "show the latest statuses" do
   end
 
   Scenario "the command for showing the latest statuses is the default command" do
-    When "application is launched with command 'home'" do
+    When "application is launched with 'home' command" do
       @status = launch_app("-a foouser:barpwd --no-colors home", INJECTION) do |pid, stdin, stdout|
         @output = stdout.readlines
       end
