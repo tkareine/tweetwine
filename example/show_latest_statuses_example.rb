@@ -5,7 +5,7 @@ Feature "show the latest statuses" do
   as_a "user"
   i_want_to "see the latest statuses"
 
-  INJECTION = 'FakeWeb.register_uri(:get, "https://' + TEST_AUTH + '@twitter.com/statuses/friends_timeline.json?count=20&page=1", :body => fixture("statuses.json"))'
+  INJECTION = 'FakeWeb.register_uri(:get, "https://' + TEST_AUTH + '@twitter.com/statuses/friends_timeline.json?count=20&page=1", :body => fixture("latest_statuses.json"))'
 
   Scenario "see the latest statuses with colorization disabled" do
     When "application is launched with no command" do
