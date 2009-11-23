@@ -16,7 +16,6 @@ module Tweetwine
 require "fakeweb"
 FakeWeb.allow_net_connect = false
 
-require "date"    # a workaround for Timecop bug
 require "time"
 require "timecop"
 Timecop.freeze(Time.parse("2009-10-14 01:56:15 +0300"))
