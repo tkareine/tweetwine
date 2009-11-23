@@ -4,15 +4,15 @@ module Tweetwine
   class StartupConfig
     attr_reader :options, :command
 
-    def initialize(supported_commands, default_command)
+    def initialize(supported_commands, default_command, default_opts = {})
       raise ArgumentError, "Must give at least one supported command" if supported_commands.empty?
       raise ArgumentError, "Default command is not a supported command" unless supported_commands.include? default_command
       @supported_commands, @default_command = supported_commands, default_command
-      @options, @command = {}, nil
+      @options, @command = default_opts, nil
     end
 
     def parse(args = [], config_file = nil, &cmd_option_parser)
-      options = parse_options(args, config_file, &cmd_option_parser)
+      options = @options.merge(parse_options(args, config_file, &cmd_option_parser))
       command = if args.empty? then @default_command else args.shift.to_sym end
       raise ArgumentError, "Unknown command" unless @supported_commands.include? command
       @options, @command = options, command

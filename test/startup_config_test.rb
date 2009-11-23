@@ -16,11 +16,17 @@ class StartupConfigTest < Test::Unit::TestCase
         assert_raise(ArgumentError) { StartupConfig.new([:cmd_a], :cmd_b) }
         assert_nothing_raised { StartupConfig.new([:cmd_a], :cmd_a) }
       end
+
+      should "allow passing default options" do
+        opts = {:opt => "foo"}
+        config = StartupConfig.new([:cmd_a], :cmd_a, opts)
+        assert_equal opts, config.options
+      end
     end
 
     context "at runtime" do
       setup do
-        @config = StartupConfig.new([:default_action, :another_action], :default_action)
+        @config = StartupConfig.new([:default_action, :another_action], :default_action, {:defopt => 42})
       end
 
       should "use the default command when given no command as a cmdline argument" do
@@ -42,15 +48,34 @@ class StartupConfigTest < Test::Unit::TestCase
         end
       end
 
-      should "allow parsing cmdline args before the command" do
-        cmd_args = %w{--opt foo another_action left overs}
-        @config.parse(cmd_args) do |args|
-           args.slice!(0..1)
-           {:opt => "foo"}
+      context "when given cmdline args and no config file" do
+        setup do
+          @cmd_args = %w{--opt bar --another_opt baz another_action left overs}
+          @config.parse(@cmd_args) do |args|
+            args.slice!(0..3)
+            {:defopt => 56, :nopt => "baz"}
+          end
         end
-        assert_equal({:opt => "foo"}, @config.options)
-        assert_equal :another_action, @config.command
-        assert_equal %w{left overs},  cmd_args
+
+        should "have the parsed option defined" do
+          assert_equal "baz", @config.options[:nopt]
+        end
+
+        should "override default options with the options given as cmdline args" do
+          assert_equal 56, @config.options[:defopt]
+        end
+
+        should "parse cmdline args before the command" do
+          assert_equal({:defopt => 56, :nopt => "baz"}, @config.options)
+        end
+
+        should "identify the next argument after cmdline args as the command" do
+          assert_equal :another_action, @config.command
+        end
+
+        should "leave remaining args to be consumed by the command" do
+          assert_equal %w{left overs}, @cmd_args
+        end
       end
 
       context "when given no cmdline args and a config file" do
@@ -61,18 +86,9 @@ class StartupConfigTest < Test::Unit::TestCase
         should "have the parsed option defined" do
           assert_equal false, @config.options[:colors]
         end
-      end
 
-      context "when given cmdline args and no config file" do
-        setup do
-          @config.parse(%w{--opt foo}) do |args|
-            args.clear
-            {:opt => "foo"}
-          end
-        end
-
-        should "have the parsed option defined" do
-          assert_equal "foo", @config.options[:opt]
+        should "override default options with the options given from the config file" do
+          assert_equal 78, @config.options[:defopt]
         end
       end
 
@@ -80,16 +96,13 @@ class StartupConfigTest < Test::Unit::TestCase
         setup do
           @config.parse(%w{--colors}, TEST_CONFIG_FILE) do |args|
             args.clear
-            {:colors => true}
+            {:defopt => 56, :colors => true}
           end
         end
 
         should "the command line option should override the config file option" do
           assert_equal true, @config.options[:colors]
-        end
-
-        should "have nil for an undefined option" do
-          assert_nil @config.options[:num_statuses]
+          assert_equal 56, @config.options[:defopt]
         end
       end
     end

@@ -6,8 +6,8 @@ module Tweetwine
     EXIT_VERSION = 2
     EXIT_ERROR = 255
 
-    def self.launch(args, exec_name, config_file)
-      new(args, exec_name, config_file, &default_dependencies).execute(args)
+    def self.launch(args, exec_name, config_file, extra_opts = {})
+      new(args, exec_name, config_file, extra_opts, &default_dependencies).execute(args)
     rescue ArgumentError, HttpError => e
       puts "Error: #{e.message}"
       exit(EXIT_ERROR)
@@ -33,9 +33,9 @@ module Tweetwine
       end
     end
 
-    def initialize(args, exec_name, config_file, &dependencies_blk)
+    def initialize(args, exec_name, config_file, extra_opts = {}, &dependencies_blk)
       @global_option_parser = create_global_option_parser(exec_name)
-      @config = StartupConfig.new(Client::COMMANDS + [:help], Client::DEFAULT_COMMAND)
+      @config = StartupConfig.new(Client::COMMANDS + [:help], Client::DEFAULT_COMMAND, extra_opts)
       @config.parse(args, config_file, &@global_option_parser)
       @client = Client.new(dependencies_blk.call(@config.options), @config.options) if @config.command != :help
     end
