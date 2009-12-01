@@ -4,7 +4,7 @@ FakeWeb.register_uri(:post, "https://#{TEST_AUTH}@twitter.com/statuses/update.js
 
 Feature "update my status" do
   in_order_to "tell something about me to the world"
-  as_a "user"
+  as_a "authenticated user"
   i_want_to "update my status"
 
   STATUS = "bored. going to sleep."
