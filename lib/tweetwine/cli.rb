@@ -175,8 +175,8 @@ of each friend."
       :home => {
         :help => {
           :desc => \
-"Show the latest statuses of friends and own tweets (the public timeline of
-the authenticated user)."
+"Show the latest statuses of friends and own tweets (the home timeline of the
+authenticated user)."
         }
       },
       :mentions => {

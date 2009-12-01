@@ -30,10 +30,10 @@ program recognizes the following basic settings:
   password: <your_password>
   colors: true|false
 
-The program supports showing the public timeline of the authenticated user,
-the latest statuses of friends and followers, and the latest statuses that
-mention the user. If that's not enough, statuses can be searched with
-arbitrary terms. In addition, new statuses can be sent.
+The program supports showing the home timeline of the authenticated user, the
+latest statuses of friends and followers, and the latest statuses that mention
+the user. If that's not enough, statuses can be searched with arbitrary terms.
+In addition, new statuses can be sent.
 
 For all the global options and commands, see:
 
