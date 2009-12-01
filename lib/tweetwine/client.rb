@@ -31,7 +31,7 @@ module Tweetwine
     end
 
     def home(args = [], options = nil)
-      response = get_from_rest_api("statuses/friends_timeline", :num_statuses, :page)
+      response = get_from_rest_api("statuses/home_timeline", :num_statuses, :page)
       show_statuses_from_rest_api(*response)
     end
 

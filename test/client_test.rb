@@ -85,7 +85,7 @@ class ClientTest < Test::Unit::TestCase
           }
         )
         @http_resource.expects(:[]) \
-                      .with("statuses/friends_timeline.json?#{@rest_api_status_query_str}") \
+                      .with("statuses/home_timeline.json?#{@rest_api_status_query_str}") \
                       .returns(stub(:get => twitter_records.to_json))
         @io.expects(:show_record).with(internal_records[0])
         @io.expects(:show_record).with(internal_records[1])
