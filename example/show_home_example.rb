@@ -1,6 +1,6 @@
 require "example_helper"
 
-FakeWeb.register_uri(:get, "https://#{TEST_AUTH}@twitter.com/statuses/home_timeline.json?count=20&page=1", :body => fixture("latest_statuses.json"))
+FakeWeb.register_uri(:get, "https://#{TEST_AUTH}@twitter.com/statuses/home_timeline.json?count=20&page=1", :body => fixture("home.json"))
 
 Feature "show the latest statuses in the home timeline for the user" do
   in_order_to "stay up-to-date"

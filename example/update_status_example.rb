@@ -1,6 +1,6 @@
 require "example_helper"
 
-FakeWeb.register_uri(:post, "https://#{TEST_AUTH}@twitter.com/statuses/update.json", :body => fixture("update_status.json"))
+FakeWeb.register_uri(:post, "https://#{TEST_AUTH}@twitter.com/statuses/update.json", :body => fixture("update.json"))
 
 Feature "update my status" do
   in_order_to "tell something about me to the world"
