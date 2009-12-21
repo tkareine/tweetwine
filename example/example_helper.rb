@@ -8,6 +8,7 @@
   timecop
 }.each { |lib| require lib }
 
+FakeWeb.allow_net_connect = false
 Timecop.freeze(Time.parse("2009-10-14 01:56:15 +0300"))
 
 require "tweetwine"
