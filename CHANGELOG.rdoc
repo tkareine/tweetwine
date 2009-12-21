@@ -1,3 +1,7 @@
+=== 0.2.7 released 2009-12-22
+
+* Formatted help texts so that they do not exceed 80 chars in width.
+
 === 0.2.6 released 2009-12-22
 
 * Command <tt>search</tt> allows searching statuses.
