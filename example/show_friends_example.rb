@@ -1,6 +1,6 @@
 require "example_helper"
 
-FakeWeb.register_uri(:get, "https://#{TEST_AUTH}@twitter.com/statuses/friends/#{TEST_USER}.json?page=1", :body => fixture("users.json"))
+FakeWeb.register_uri(:get, "https://#{TEST_AUTH}@twitter.com/statuses/friends/#{TEST_USER}.json", :body => fixture("users.json"))
 
 Feature "show friends and their latest statuses" do
   in_order_to "to see who I follow"

@@ -64,7 +64,6 @@ class ClientTest < Test::Unit::TestCase
         @password = "lullaby"
         @client = Client.new(@deps, { :username => @username, :password => @password })
         @rest_api_status_query_str = "count=#{Client::DEFAULT_NUM_STATUSES}&page=#{Client::DEFAULT_PAGE_NUM}"
-        @rest_api_user_query_str = "page=#{Client::DEFAULT_PAGE_NUM}"
         @search_api_base_url = "http://search.twitter.com/search.json"
         @search_api_query_str = "rpp=#{Client::DEFAULT_NUM_STATUSES}&page=#{Client::DEFAULT_PAGE_NUM}"
       end
@@ -454,7 +453,7 @@ class ClientTest < Test::Unit::TestCase
           }
         )
         @http_resource.expects(:[]) \
-                      .with("statuses/friends/#{@username}.json?#{@rest_api_user_query_str}") \
+                      .with("statuses/friends/#{@username}.json") \
                       .returns(stub(:get => twitter_records.to_json))
         @io.expects(:show_record).with(internal_records[0])
         @io.expects(:show_record).with(internal_records[1])
@@ -477,7 +476,7 @@ class ClientTest < Test::Unit::TestCase
           }
         )
         @http_resource.expects(:[]) \
-                      .with("statuses/followers/#{@username}.json?#{@rest_api_user_query_str}") \
+                      .with("statuses/followers/#{@username}.json") \
                       .returns(stub(:get => twitter_records.to_json))
         @io.expects(:show_record).with(internal_records[0])
         @io.expects(:show_record).with(internal_records[1])

@@ -63,12 +63,12 @@ module Tweetwine
     end
 
     def friends(args = [], options = nil)
-      response = get_from_rest_api("statuses/friends/#{@username}", :page)
+      response = get_from_rest_api("statuses/friends/#{@username}")
       show_users_from_rest_api(*response)
     end
 
     def followers(args = [], options = nil)
-      response = get_from_rest_api("statuses/followers/#{@username}", :page)
+      response = get_from_rest_api("statuses/followers/#{@username}")
       show_users_from_rest_api(*response)
     end
 
@@ -83,7 +83,8 @@ module Tweetwine
 
     def get_from_rest_api(sub_url, *query_opts)
       query_str = query_options_to_string(query_opts, :page => "page", :num_statuses => "count")
-      JSON.parse(@http_resource[sub_url + ".json?#{query_str}"].get)
+      url_suffix = unless query_str.empty? then "?" << query_str else "" end
+      JSON.parse(@http_resource[sub_url + ".json" + url_suffix].get)
     end
 
     def post_to_rest_api(sub_url, payload)
