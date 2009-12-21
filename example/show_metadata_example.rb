@@ -26,10 +26,32 @@ Feature "show metadata" do
     end
 
     Then "help is shown" do
-      @output[2].should =~ /^Usage:.* \[global_options\.\.\.\] \[command\] \[command_options\.\.\.\]/
-      @output[4].should =~ /\[command\] is one of \{#{Client::COMMANDS.join(", ")}\},/
-      @output[5].should =~ /defaulting to #{Client::DEFAULT_COMMAND}/
-      @output[7].should =~ /\[global_options\]:$/
+      @output.join.should == <<-END
+A simple but tasty Twitter agent for command line use, made for fun.
+
+Usage: tweetwine [global_options...] [command] [command_options...]
+
+  [command] is one of
+    * followers,
+    * friends,
+    * home,
+    * mentions,
+    * search,
+    * update, or
+    * user.
+
+  The default command is home.
+
+  [global_options]:
+    -a, --auth USERNAME:PASSWORD     Authentication
+    -c, --colors                     Colorize output with ANSI escape codes
+    -n, --num N                      The number of statuses in page, default 20
+        --no-colors                  Do not use ANSI colors
+        --no-url-shorten             Do not shorten URLs for status update
+    -p, --page N                     The page number for statuses, default 1
+    -v, --version                    Show version information and exit
+    -h, --help                       Show this help message and exit
+      END
       @status.exitstatus.should == CLI::EXIT_HELP
     end
   end

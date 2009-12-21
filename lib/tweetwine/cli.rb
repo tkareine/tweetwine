@@ -86,8 +86,11 @@ module Tweetwine
 
 Usage: #{exec_name} [global_options...] [command] [command_options...]
 
-  [command] is one of {#{Client::COMMANDS.join(", ")}},
-  defaulting to #{Client::DEFAULT_COMMAND}.
+  [command] is one of
+    * #{Client::COMMANDS[0...-1].join(",\n    * ")}, or
+    * #{Client::COMMANDS.last}.
+
+  The default command is #{Client::DEFAULT_COMMAND}.
 
   [global_options]:
 ",
@@ -108,12 +111,12 @@ Usage: #{exec_name} [global_options...] [command] [command_options...]
               :short  => "-n",
               :long   => "--num N",
               :type   => Integer,
-              :desc   => "The number of statuses to fetch, defaults to #{Client::DEFAULT_NUM_STATUSES}",
+              :desc   => "The number of statuses in page, default #{Client::DEFAULT_NUM_STATUSES}",
               :action => lambda { |arg| parsed[:num_statuses] = arg }
             },
             {
               :long   => "--no-colors",
-              :desc   => "Do not colorize output with ANSI escape codes",
+              :desc   => "Do not use ANSI colors",
               :action => lambda { |arg| parsed[:colors] = false }
             },
             {
@@ -125,7 +128,7 @@ Usage: #{exec_name} [global_options...] [command] [command_options...]
               :short  => "-p",
               :long   => "--page N",
               :type   => Integer,
-              :desc   => "The page number of the statuses to fetch, defaults to #{Client::DEFAULT_PAGE_NUM}",
+              :desc   => "The page number for statuses, default #{Client::DEFAULT_PAGE_NUM}",
               :action => lambda { |arg| parsed[:page_num] = arg }
             },
             {
@@ -168,8 +171,8 @@ of each follower."
       :friends => {
         :help => {
           :desc => \
-"Show the friends of the authenticated user, together with the latest status
-of each friend."
+"Show the friends of the authenticated user, together with the latest status of
+each friend."
         }
       },
       :home => {
