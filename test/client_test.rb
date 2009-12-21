@@ -485,6 +485,10 @@ class ClientTest < Test::Unit::TestCase
       end
 
       context "for searching tweets" do
+        should "raise exception if no search word is given" do
+          assert_raise(ArgumentError) { @client.search() }
+        end
+
         should "allow searching for tweets that match all the given words" do
           twitter_response, internal_records = create_test_twitter_records_from_search_api(
             {

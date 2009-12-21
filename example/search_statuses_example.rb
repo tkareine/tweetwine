@@ -20,4 +20,17 @@ Feature "search statuses" do
       @output[4].should == "braid is even better than of the games i'm in, expect re4"
     end
   end
+
+  Scenario "attempt searching without specifying search word" do
+    When "application is launched 'search' command without extra arguments" do
+      @status = launch_app("-a anyuser:anypwd --no-colors -n 2 search") do |pid, stdin, stdout|
+        @output = stdout.readlines
+      end
+    end
+
+    Then "the latest statuses that match the search are shown" do
+      @output[0].should == "Error: No search word\n"
+      @status.exitstatus.should == CLI::EXIT_ERROR
+    end
+  end
 end
