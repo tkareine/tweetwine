@@ -7,12 +7,12 @@ Feature "show the latest statuses mentioning the user" do
   as_a "authenticated user"
   i_want_to "see the latest statuses that mention me"
 
-  Scenario "see mentions with colorization disabled" do
-    When "application is launched 'mentions' command" do
+  Scenario "see the latest statuses that mention me" do
+    When "application is launched with 'mentions' command" do
       @output = launch_cli(%W{-a #{TEST_AUTH} --no-colors mentions})
     end
 
-    Then "the latest statuses mentioning the user are shown" do
+    Then "the latest statuses that mention me are shown" do
       @output[0].should == "jillv, in reply to fooman, 3 days ago:"
       @output[1].should == "@fooman, did you see their eyes glow yellow after sunset?"
       @output[2].should == ""

@@ -7,12 +7,12 @@ Feature "search statuses" do
   as_a "any user"
   i_want_to "see latest statuses that match the search"
 
-  Scenario "see statuses that match to the search" do
-    When "application is launched 'search' command" do
+  Scenario "see statuses that match the search" do
+    When "application is launched 'search' command and search words as extra arguments" do
       @output = launch_cli(%W{-a anyuser:anypwd --no-colors -n 2 search braid game})
     end
 
-    Then "the latest statuses matching the search are shown" do
+    Then "the latest statuses that match the search are shown" do
       @output[0].should == "thatswhatshesaid, in reply to hatguy, 5 hours ago:"
       @output[1].should == "@hatguy braid, perhaps the best indie game of 2009"
       @output[2].should == ""
