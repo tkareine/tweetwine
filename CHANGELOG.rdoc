@@ -1,4 +1,4 @@
-=== Unreleased
+=== 0.2.6 released 2009-12-22
 
 * Command <tt>search</tt> allows searching statuses.
 * Renamed option <tt>--colorize</tt> to <tt>--colors</tt>.
