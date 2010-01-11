@@ -40,24 +40,26 @@ class ClientTest < Test::Unit::TestCase
       assert_raise(HttpError) { @client.get("https://unresolved.org") }
     end
 
-    should "retry connection upon connection reset" do
-      retrying_calls = sequence("Retrying Client calls")
-      RestClient.expects(:get).with("https://moderate.traffic.org").in_sequence(retrying_calls).raises(Errno::ECONNRESET)
-      RestClient.expects(:get).with("https://moderate.traffic.org").in_sequence(retrying_calls)
-      @io.expects(:warn).with("Could not connect -- retrying in 4 seconds")
-      @client.get("https://moderate.traffic.org")
-    end
+    [Errno::ECONNRESET, RestClient::RequestTimeout].each do |error_class|
+      should "retry connection upon connection reset, case #{error_class}" do
+        retrying_calls = sequence("Retrying Client calls")
+        RestClient.expects(:get).with("https://moderate.traffic.org").in_sequence(retrying_calls).raises(error_class)
+        RestClient.expects(:get).with("https://moderate.traffic.org").in_sequence(retrying_calls)
+        @io.expects(:warn).with("Could not connect -- retrying in 4 seconds")
+        @client.get("https://moderate.traffic.org")
+      end
 
-    should "retry connection a maximum of certain number of times" do
-      retrying_calls = sequence("Retrying Client calls")
-      io_calls = sequence("IO")
-      Client::MAX_RETRIES.times do
-        RestClient.expects(:get).with("https://unresponsive.org").in_sequence(retrying_calls).raises(Errno::ECONNRESET)
+      should "retry connection a maximum of certain number of times, case #{error_class}" do
+        retrying_calls = sequence("Retrying Client calls")
+        io_calls = sequence("IO")
+        Client::MAX_RETRIES.times do
+          RestClient.expects(:get).with("https://unresponsive.org").in_sequence(retrying_calls).raises(error_class)
+        end
+        (Client::MAX_RETRIES - 1).times do
+          @io.expects(:warn).in_sequence(io_calls)
+        end
+        assert_raise(HttpError) { @client.get("https://unresponsive.org") }
       end
-      (Client::MAX_RETRIES - 1).times do
-        @io.expects(:warn).in_sequence(io_calls)
-      end
-      assert_raise(HttpError) { @client.get("https://unresponsive.org") }
     end
 
     should "return a resource with IO inherited from the client" do
@@ -101,24 +103,26 @@ class ResourceTest < Test::Unit::TestCase
       assert_raise(HttpError) { @resource.get }
     end
 
-    should "retry connection upon connection reset" do
-      retrying_calls = sequence("Retrying Resource calls")
-      @wrapped.expects(:get).in_sequence(retrying_calls).raises(Errno::ECONNRESET)
-      @wrapped.expects(:get).in_sequence(retrying_calls)
-      @io.expects(:warn).with("Could not connect -- retrying in 4 seconds")
-      @resource.get
-    end
+    [Errno::ECONNRESET, RestClient::RequestTimeout].each do |error_class|
+      should "retry connection upon connection reset, case #{error_class}" do
+        retrying_calls = sequence("Retrying Resource calls")
+        @wrapped.expects(:get).in_sequence(retrying_calls).raises(error_class)
+        @wrapped.expects(:get).in_sequence(retrying_calls)
+        @io.expects(:warn).with("Could not connect -- retrying in 4 seconds")
+        @resource.get
+      end
 
-    should "retry connection a maximum of certain number of times" do
-      retrying_calls = sequence("Retrying Resource calls")
-      io_calls = sequence("IO")
-      Resource::MAX_RETRIES.times do
-        @wrapped.expects(:get).in_sequence(retrying_calls).raises(Errno::ECONNRESET)
+      should "retry connection a maximum of certain number of times, case #{error_class}" do
+        retrying_calls = sequence("Retrying Resource calls")
+        io_calls = sequence("IO")
+        Resource::MAX_RETRIES.times do
+          @wrapped.expects(:get).in_sequence(retrying_calls).raises(error_class)
+        end
+        (Resource::MAX_RETRIES - 1).times do
+          @io.expects(:warn).in_sequence(io_calls)
+        end
+        assert_raise(HttpError) { @resource.get }
       end
-      (Resource::MAX_RETRIES - 1).times do
-        @io.expects(:warn).in_sequence(io_calls)
-      end
-      assert_raise(HttpError) { @resource.get }
     end
   end
 end
