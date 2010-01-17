@@ -90,6 +90,7 @@ module Tweetwine
     end
 
     def format_status(status)
+      status = Util.unescape_html(status)
       if @colors
         status = colorize_all_by_group(:yellow, status, USERNAME_REGEX)
         status = colorize_all_by_group(:magenta, status, HASHTAG_REGEX)

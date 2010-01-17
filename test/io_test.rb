@@ -99,6 +99,27 @@ class IOTest < Test::Unit::TestCase
         @io.show_record(record)
       end
 
+
+      should "unescape HTML in a status" do
+        from_user = "fooman"
+        escaped_status = "apple &gt; orange &amp; grapefruit &lt; banana"
+        unescaped_status = "apple > orange & grapefruit < banana"
+        record = {
+          :from_user  => from_user,
+          :status     => escaped_status,
+          :created_at => Time.at(1),
+          :to_user    => nil
+        }
+        Util.expects(:humanize_time_diff).returns([2, "secs"])
+        @output.expects(:puts).with(<<-END
+#{from_user}, 2 secs ago:
+#{unescaped_status}
+
+        END
+        )
+        @io.show_record(record)
+      end
+
       should "output a preview of a status" do
         status = "@nick, check http://bit.ly/18rU_Vx"
         @output.expects(:puts).with(<<-END
