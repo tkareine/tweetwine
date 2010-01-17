@@ -120,7 +120,7 @@ class UtilTest < Test::Unit::TestCase
       assert_equal "_", Util.percent_encode("_")
     end
 
-    should "encode space character with precent-encoding, not with '+' character" do
+    should "encode space character with percent-encoding, not with '+' character" do
       assert_equal "%20", Util.percent_encode(" ")
     end
 
