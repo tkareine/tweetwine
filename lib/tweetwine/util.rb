@@ -1,3 +1,4 @@
+require "cgi"
 require "time"
 require "uri"
 
@@ -62,6 +63,10 @@ module Tweetwine
 
     def self.percent_encode(str)
       URI.escape(str.to_s, /[^#{URI::PATTERN::UNRESERVED}]/)
+    end
+
+    def self.unescape_html(str)
+      CGI.unescapeHTML(str.gsub('&nbsp;', ' '))
     end
 
     def self.find_hash_path(hash, path)

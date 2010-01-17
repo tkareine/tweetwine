@@ -138,6 +138,26 @@ class UtilTest < Test::Unit::TestCase
     end
   end
 
+  context "for unescaping HTML" do
+    should "not affect already unescaped characters" do
+      assert_equal "a", Util.unescape_html("a")
+      assert_equal "B", Util.unescape_html("B")
+      assert_equal "3", Util.unescape_html("3")
+      assert_equal ".", Util.unescape_html(".")
+      assert_equal "-", Util.unescape_html("-")
+      assert_equal "_", Util.unescape_html("_")
+      assert_equal "+", Util.unescape_html("+")
+    end
+
+    should "unescape HTML-escaped characters" do
+      assert_equal "<",  Util.unescape_html("&lt;")
+      assert_equal ">",  Util.unescape_html("&gt;")
+      assert_equal "&",  Util.unescape_html("&amp;")
+      assert_equal "\"", Util.unescape_html("&quot;")
+      assert_equal " ",  Util.unescape_html("&nbsp;")
+    end
+  end
+
   context "for traversing a hash with a path expression for finding a value" do
     setup do
       @inner_hash = {
