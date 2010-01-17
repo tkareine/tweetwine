@@ -83,4 +83,5 @@ com >.
 
 == Legal notes
 
-Copyright (c) 2009 Tuomas Kareinen. See MIT-LICENSE.txt in this directory.
+Copyright (c) 2009-2010 Tuomas Kareinen. See MIT-LICENSE.txt in this
+directory.
