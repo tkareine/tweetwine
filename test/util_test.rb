@@ -111,50 +111,47 @@ class UtilTest < Test::Unit::TestCase
   end
 
   context "for percent-encoding strings" do
-    should "not encode safe characters" do
-      assert_equal "a", Util.percent_encode("a")
-      assert_equal "B", Util.percent_encode("B")
-      assert_equal "3", Util.percent_encode("3")
-      assert_equal ".", Util.percent_encode(".")
-      assert_equal "-", Util.percent_encode("-")
-      assert_equal "_", Util.percent_encode("_")
+    %w{a B 3 . - _}.each do |char|
+      should "not encode safe characters, case '#{char}'" do
+        assert_equal char, Util.percent_encode(char)
+      end
     end
 
     should "encode space character with percent-encoding, not with '+' character" do
       assert_equal "%20", Util.percent_encode(" ")
     end
 
-    should "encode unsafe characters that URI.encode leaves by default unencoded" do
-      assert_equal "&",   URI.encode("&")
-      assert_equal "%26", Util.percent_encode("&")
-      assert_equal "?",   URI.encode("?")
-      assert_equal "%3F", Util.percent_encode("?")
-      assert_equal "/",   URI.encode("/")
-      assert_equal "%2F", Util.percent_encode("/")
-      assert_equal ":",   URI.encode(":")
-      assert_equal "%3A", Util.percent_encode(":")
-      assert_equal ",",   URI.encode(",")
-      assert_equal "%2C", Util.percent_encode(",")
+    [
+      %w{& %26},
+      %w{? %3F},
+      %w{/ %2F},
+      %w{: %3A},
+      %w{, %2C}
+    ].each do |input, expected|
+      should "encode unsafe characters that URI.encode leaves by default unencoded, case '#{input}'" do
+        assert_equal input, URI.encode(input)
+        assert_equal expected, Util.percent_encode(input)
+      end
     end
   end
 
   context "for unescaping HTML" do
-    should "not affect already unescaped characters" do
-      assert_equal "a", Util.unescape_html("a")
-      assert_equal "B", Util.unescape_html("B")
-      assert_equal "3", Util.unescape_html("3")
-      assert_equal ".", Util.unescape_html(".")
-      assert_equal "-", Util.unescape_html("-")
-      assert_equal "_", Util.unescape_html("_")
-      assert_equal "+", Util.unescape_html("+")
+    %w{a B 3 . - _ +}.each do |char|
+      should "not affect already unescaped characters, case '#{char}'" do
+        assert_equal char, Util.unescape_html(char)
+      end
     end
 
-    should "unescape HTML-escaped characters" do
-      assert_equal "<",  Util.unescape_html("&lt;")
-      assert_equal ">",  Util.unescape_html("&gt;")
-      assert_equal "&",  Util.unescape_html("&amp;")
-      assert_equal "\"", Util.unescape_html("&quot;")
-      assert_equal " ",  Util.unescape_html("&nbsp;")
+    [
+      %w{&lt;   <},
+      %w{&gt;   >},
+      %w{&amp;  &},
+      %w{&quot; "},
+      %W{&nbsp; \ }
+    ].each do |input, expected|
+      should "unescape HTML-escaped characters, case '#{input}'" do
+        assert_equal expected, Util.unescape_html(input)
+      end
     end
   end
 
