@@ -2,6 +2,14 @@
 
 A simple but tasty Twitter agent for command line use, made for fun.
 
+== Features
+
+* Simple to use command line interface, with Bash completion support
+* ANSI coloring of statuses, but in discreet manner
+* Supports shortening URLs in a status update with a configurable shortening
+  service
+* Configuration file for preferred settings
+
 == Installation
 
 Install Tweetwine as a RubyGem from Gemcutter[http://gemcutter.org/]:
