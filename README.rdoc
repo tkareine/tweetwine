@@ -76,6 +76,21 @@ The feature can be disabled by
 
 The use of the feature requires <b>nokogiri</b> gem to be installed.
 
+=== Bash command line completion support
+
+Bash shell supports command line completion via tab character. If you want to
+enable Tweetwine specific completion with Bash, source the file
+<tt>tweetwine-completion.bash</tt>, located in <tt>contrib</tt> directory:
+
+  . contrib/tweetwine-completion.bash
+
+In order to do this automatically when your shell starts, insert the following
+snippet to your Bash initialization script (such as <tt>~/.bashrc</tt>):
+
+  if [ -f <path_to_tweetwine>/contrib/tweetwine-completion.bash ]; then
+      . <path_to_tweetwine>/contrib/tweetwine-completion.bash
+  fi
+
 == Contacting
 
 Please send feedback by email to Tuomas Kareinen < tkareine (at) gmail (dot)
