@@ -51,7 +51,7 @@ class StartupConfigTest < Test::Unit::TestCase
         end
       end
 
-      context "when given cmdline args and no config file" do
+      context "when given cmdline args and no config file and no environment variables" do
         setup do
           @cmd_args = %w{--opt bar --another_opt baz another_action left overs}
           @config.parse(@cmd_args) do |args|
@@ -81,7 +81,7 @@ class StartupConfigTest < Test::Unit::TestCase
         end
       end
 
-      context "when given no cmdline args and a config file" do
+      context "when given a config file and no cmdline args and no environment variables" do
         setup do
           @config.parse([], TEST_CONFIG_FILE)
         end
@@ -95,17 +95,62 @@ class StartupConfigTest < Test::Unit::TestCase
         end
       end
 
-      context "when given an option both as a cmdline option and in a config file" do
+      context "when given an environment variable and no cmdline args no config file" do
         setup do
-          @config.parse(%w{--colors}, TEST_CONFIG_FILE) do |args|
+          ENV['colors'] = "baba"
+          ENV['defopt'] = "zaza"
+          ENV['blank'] = ""
+          @config.parse([], nil, [:colors, :defopt])
+        end
+
+        should "have the parsed option defined" do
+          assert_equal "baba", @config.options[:colors]
+        end
+
+        should "override default value for the option given as an environment variable" do
+          assert_equal "zaza", @config.options[:defopt]
+        end
+
+        should "not pass blank environment variable" do
+          assert_equal nil, @config.options[:blank]
+        end
+
+        teardown do
+          ENV['colors'] = ENV['defopt'] = ENV['blank'] = nil
+        end
+      end
+
+      context "when given an option as a cmdline option and in a config file and as an environment variable" do
+        setup do
+          @config.parse(%w{--colors}, TEST_CONFIG_FILE, [:colors, :defopt]) do |args|
             args.clear
             {:defopt => 56, :colors => true}
           end
         end
 
-        should "the command line option should override the config file option" do
+        should "the command line option should override all other option sources" do
           assert_equal true, @config.options[:colors]
           assert_equal 56, @config.options[:defopt]
+        end
+      end
+
+      context "when given an option from a config file and as an environment variable" do
+        setup do
+          ENV['colors'] = "baba"
+          ENV['defopt'] = "zaza"
+          @config.parse(%w{}, TEST_CONFIG_FILE, [:colors, :defopt]) do |args|
+            args.clear
+            {}
+          end
+        end
+
+        should "the config file option should override environment variable" do
+          assert_equal false, @config.options[:colors]
+          assert_equal 78, @config.options[:defopt]
+        end
+
+        teardown do
+          ENV['colors'] = ENV['defopt'] = nil
         end
       end
     end
