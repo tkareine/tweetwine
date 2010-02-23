@@ -47,12 +47,12 @@ end
 
 desc "Install the software as a gem"
 task :install => [:package] do
-  sh %{sudo gem install pkg/#{name}-#{version}.gem}
+  sh %{gem install pkg/#{name}-#{version}.gem}
 end
 
 desc "Uninstall the gem"
 task :uninstall => [:clean] do
-  sh %{sudo gem uninstall #{name}}
+  sh %{gem uninstall #{name}}
 end
 
 require "rake/rdoctask"
