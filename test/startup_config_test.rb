@@ -61,7 +61,7 @@ class StartupConfigTest < Test::Unit::TestCase
           assert_equal "baz", @config.options[:nopt]
         end
 
-        should "override default options with the options given as cmdline args" do
+        should "override the default value for the option given as a cmdline arg" do
           assert_equal 56, @config.options[:defopt]
         end
 
@@ -87,7 +87,7 @@ class StartupConfigTest < Test::Unit::TestCase
           assert_equal false, @config.options[:colors]
         end
 
-        should "override default options with the options given from the config file" do
+        should "override the default value for the option given from the config file" do
           assert_equal 78, @config.options[:defopt]
         end
       end
