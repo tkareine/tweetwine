@@ -36,7 +36,7 @@ module Tweetwine
     def initialize(args, exec_name, config_file, extra_opts = {}, &dependencies_blk)
       @global_option_parser = create_global_option_parser(exec_name)
       @config = StartupConfig.new(Client::COMMANDS + [:help], Client::DEFAULT_COMMAND, extra_opts)
-      @config.parse(args, config_file, &@global_option_parser)
+      @config.parse(args, config_file, [:http_proxy], &@global_option_parser)
       @client = Client.new(dependencies_blk.call(@config.options), @config.options) if @config.command != :help
     end
 
@@ -130,6 +130,12 @@ Usage: #{exec_name} [global_options...] [command] [command_options...]
               :type   => Integer,
               :desc   => "The page number for statuses, default #{Client::DEFAULT_PAGE_NUM}",
               :action => lambda { |arg| parsed[:page_num] = arg }
+            },
+            {
+              :long   => "--http-proxy URL",
+              :type   => String,
+              :desc   => "Use proxy for HTTP and HTTPS",
+              :action => lambda { |arg| parsed[:http_proxy] = arg }
             },
             {
               :short  => "-v",
