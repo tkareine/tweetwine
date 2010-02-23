@@ -4,7 +4,7 @@ require "rubygems"
 
 name = "tweetwine"
 require "#{name}"
-version = Tweetwine::VERSION
+version = Tweetwine::VERSION.dup
 
 require "rake/clean"
 
