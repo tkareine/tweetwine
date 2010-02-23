@@ -120,6 +120,11 @@ Usage: #{exec_name} [global_options...] [command] [command_options...]
               :action => lambda { |arg| parsed[:colors] = false }
             },
             {
+              :long   => "--no-http-proxy",
+              :desc   => "Do not use proxy for HTTP and HTTPS",
+              :action => lambda { |arg| parsed[:http_proxy] = nil }
+            },
+            {
               :long   => "--no-url-shorten",
               :desc   => "Do not shorten URLs for status update",
               :action => lambda { |arg| parsed[:shorten_urls] = { :enable => false } }
