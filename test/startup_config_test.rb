@@ -26,7 +26,10 @@ class StartupConfigTest < Test::Unit::TestCase
 
     context "at runtime" do
       setup do
-        @config = StartupConfig.new([:default_action, :another_action], :default_action, {:defopt => 42})
+        @config = StartupConfig.new(
+          [:default_action, :another_action],
+          :default_action,
+          {:defopt => 42})
       end
 
       should "use the default command when given no command as a cmdline argument" do
