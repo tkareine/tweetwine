@@ -84,6 +84,13 @@ The feature can be disabled by
 
 The use of the feature requires <b>nokogiri</b> gem to be installed.
 
+=== HTTP proxy setting
+
+If <tt>$http_proxy</tt> environment variable is set, Tweetwine attempts to use
+the URL in the environment variable as HTTP proxy for all its HTTP
+connections. This setting can be overridden with <tt>--http-proxy</tt> and
+<tt>--no-http-proxy</tt> command line options.
+
 === Bash command line completion support
 
 Bash shell supports command line completion via tab character. If you want to
