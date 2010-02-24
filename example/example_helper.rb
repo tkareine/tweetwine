@@ -19,6 +19,7 @@ module Tweetwine
     TEST_USER = "fooman"
     TEST_PASSWD = "barpwd"
     TEST_AUTH = "#{TEST_USER}:#{TEST_PASSWD}"
+    TEST_PROXY_URL = "http://proxy.net:8080"
 
     def launch_app(args, &blk)
       lib = File.dirname(__FILE__) << "/../lib"
