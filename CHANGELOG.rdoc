@@ -1,3 +1,8 @@
+=== 0.2.9 released 2010-02-24
+
+* HTTP proxy support
+* A Bash completion support script is packed in the gem
+
 === 0.2.8 released 2010-01-17
 
 * Unescape basic HTML encoding when displaying statuses
