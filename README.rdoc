@@ -12,9 +12,9 @@ A simple but tasty Twitter agent for command line use, made for fun.
 
 == Installation
 
-Install Tweetwine as a RubyGem from Gemcutter[http://gemcutter.org/]:
+Install Tweetwine as a RubyGem:
 
-  $ gem install tweetwine --source http://gemcutter.org
+  $ gem install tweetwine
 
 The program is compatible with both Ruby 1.8 and 1.9.
 
