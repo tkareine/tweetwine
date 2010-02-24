@@ -47,8 +47,10 @@ Usage: tweetwine [global_options...] [command] [command_options...]
     -c, --colors                     Colorize output with ANSI escape codes
     -n, --num N                      The number of statuses in page, default 20
         --no-colors                  Do not use ANSI colors
+        --no-http-proxy              Do not use proxy for HTTP and HTTPS
         --no-url-shorten             Do not shorten URLs for status update
     -p, --page N                     The page number for statuses, default 1
+        --http-proxy URL             Use proxy for HTTP and HTTPS
     -v, --version                    Show version information and exit
     -h, --help                       Show this help message and exit
       END

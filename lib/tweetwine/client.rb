@@ -18,6 +18,7 @@ module Tweetwine
       @io = dependencies.io
       @username = options[:username].to_s
       raise ArgumentError, "No authentication data given" if @username.empty?
+      RetryingHttp.proxy = options[:http_proxy] if options[:http_proxy]
       @http_client = dependencies.http_client
       @http_resource = @http_client.as_resource("https://twitter.com", :user => @username, :password => options[:password])
       @num_statuses = Util.parse_int_gt(options[:num_statuses], DEFAULT_NUM_STATUSES, 1, "number of statuses_to_show")

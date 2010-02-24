@@ -8,6 +8,22 @@ end
 module Tweetwine
 module RetryingHttp
 
+class ModuleTest < Test::Unit::TestCase
+  context "When using HTTP proxy" do
+    setup do
+      RetryingHttp.proxy = "http://proxy.net:8080"
+    end
+
+    should "pass HTTP proxy configuration to RestClient" do
+      assert_equal "http://proxy.net:8080", RestClient.proxy
+    end
+
+    teardown do
+      RetryingHttp.proxy = nil
+    end
+  end
+end
+
 class ClientTest < Test::Unit::TestCase
   context "A Client instance" do
     setup do

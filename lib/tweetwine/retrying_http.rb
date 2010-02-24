@@ -4,6 +4,10 @@ module Tweetwine
   class HttpError < RuntimeError; end
 
   module RetryingHttp
+    def self.proxy=(url)
+      RestClient.proxy = url
+    end
+
     class Base
       MAX_RETRIES = 3
       RETRY_BASE_WAIT_TIMEOUT = 4
