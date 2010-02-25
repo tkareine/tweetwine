@@ -29,7 +29,7 @@ module Tweetwine
     end
 
     def parse_cmdline_args(args, &cmd_option_parser)
-      cmd_option_parser.call(args)
+      yield args
     end
 
     def parse_config_file(config_file)

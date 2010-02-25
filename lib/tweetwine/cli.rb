@@ -37,7 +37,7 @@ module Tweetwine
       @global_option_parser = create_global_option_parser(exec_name)
       @config = StartupConfig.new(Client::COMMANDS + [:help], Client::DEFAULT_COMMAND, extra_opts)
       @config.parse(args, config_file, [:http_proxy], &@global_option_parser)
-      @client = Client.new(dependencies_blk.call(@config.options), @config.options) if @config.command != :help
+      @client = Client.new(yield(@config.options), @config.options) if @config.command != :help
     end
 
     def show_help_command_and_exit(args)
