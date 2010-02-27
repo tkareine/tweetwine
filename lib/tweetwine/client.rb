@@ -28,7 +28,6 @@ module Tweetwine
       else
         nil
       end
-      @status_update_factory = StatusUpdateFactory.new(@io, @url_shortener)
     end
 
     def home(args = [], options = nil)
@@ -48,8 +47,7 @@ module Tweetwine
     end
 
     def update(args = [], options = nil)
-      new_status = if args.empty? then nil else args.join(" ") end
-      new_status = @status_update_factory.create(new_status)
+      new_status = create_status_update(args.join(" "))
       completed = false
       unless new_status.empty?
         @io.show_status_preview(new_status)
@@ -158,57 +156,32 @@ module Tweetwine
       end
     end
 
-    class StatusUpdateFactory
-      def initialize(io, url_shortener)
-        @io = io
-        @url_shortener = url_shortener
+    def create_status_update(status)
+      status = if status.nil? || status.empty?
+        @io.prompt("Status update")
+      else
+        status.dup
       end
-
-      def create(status)
-        StatusUpdate.new(status, @io, @url_shortener).to_s
-      end
+      status.strip!
+      shorten_urls_in(status) if @url_shortener
+      truncate_status(status) if status.length > MAX_STATUS_LENGTH
+      status
     end
 
-    class StatusUpdate
-      def initialize(status, io, url_shortener)
-        @io = io
-        @url_shortener = url_shortener
-        @text = prepare(status)
+    def shorten_urls_in(status)
+      url_pairs = URI.extract(status, ["http", "https"]).uniq.map do |url_to_be_shortened|
+        [url_to_be_shortened, @url_shortener.shorten(url_to_be_shortened)]
       end
-
-      def to_s
-        @text.to_s
+      url_pairs.reject { |pair| pair.last.nil? || pair.last.empty? }.each do |url_pair|
+        status.gsub!(url_pair.first, url_pair.last)
       end
+    rescue HttpError, LoadError => e
+      @io.warn "#{e}. Skipping URL shortening..."
+    end
 
-      private
-
-      def prepare(status)
-        status = unless status
-          @io.prompt("Status update")
-        else
-          status.dup
-        end
-        status.strip!
-        shorten_urls!(status) if @url_shortener
-        truncate!(status) if status.length > MAX_STATUS_LENGTH
-        status
-      end
-
-      def truncate!(status)
-        status.replace status[0...MAX_STATUS_LENGTH]
-        @io.warn("Status will be truncated.")
-      end
-
-      def shorten_urls!(status)
-        url_pairs = URI.extract(status, ["http", "https"]).uniq.map do |url_to_be_shortened|
-          [url_to_be_shortened, @url_shortener.shorten(url_to_be_shortened)]
-        end
-        url_pairs.reject { |pair| pair.last.nil? || pair.last.empty? }.each do |url_pair|
-          status.gsub!(url_pair.first, url_pair.last)
-        end
-      rescue HttpError, LoadError => e
-        @io.warn "#{e}. Skipping URL shortening..."
-      end
+    def truncate_status(status)
+      status.replace status[0...MAX_STATUS_LENGTH]
+      @io.warn("Status will be truncated.")
     end
   end
 end
