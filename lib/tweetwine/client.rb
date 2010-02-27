@@ -25,8 +25,6 @@ module Tweetwine
       @page_num = Util.parse_int_gt(options[:page_num], DEFAULT_PAGE_NUM, 1, "page number")
       @url_shortener = if options[:shorten_urls] && options[:shorten_urls][:enable]
         dependencies.url_shortener.call(options[:shorten_urls])
-      else
-        nil
       end
     end
 
