@@ -28,6 +28,16 @@ module Tweetwine
       end
     end
 
+    def followers(args = [], options = nil)
+      response = get_from_rest_api("statuses/followers/#{@username}")
+      show_users_from_rest_api(*response)
+    end
+
+    def friends(args = [], options = nil)
+      response = get_from_rest_api("statuses/friends/#{@username}")
+      show_users_from_rest_api(*response)
+    end
+
     def home(args = [], options = nil)
       response = get_from_rest_api("statuses/home_timeline", :num_statuses, :page)
       show_statuses_from_rest_api(*response)
@@ -38,10 +48,11 @@ module Tweetwine
       show_statuses_from_rest_api(*response)
     end
 
-    def user(args = [], options = nil)
-      user = if args.empty? then @username else args.first end
-      response = get_from_rest_api("statuses/user_timeline/#{user}", :num_statuses, :page)
-      show_statuses_from_rest_api(*response)
+    def search(args = [], options = nil)
+      raise ArgumentError, "No search word" if args.empty?
+      query = if options && options[:bin_op] == :or then args.join(" OR ") else args.join(" ") end
+      response = get_from_search_api(query, :num_statuses, :page)
+      show_statuses_from_search_api(*response["results"])
     end
 
     def update(args = [], options = nil)
@@ -59,21 +70,10 @@ module Tweetwine
       @io.info "Cancelled." unless completed
     end
 
-    def friends(args = [], options = nil)
-      response = get_from_rest_api("statuses/friends/#{@username}")
-      show_users_from_rest_api(*response)
-    end
-
-    def followers(args = [], options = nil)
-      response = get_from_rest_api("statuses/followers/#{@username}")
-      show_users_from_rest_api(*response)
-    end
-
-    def search(args = [], options = nil)
-      raise ArgumentError, "No search word" if args.empty?
-      query = if options && options[:bin_op] == :or then args.join(" OR ") else args.join(" ") end
-      response = get_from_search_api(query, :num_statuses, :page)
-      show_statuses_from_search_api(*response["results"])
+    def user(args = [], options = nil)
+      user = if args.empty? then @username else args.first end
+      response = get_from_rest_api("statuses/user_timeline/#{user}", :num_statuses, :page)
+      show_statuses_from_rest_api(*response)
     end
 
     private
