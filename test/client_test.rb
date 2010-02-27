@@ -220,6 +220,7 @@ class ClientTest < Test::Unit::TestCase
 
         should "cancel a status update via argument, when empty status" do
           @http_resource.expects(:[]).never
+          @io.expects(:prompt).with("Status update").returns("")
           @io.expects(:confirm).never
           @io.expects(:info).with("Cancelled.")
           @io.expects(:show_record).never
