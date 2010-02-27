@@ -46,7 +46,7 @@ module Tweetwine
     end
 
     def show_record(record)
-      clean_record!(record)
+      clean_record(record)
       if record[:status]
         show_record_as_user_with_status(record)
       else
@@ -56,10 +56,10 @@ module Tweetwine
 
     private
 
-    def clean_record!(record)
+    def clean_record(record)
       record.each_pair do |key, value|
         if value.is_a? Hash
-          clean_record!(value)
+          clean_record(value)
         else
           unless value.nil?
             value = value.to_s
