@@ -1,3 +1,7 @@
+=== 0.2.11 released 2010-02-28
+
+* Fix compatibility with rest-client 1.4.0
+
 === 0.2.10 released 2010-02-28
 
 * Fixed a bug in retrying connection upon connection failure: the last attempt
