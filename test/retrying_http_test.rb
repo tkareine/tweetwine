@@ -68,10 +68,10 @@ class ClientTest < Test::Unit::TestCase
       should "retry connection a maximum of certain number of times, case #{error_class}" do
         retrying_calls = sequence("Retrying Client calls")
         io_calls = sequence("IO")
-        Client::MAX_RETRIES.times do
+        (Client::MAX_RETRIES + 1).times do
           RestClient.expects(:get).with("https://unresponsive.org").in_sequence(retrying_calls).raises(error_class)
         end
-        (Client::MAX_RETRIES - 1).times do
+        Client::MAX_RETRIES.times do
           @io.expects(:warn).in_sequence(io_calls)
         end
         assert_raise(HttpError) { @client.get("https://unresponsive.org") }
@@ -131,10 +131,10 @@ class ResourceTest < Test::Unit::TestCase
       should "retry connection a maximum of certain number of times, case #{error_class}" do
         retrying_calls = sequence("Retrying Resource calls")
         io_calls = sequence("IO")
-        Resource::MAX_RETRIES.times do
+        (Resource::MAX_RETRIES + 1).times do
           @wrapped.expects(:get).in_sequence(retrying_calls).raises(error_class)
         end
-        (Resource::MAX_RETRIES - 1).times do
+        Resource::MAX_RETRIES.times do
           @io.expects(:warn).in_sequence(io_calls)
         end
         assert_raise(HttpError) { @resource.get }

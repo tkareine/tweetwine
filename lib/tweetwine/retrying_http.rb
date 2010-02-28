@@ -29,10 +29,10 @@ module Tweetwine
       def do_with_retries
         retries = 0
         begin
-          retries += 1
           yield
         rescue Errno::ECONNRESET, RestClient::RequestTimeout => e
           if retries < MAX_RETRIES
+            retries += 1
             timeout = RETRY_BASE_WAIT_TIMEOUT**retries
             @io.warn("Could not connect -- retrying in #{timeout} seconds") if @io
             sleep timeout
