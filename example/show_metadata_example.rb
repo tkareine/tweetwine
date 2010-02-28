@@ -13,7 +13,7 @@ Feature "show metadata" do
     end
 
     Then "version is shown" do
-      @output.should =~ /\d\.\d\.\d$/
+      @output.should =~ /\d+\.\d+\.\d+$/
       @status.exitstatus.should == CLI::EXIT_VERSION
     end
   end
