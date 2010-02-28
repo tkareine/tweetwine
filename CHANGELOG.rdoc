@@ -1,3 +1,9 @@
+=== 0.2.10 released 2010-02-28
+
+* Fixed a bug in retrying connection upon connection failure: the last attempt
+  to connect, after 64 seconds, was missing
+* Small implementation improvements
+
 === 0.2.9 released 2010-02-24
 
 * HTTP proxy support
