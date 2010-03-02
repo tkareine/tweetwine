@@ -18,7 +18,9 @@ Install Tweetwine as a RubyGem:
 
 The program is compatible with both Ruby 1.8 and 1.9.
 
-The program requires <b>rest-client</b> gem to be installed. In addition, the program needs <b>json</b> gem on Ruby 1.8.
+The program requires rest-client[http://github.com/archiloque/rest-client] gem
+to be installed. In addition, the program needs
+json[http://json.rubyforge.org/] gem on Ruby 1.8.
 
 == Usage
 
@@ -82,7 +84,8 @@ The feature can be disabled by
 * setting key <tt>enable</tt> to <tt>false</tt>, or
 * using the command line option <tt>--no-url-shorten</tt>.
 
-The use of the feature requires <b>nokogiri</b> gem to be installed.
+The use of the feature requires nokogiri[http://nokogiri.org/] gem to be
+installed.
 
 === HTTP proxy setting
 
