@@ -18,7 +18,7 @@ Install Tweetwine as a RubyGem:
 
 The program is compatible with both Ruby 1.8 and 1.9.
 
-The program requires <b>rest_client</b> gem to be installed. In addition, the program needs <b>json</b> gem on Ruby 1.8.
+The program requires <b>rest-client</b> gem to be installed. In addition, the program needs <b>json</b> gem on Ruby 1.8.
 
 == Usage
 
