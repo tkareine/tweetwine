@@ -67,9 +67,9 @@ task :roodi do
   sh %{roodi "**/*.rb"}
 end
 
-desc "Search unfinished parts of source code"
+desc "Show parts of the project tagged as incomplete"
 task :todo do
-  FileList["**/*.rb", "**/*.rdoc", "**/*.txt"].egrep /(TODO|FIXME)/
+  FileList["**/*.*"].egrep /(TODO|FIXME)/
 end
 
 task :default => [:"test:unit", :"test:example"]
