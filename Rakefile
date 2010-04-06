@@ -63,14 +63,18 @@ task :uninstall => [:clean] do
   sh %{gem uninstall #{name}}
 end
 
-require "rake/rdoctask"
-desc "Create documentation"
-Rake::RDocTask.new(:rdoc) do |rd|
-  rd.rdoc_dir = "rdoc"
-  rd.title = "#{name} #{version}"
-  rd.main = "README.rdoc"
-  rd.rdoc_files.include("MIT-LICENSE.txt", "*.rdoc", "lib/**/*.rb")
-  rd.options << "--line-numbers"
+namespace :man do
+  CLOBBER.include "man/#{name}.?", "man/#{name}.?.html"
+
+  desc "Build the manual"
+  task :build do
+    sh "ronn -br5 --manual='#{name.capitalize} Manual' --organization='Tuomas Kareinen' man/*.ronn"
+  end
+
+  desc "Show the manual"
+  task :show => :build do
+    sh "man man/#{name}.1"
+  end
 end
 
 require "rake/testtask"

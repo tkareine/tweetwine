@@ -1,3 +1,4 @@
 /coverage/
+/man/
+!/man/*.ronn
 /pkg/
-/rdoc/
