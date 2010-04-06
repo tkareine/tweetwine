@@ -40,22 +40,26 @@ namespace :man do
   end
 end
 
-require "rake/testtask"
-desc "Run tests"
-Rake::TestTask.new(:test) do |t|
-  t.test_files = FileList["test/**/*_test.rb"]
-  t.verbose = true
-  t.warning = true
-  t.ruby_opts << "-rrubygems"
-  t.libs << "test"
-end
+namespace :test do
+  require "rake/testtask"
 
-Rake::TestTask.new(:example) do |t|
-  t.test_files = FileList["example/**/*_example.rb"]
-  t.verbose = true
-  t.warning = false
-  t.ruby_opts << "-rrubygems"
-  t.libs << "example"
+  desc "Run unit tests"
+  Rake::TestTask.new(:unit) do |t|
+    t.test_files = FileList["test/**/*_test.rb"]
+    t.verbose = true
+    t.warning = true
+    t.ruby_opts << "-rrubygems"
+    t.libs << "test"
+  end
+
+  desc "Run integration/example tests"
+  Rake::TestTask.new(:example) do |t|
+    t.test_files = FileList["example/**/*_example.rb"]
+    t.verbose = true
+    t.warning = false
+    t.ruby_opts << "-rrubygems"
+    t.libs << "example"
+  end
 end
 
 desc "Find code smells"
@@ -68,4 +72,4 @@ task :todo do
   FileList["**/*.rb", "**/*.rdoc", "**/*.txt"].egrep /(TODO|FIXME)/
 end
 
-task :default => [:test, :example]
+task :default => [:"test:unit", :"test:example"]
