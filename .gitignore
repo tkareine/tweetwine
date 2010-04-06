@@ -1,4 +1,4 @@
+/*.gem
 /coverage/
 /man/
 !/man/*.ronn
-/pkg/

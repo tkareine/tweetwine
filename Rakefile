@@ -1,66 +1,29 @@
-$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), "lib"))
-
-require "rubygems"
-
-name = "tweetwine"
-require "#{name}"
-version = Tweetwine::VERSION.dup
-
 require "rake/clean"
 
-require "rake/gempackagetask"
-spec = Gem::Specification.new do |s|
-  s.name = name
-  s.version = version
-  s.homepage = "http://github.com/tuomas/tweetwine"
-  s.summary = "A simple Twitter agent for command line use"
-  s.description = "A simple but tasty Twitter agent for command line use, made for fun."
+$LOAD_PATH.unshift(File.expand_path("../lib/", __FILE__))
+name = "tweetwine"
+require "#{name}/meta"
+version = Tweetwine::VERSION.dup
 
-  s.author = "Tuomas Kareinen"
-  s.email = "tkareine@gmail.com"
+namespace :gem do
+  CLOBBER.include "#{name}-*.gem"
 
-  s.platform = Gem::Platform::RUBY
-  s.files = FileList[
-    "Rakefile",
-    "MIT-LICENSE.txt",
-    "*.rdoc",
-    "bin/**/*",
-    "contrib/**/*",
-    "example/**/*",
-    "lib/**/*",
-    "test/**/*"].to_a
-  s.executables = ["tweetwine"]
-
-  s.add_dependency("rest-client", ">= 1.0.0")
-
-  s.has_rdoc = true
-  s.extra_rdoc_files = FileList["MIT-LICENSE.txt", "*.rdoc"].to_a
-  s.rdoc_options << "--title"   << "#{name} #{version}" \
-                 << "--main"    << "README.rdoc" \
-                 << "--exclude" << "test" \
-                 << "--line-numbers"
-end
-
-Rake::GemPackageTask.new(spec) do |pkg|
-  pkg.need_zip = false
-  pkg.need_tar = true
-end
-
-desc "Generate a gemspec file"
-task :gemspec do
-  File.open("#{spec.name}.gemspec", "w") do |f|
-    f.write spec.to_ruby
+  file "#{name}.gem" => :"man:build" do |f|
+    sh %{gem build #{name}.gemspec}
   end
-end
 
-desc "Install the software as a gem"
-task :install => [:package] do
-  sh %{gem install pkg/#{name}-#{version}.gem}
-end
+  desc "Package the software as a gem"
+  task :build => "#{name}.gem"
 
-desc "Uninstall the gem"
-task :uninstall => [:clean] do
-  sh %{gem uninstall #{name}}
+  desc "Install the software as a gem"
+  task :install => :build do
+    sh %{gem install #{name}-#{version}.gem}
+  end
+
+  desc "Uninstall the gem"
+  task :uninstall => :clean do
+    sh %{gem uninstall #{name}}
+  end
 end
 
 namespace :man do
