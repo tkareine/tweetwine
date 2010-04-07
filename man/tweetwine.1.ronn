@@ -53,10 +53,10 @@ configuration (`~/.tweetwine`).
   * `-v`, `--version`:
     Show version information and exit.
 
-  * `-h`, `--help [COMMAND]`:
+  * `-h`, `--help`:
     Show help message and exit.
 
-For command specific options, use:
+In order to see <COMMAND_OPTIONS>, enter:
 
     $ tweetwine help <COMMAND>
 
