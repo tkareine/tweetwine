@@ -62,6 +62,9 @@ namespace :test do
     t.ruby_opts << "-rrubygems"
     t.libs << "example"
   end
+
+  desc "Run all tests"
+  task :all => [:unit, :example]
 end
 
 desc "Find code smells"
@@ -74,4 +77,4 @@ task :todo do
   FileList["**/*.*"].egrep /(TODO|FIXME)/
 end
 
-task :default => [:"test:unit", :"test:example"]
+task :default => :"test:all"
