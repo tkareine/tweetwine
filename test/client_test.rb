@@ -5,7 +5,7 @@ require "json"
 
 module Tweetwine
 
-class ClientTest < Test::Unit::TestCase
+class ClientTest < TweetwineTestCase
   context "A client instance" do
     setup do
       @io = mock()

@@ -4,7 +4,7 @@ require "test_helper"
 
 module Tweetwine
 
-class StartupConfigTest < Test::Unit::TestCase
+class StartupConfigTest < TweetwineTestCase
   TEST_CONFIG_FILE = File.dirname(__FILE__) << "/fixtures/test_config.yaml"
 
   context "A StartupConfig instance" do

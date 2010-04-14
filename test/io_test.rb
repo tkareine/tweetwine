@@ -4,7 +4,7 @@ require "test_helper"
 
 module Tweetwine
 
-class IOTest < Test::Unit::TestCase
+class IOTest < TweetwineTestCase
   context "An IO instance" do
     setup do
       @input = mock()

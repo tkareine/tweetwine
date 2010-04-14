@@ -33,13 +33,13 @@ Gem::Specification.new do |s|
 
   s.add_dependency("rest-client", ">= 1.0.0")
   s.add_dependency("json", ">= 1.0.0") if RUBY_VERSION < "1.9"
+  s.add_development_dependency("contest", ">= 0.1.2")
   s.add_development_dependency("coulda",  ">= 0.5.3")
   s.add_development_dependency("fakeweb", ">= 1.2.8")
   s.add_development_dependency("matchy",  ">= 0.3.3")
   s.add_development_dependency("mocha",   ">= 0.9.8")
   s.add_development_dependency("open4",   "~> 1.0")
   s.add_development_dependency("ronn",    ">= 0.5.0")
-  s.add_development_dependency("shoulda", ">= 2.10.0")
   s.add_development_dependency("timecop", ">= 0.3.4")
 
   s.has_rdoc = true

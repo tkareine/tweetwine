@@ -4,7 +4,7 @@ require "test_helper"
 
 module Tweetwine
 
-class OptionsTest < Test::Unit::TestCase
+class OptionsTest < TweetwineTestCase
   context "An Options instance" do
     should "get the value corresponding to a key or nil (the default value)" do
       assert_equal "alpha", Options.new({:a => "alpha"})[:a]

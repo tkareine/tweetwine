@@ -4,7 +4,7 @@ require "test_helper"
 
 module Tweetwine
 
-class CLITest < Test::Unit::TestCase
+class CLITest < TweetwineTestCase
   context "A CLI, upon initialization" do
     should "disallow using #new to create a new instance" do
       assert_raise(NoMethodError) { CLI.new("-v", "test", "") {} }

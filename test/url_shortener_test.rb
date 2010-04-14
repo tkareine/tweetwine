@@ -4,7 +4,7 @@ require "test_helper"
 
 module Tweetwine
 
-class UrlShortenerTest < Test::Unit::TestCase
+class UrlShortenerTest < TweetwineTestCase
   context "An UrlShortener instance" do
     setup do
       @http_client = mock()
