@@ -56,6 +56,7 @@ module Tweetwine
           replacement_delta = replacement.size - match_data[i].size
           dup_index += replacement_delta
         end
+
         skip_delta = match_data.end(0)
         index += skip_delta
         dup_index += skip_delta
