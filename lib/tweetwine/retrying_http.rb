@@ -1,3 +1,5 @@
+# coding: utf-8
+
 require "rest_client"
 
 module Tweetwine

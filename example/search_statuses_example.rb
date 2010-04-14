@@ -1,3 +1,5 @@
+# coding: utf-8
+
 require "example_helper"
 
 FakeWeb.register_uri(:get, "http://search.twitter.com/search.json?q=braid%20game&rpp=2&page=1", :body => fixture("search.json"))

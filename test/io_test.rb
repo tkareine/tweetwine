@@ -1,3 +1,5 @@
+# coding: utf-8
+
 require "test_helper"
 
 module Tweetwine
@@ -216,42 +218,47 @@ Lulz, so happy! \e[35m#{hashtags[0]}\e[0m \e[35m#{hashtags[1]}\e[0m
         @io.show_record(record)
       end
 
-      should "highlight HTTP and HTTPS URLs in a status" do
-        from_user = "barman"
-        links = %w{http://bit.ly/18rU_Vx http://is.gd/1qLk3 https://is.gd/2rLk4}
-        record = {
-          :from_user  => from_user,
-          :status     => "Three links: #{links[0]} #{links[1]} and #{links[2]}",
-          :created_at => Time.at(1),
-          :to_user    => nil
-        }
-        Util.expects(:humanize_time_diff).returns([2, "secs"])
-        @output.expects(:puts).with(<<-END
+      %w{http://is.gd/1qLk3 http://is.gd/1qLk3?id=foo}.each do |url|
+        should "highlight HTTP and HTTPS URLs in a status, given #{url}" do
+          from_user = "barman"
+          record = {
+            :from_user  => from_user,
+            :status     => "New Rails³ - #{url}",
+            :created_at => Time.at(1),
+            :to_user    => nil
+          }
+          Util.expects(:humanize_time_diff).returns([2, "secs"])
+          @output.expects(:puts).with(<<-END
 \e[32m#{from_user}\e[0m, 2 secs ago:
-Three links: \e[36m#{links[0]}\e[0m \e[36m#{links[1]}\e[0m and \e[36m#{links[2]}\e[0m
+New Rails³ - \e[36m#{url}\e[0m
 
-        END
-        )
-        @io.show_record(record)
+          END
+          )
+          @io.show_record(record)
+        end
       end
 
-      should "highlight HTTP and HTTPS URLs in a status, even if duplicates" do
-        from_user = "barman"
-        link = "http://is.gd/1qLk3"
-        record = {
-          :from_user  => from_user,
-          :status     => "Duplicate links: #{link} and #{link}",
-          :created_at => Time.at(1),
-          :to_user    => nil
-        }
-        Util.expects(:humanize_time_diff).returns([2, "secs"])
-        @output.expects(:puts).with(<<-END
+      [
+        %w{http://is.gd/1qLk3 http://is.gd/1qLk3},
+        %w{http://is.gd/1qLk3 http://is.gd/1q}
+      ].each do |(first_url, second_url)|
+        should "highlight HTTP and HTTPS URLs in a status, given #{first_url} and #{second_url}" do
+          from_user = "barman"
+          record = {
+            :from_user  => from_user,
+            :status     => "Links: #{first_url} and #{second_url} np",
+            :created_at => Time.at(1),
+            :to_user    => nil
+          }
+          Util.expects(:humanize_time_diff).returns([2, "secs"])
+          @output.expects(:puts).with(<<-END
 \e[32m#{from_user}\e[0m, 2 secs ago:
-Duplicate links: \e[36m#{link}\e[0m and \e[36m#{link}\e[0m
+Links: \e[36m#{first_url}\e[0m and \e[36m#{second_url}\e[0m np
 
-        END
-        )
-        @io.show_record(record)
+          END
+          )
+          @io.show_record(record)
+        end
       end
 
       should "highlight usernames in a status" do
