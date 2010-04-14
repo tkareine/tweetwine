@@ -1,3 +1,5 @@
+# coding: utf-8
+
 require "example_helper"
 
 FakeWeb.register_uri(:post, "https://#{TEST_AUTH}@twitter.com/statuses/update.json", :body => fixture("update.json"))

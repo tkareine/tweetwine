@@ -1,3 +1,5 @@
+# coding: utf-8
+
 require "example_helper"
 
 Feature "show metadata" do

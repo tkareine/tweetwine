@@ -1,3 +1,5 @@
+# coding: utf-8
+
 module Tweetwine
   class UrlShortener
     def initialize(http_client, options)

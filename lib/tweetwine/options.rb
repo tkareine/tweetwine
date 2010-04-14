@@ -1,3 +1,5 @@
+# coding: utf-8
+
 module Tweetwine
   class Options
     def initialize(options, source = nil)
