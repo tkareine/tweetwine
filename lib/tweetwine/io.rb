@@ -1,3 +1,4 @@
+require "strscan"
 require "uri"
 
 module Tweetwine
@@ -92,11 +93,9 @@ module Tweetwine
     def format_status(status)
       status = Util.unescape_html(status)
       if @colors
-        status = colorize_all_by_group(:yellow, status, USERNAME_REGEX)
-        status = colorize_all_by_group(:magenta, status, HASHTAG_REGEX)
-        URI.extract(status, ["http", "https"]).uniq.each do |url|
-          status = colorize_all(:cyan, status, url)
-        end
+        status = colorize_matching(:yellow, status, USERNAME_REGEX)
+        status = colorize_matching(:magenta, status, HASHTAG_REGEX)
+        status = colorize_matching(:cyan, status, URI.extract(status, ["http", "https"]).uniq)
       end
       status
     end
@@ -114,12 +113,16 @@ module Tweetwine
       end
     end
 
-    def colorize_all(color, str, pattern)
-      str.gsub(pattern) { |s| colorize_str(COLOR_CODES[color.to_sym], s) }
-    end
-
-    def colorize_all_by_group(color, str, pattern)
-      Util.str_gsub_by_group(str, pattern) { |s| colorize_str(COLOR_CODES[color.to_sym], s) }
+    def colorize_matching(color, str, pattern)
+      regexp = case pattern
+      when Array
+        Regexp.union(pattern.map { |p| Regexp.new(Regexp.escape(p)) })
+      when Regexp
+        pattern
+      else
+        raise "Unknown kind of pattern"
+      end
+      Util.str_gsub_by_group(str, regexp) { |s| colorize(color, s) }
     end
 
     def colorize(color, str)
