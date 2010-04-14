@@ -1,3 +1,5 @@
+# coding: utf-8
+
 require "test_helper"
 require "time"
 
@@ -107,6 +109,10 @@ class UtilTest < Test::Unit::TestCase
       assert_not_same new_str, org_str
       assert_equal "hello", org_str
       assert_equal "hEllo", new_str
+    end
+
+    should "work with UTF-8 input" do
+      assert_equal "Ali<b>en</b>³,<b>Pre</b>dator", Util.str_gsub_by_group("Alien³,Predator", /(en).+(Pre)/) { |s| "<b>#{s}</b>" }
     end
   end
 
