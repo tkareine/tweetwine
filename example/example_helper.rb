@@ -39,7 +39,7 @@ module Tweetwine
 
     def fixture(filename)
       contents = nil
-      filepath = File.dirname(__FILE__) << "/fixtures/" << filename
+      filepath = File.dirname(__FILE__) << "/fixture/" << filename
       File.open(filepath) do |f|
         contents = f.readlines.join("\n")
       end
