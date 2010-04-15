@@ -1,7 +1,6 @@
 # coding: utf-8
 
 require "tweetwine"
-require "test/unit"
 require "contest"
 require "mocha"
 
