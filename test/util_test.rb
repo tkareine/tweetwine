@@ -79,14 +79,14 @@ class UtilTest < TweetwineTestCase
     should "replace the contents of the string by using a single matching group of the regexp" do
       assert_equal "hEllo", Util.str_gsub_by_group("hello", /.+(e)/) { |s| s.upcase }
       assert_equal "hEllO", Util.str_gsub_by_group("hello", /([aeio])/) { |s| s.upcase }
-      assert_equal "hEEllOO", Util.str_gsub_by_group("hello", /([aeio])/) { |s| s.upcase * 2 }
+      assert_equal "h<b>e</b>ll<b>o</b>", Util.str_gsub_by_group("hello", /([aeio])/) { |s| "<b>#{s}</b>" }
       assert_equal "hll", Util.str_gsub_by_group("hello", /([aeio])/) { |s| "" }
       assert_equal "hell", Util.str_gsub_by_group("hello", /.+([io])/) { |s| "" }
     end
 
     should "replace the contents of the string by using multiple matching groups of the regexp" do
       assert_equal "hEllO", Util.str_gsub_by_group("hello", /([ae]).+([io])/) { |s| s.upcase }
-      assert_equal "hXEXllXOX", Util.str_gsub_by_group("hello", /([ae]).+([io])/) { |s| "X" + s.upcase + "X" }
+      assert_equal "h<b>e</b>ll<b>o</b>", Util.str_gsub_by_group("hello", /([ae]).+([io])/) { |s| "<b>#{s}</b>" }
       assert_equal "hll", Util.str_gsub_by_group("hello", /.+([ae]).+([io])/) { |s| "" }
       assert_equal "hll", Util.str_gsub_by_group("hello", /([ae]).+([io])/) { |s| "" }
       assert_equal "hEllo", Util.str_gsub_by_group("hello", /^(a)|.+(e)/) { |s| s.upcase }
@@ -95,6 +95,7 @@ class UtilTest < TweetwineTestCase
     should "replace the contents of the string by using the whole regexp if there are no groups in the regexp an the regexp matches" do
       assert_equal "", Util.str_gsub_by_group("", /el/) { |s| s.upcase }
       assert_equal "hELlo", Util.str_gsub_by_group("hello", /el/) { |s| s.upcase }
+      assert_equal "h<b>e</b>ll<b>o</b>", Util.str_gsub_by_group("hello", /e|o/) { |s| "<b>#{s}</b>" }
     end
 
     should "not change the contents of the string if the regexp does not match" do
