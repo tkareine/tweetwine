@@ -9,6 +9,8 @@ Mocha::Configuration.prevent(:stubbing_non_existent_method)
 module Tweetwine
   module Test
     module Helper
+      module_function
+
       def create_test_twitter_status_records_from_rest_api(*internal_records)
         twitter_records = internal_records.map do |internal_record|
           {
@@ -52,6 +54,10 @@ module Tweetwine
         }
         [twitter_records, internal_records]
       end
+
+      def fixture_file(filename)
+        File.dirname(__FILE__) << "/fixture/" << filename
+      end
     end
 
     module Assertion
@@ -69,6 +75,7 @@ module Tweetwine
 
   class TweetwineTestCase < ::Test::Unit::TestCase
     include Tweetwine
+    include Test
     include Test::Helper
     include Test::Assertion
   end

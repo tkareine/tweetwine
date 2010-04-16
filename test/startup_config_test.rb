@@ -5,7 +5,7 @@ require "test_helper"
 module Tweetwine
 
 class StartupConfigTest < TweetwineTestCase
-  TEST_CONFIG_FILE = File.dirname(__FILE__) << "/fixture/test_config.yaml"
+  TEST_CONFIG_FILE = Helper.fixture_file("test_config.yaml")
 
   context "A StartupConfig instance" do
     context "upon initialization" do
