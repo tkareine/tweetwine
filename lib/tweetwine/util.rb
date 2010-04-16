@@ -46,20 +46,20 @@ module Tweetwine
 
     def self.str_gsub_by_group(str, regexp)
       dup_str = str.dup
-      index, dup_index = 0, 0
-      while index < str.size && (match_data = regexp.match(str[index..-1]))
+      str_pos, dup_pos = 0, 0
+      while str_pos < str.size && (match_data = regexp.match(str[str_pos..-1]))
         matching_group_indexes = indexes_of_filled_matches(match_data)
 
         matching_group_indexes.each do |i|
           replacement = (yield match_data[i]).to_s
-          dup_str[dup_index + match_data.begin(i), match_data[i].size] = replacement
+          dup_str[dup_pos + match_data.begin(i), match_data[i].size] = replacement
           replacement_delta = replacement.size - match_data[i].size
-          dup_index += replacement_delta
+          dup_pos += replacement_delta
         end
 
         skip_delta = match_data.end(0)
-        index += skip_delta
-        dup_index += skip_delta
+        str_pos += skip_delta
+        dup_pos += skip_delta
       end
       dup_str
     end
