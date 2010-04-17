@@ -21,10 +21,11 @@ Gem::Specification.new do |s|
   s.email = "tkareine@gmail.com"
 
   s.files = Dir[
-    "{bin,contrib,example,lib,test}/**/*",
+    "*.rdoc",
     "LICENSE.txt",
     "Rakefile",
     "README.md",
+    "{bin,contrib,example,lib,test}/**/*",
     "man/**/*.[1-9]",
     "man/**/*.ronn"
   ]
@@ -43,7 +44,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency("timecop", ">= 0.3.4")
 
   s.has_rdoc = true
-  s.extra_rdoc_files = %w{LICENSE.txt}
+  s.extra_rdoc_files = Dir["*.rdoc", "LICENSE.txt"]
   s.rdoc_options << "--title"   << "#{name} #{version}" \
                  << "--exclude" << "test"
 end
