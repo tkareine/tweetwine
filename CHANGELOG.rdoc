@@ -1,3 +1,10 @@
+=== 0.2.12 released 2010-04-17
+
+* Since this is a command line application, provide documentation as gem
+  manual
+* Fix highlighting of URLs when partial URLs match
+* Improve test code structure
+
 === 0.2.11 released 2010-02-28
 
 * Fix compatibility with rest-client 1.4.0
