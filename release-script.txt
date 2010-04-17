@@ -7,4 +7,4 @@ git commit -am "Bump to release-<version>"
 git tag release-<version>
 git push --tags origin master
 rake gem:build
-gem push pkg/tweetwine-<version>.gem
+gem push tweetwine-<version>.gem
