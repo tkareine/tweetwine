@@ -36,9 +36,14 @@ namespace :man do
     sh "ronn -br5 --manual='#{name.capitalize} Manual' --organization='Tuomas Kareinen' man/*.ronn"
   end
 
-  desc "Show the manual"
-  task :show => :build do
+  desc "Show the manual section 1"
+  task :show1 => :build do
     sh "man man/#{name}.1"
+  end
+
+  desc "Show the manual section 7"
+  task :show7 => :build do
+    sh "man man/#{name}.7"
   end
 end
 
