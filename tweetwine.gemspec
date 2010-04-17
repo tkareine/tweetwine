@@ -37,6 +37,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency("contest", ">= 0.1.2")
   s.add_development_dependency("coulda",  ">= 0.5.3")
   s.add_development_dependency("fakeweb", ">= 1.2.8")
+  s.add_development_dependency("gem-man", ">= 0.2.0")
   s.add_development_dependency("matchy",  ">= 0.3.3")
   s.add_development_dependency("mocha",   ">= 0.9.8")
   s.add_development_dependency("open4",   "~> 1.0")
