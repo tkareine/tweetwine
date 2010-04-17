@@ -15,7 +15,7 @@ namespace :gem do
   end
 
   desc "Package the software as a gem"
-  task :build => "#{name}.gem"
+  task :build => [:"test:all", "#{name}.gem"]
 
   desc "Install the software as a gem"
   task :install => :build do
