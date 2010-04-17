@@ -28,6 +28,11 @@ The program requires [rest-client](http://github.com/archiloque/rest-client)
 gem to be installed. In addition, the program needs
 [json](http://json.rubyforge.org/) gem on Ruby 1.8.
 
+Documentation is provided as gem man pages. Use
+[gem-man](http://github.com/defunkt/gem-man) to see them:
+
+    $ gem man tweetwine
+
 ## BASIC USAGE AND CONFIGURATION
 
 In the command line, run the program by entering
