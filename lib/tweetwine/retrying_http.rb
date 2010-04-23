@@ -15,8 +15,8 @@ module Tweetwine
       RETRY_BASE_WAIT_TIMEOUT = 4
 
       def self.use_retries_with(*methods)
-        methods.each do |method_name|
-          module_eval do
+        module_eval do
+          methods.each do |method_name|
             non_retrying_method_name = "original_#{method_name}".to_sym
             alias_method non_retrying_method_name, method_name
             define_method(method_name) do |*args|
