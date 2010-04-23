@@ -78,11 +78,6 @@ class RetryingHttpClientTest < TweetwineTestCase
         assert_raise(HttpError) { @client.get("https://unresponsive.org") }
       end
     end
-
-    should "return a resource with IO inherited from the client" do
-      resource = @client.as_resource("http://foo.bar")
-      assert_equal(@io, resource.io)
-    end
   end
 end
 
@@ -91,8 +86,7 @@ class RetryingHttpResourceTest < TweetwineTestCase
     setup do
       @io = mock()
       @wrapped = mock()
-      @resource = RetryingHttp::Resource.new(@wrapped)
-      @resource.io = @io
+      @resource = RetryingHttp::Resource.new(@wrapped, @io)
     end
 
     should "allow wrapping RestClient::Resource#get" do

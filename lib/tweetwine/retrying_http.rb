@@ -49,8 +49,6 @@ module Tweetwine
     end
 
     class Client < Base
-      attr_accessor :io
-
       def initialize(io)
         @io = io
       end
@@ -64,25 +62,19 @@ module Tweetwine
       end
 
       def as_resource(url, options = {})
-        resource = Resource.new(RestClient::Resource.new(url, options))
-        resource.io = @io
-        resource
+        Resource.new(RestClient::Resource.new(url, options), @io)
       end
 
       use_retries_with :get, :post
     end
 
     class Resource < Base
-      attr_accessor :io
-
-      def initialize(wrapped_resource)
-        @wrapped = wrapped_resource
+      def initialize(wrapped_resource, io)
+        @wrapped, @io = wrapped_resource, io
       end
 
       def [](suburl)
-        instance = self.class.new(@wrapped[suburl])
-        instance.io = @io
-        instance
+        self.class.new(@wrapped[suburl], @io)
       end
 
       def get(*args)
