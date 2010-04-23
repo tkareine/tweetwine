@@ -17,7 +17,7 @@ module Tweetwine
       def self.use_retries_with(*methods)
         module_eval do
           methods.each do |method_name|
-            non_retrying_method_name = "original_#{method_name}".to_sym
+            non_retrying_method_name = :"__original_#{method_name}"
             alias_method non_retrying_method_name, method_name
             define_method(method_name) do |*args|
               do_with_retries { send(non_retrying_method_name, *args).to_s }
