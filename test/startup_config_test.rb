@@ -85,7 +85,7 @@ class StartupConfigTest < TweetwineTestCase
 
       context "when given a config file and no cmdline args and no environment variables" do
         setup do
-          @config.parse([], TEST_CONFIG_FILE)
+          @config.parse([], [], TEST_CONFIG_FILE)
         end
 
         should "have the parsed option defined" do
@@ -102,7 +102,7 @@ class StartupConfigTest < TweetwineTestCase
           ENV['colors'] = "baba"
           ENV['defopt'] = "zaza"
           ENV['blank'] = ""
-          @config.parse([], nil, [:colors, :defopt])
+          @config.parse([], [:colors, :defopt])
         end
 
         should "have the parsed option defined" do
@@ -124,7 +124,7 @@ class StartupConfigTest < TweetwineTestCase
 
       context "when given an option as a cmdline option and in a config file and as an environment variable" do
         setup do
-          @config.parse(%w{--colors}, TEST_CONFIG_FILE, [:colors, :defopt]) do |args|
+          @config.parse(%w{--colors}, [:colors, :defopt], TEST_CONFIG_FILE) do |args|
             args.clear
             {:defopt => 56, :colors => true}
           end
@@ -140,7 +140,7 @@ class StartupConfigTest < TweetwineTestCase
         setup do
           ENV['colors'] = "baba"
           ENV['defopt'] = "zaza"
-          @config.parse(%w{}, TEST_CONFIG_FILE, [:colors, :defopt]) do |args|
+          @config.parse(%w{}, [:colors, :defopt], TEST_CONFIG_FILE) do |args|
             args.clear
             {}
           end
