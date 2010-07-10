@@ -25,9 +25,9 @@ module Tweetwine
 
     def parse_options(args, config_file, env_lookouts, &cmd_option_parser)
       cmd_options = if cmd_option_parser then parse_cmdline_args(args, &cmd_option_parser) else {} end
-      config_options = if config_file && File.exists?(config_file) then parse_config_file(config_file) else {} end
       env_options = if env_lookouts then parse_env_vars(env_lookouts) else {} end
-      env_options.merge(config_options.merge(cmd_options))
+      file_options = if config_file && File.exists?(config_file) then parse_config_file(config_file) else {} end
+      file_options.merge(env_options.merge(cmd_options))
     end
 
     def parse_cmdline_args(args, &cmd_option_parser)

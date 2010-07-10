@@ -92,7 +92,7 @@ class StartupConfigTest < TweetwineTestCase
           assert_equal false, @config.options[:colors]
         end
 
-        should "override the default value for the option given from the config file" do
+        should "override the option with config file value over all the other sources" do
           assert_equal 78, @config.options[:defopt]
         end
       end
@@ -109,7 +109,7 @@ class StartupConfigTest < TweetwineTestCase
           assert_equal "baba", @config.options[:colors]
         end
 
-        should "override default value for the option given as an environment variable" do
+        should "override the option with environment variable value over all other sources" do
           assert_equal "zaza", @config.options[:defopt]
         end
 
@@ -130,7 +130,7 @@ class StartupConfigTest < TweetwineTestCase
           end
         end
 
-        should "the command line option should override all other option sources" do
+        should "override the option with command line value over all other sources" do
           assert_equal true, @config.options[:colors]
           assert_equal 56, @config.options[:defopt]
         end
@@ -146,9 +146,9 @@ class StartupConfigTest < TweetwineTestCase
           end
         end
 
-        should "the config file option should override environment variable" do
-          assert_equal false, @config.options[:colors]
-          assert_equal 78, @config.options[:defopt]
+        should "override the option with environment variable value over the config file" do
+          assert_equal "baba", @config.options[:colors]
+          assert_equal "zaza", @config.options[:defopt]
         end
 
         teardown do
