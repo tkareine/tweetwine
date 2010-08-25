@@ -1,4 +1,4 @@
-username: foo
-password: bar
-colors: false
-defopt: 78
+---
+opt: file_opt
+fileopt: file_fileopt
+defopt: file_defopt
