@@ -4,7 +4,7 @@ require "strscan"
 require "uri"
 
 module Tweetwine
-  class IO
+  class UI
     COLOR_CODES = {
       :cyan     => 36,
       :green    => 32,
@@ -15,33 +15,44 @@ module Tweetwine
     HASHTAG_REGEX = /#[\w-]+/
     USERNAME_REGEX = /^(@\w+)|\s+(@\w+)/
 
-    def initialize(options)
-      @input = options[:input] || $stdin
-      @output = options[:output] || $stdout
-      @colors = options[:colors] || false
+    def initialize(options = {})
+      @in     = options[:in]      || $stdin
+      @out    = options[:out]     || $stdout
+      @err    = options[:err]     || $stderr
+      @colors = options[:colors]  || false
     end
 
-    def prompt(prompt)
-      @output.print "#{prompt}: "
-      @input.gets.strip!
+    def info(start_msg, end_msg = " done.")
+      if block_given?
+        @out.print start_msg
+        yield
+        @out.puts end_msg
+      else
+        @out.puts start_msg
+      end
     end
 
-    def info(msg)
-      @output.puts(msg)
+    def error(msg)
+      @err.puts "ERROR: #{msg}"
     end
 
     def warn(msg)
-      @output.puts "Warning: #{msg}"
+      @out.puts "Warning: #{msg}"
+    end
+
+    def prompt(prompt)
+      @out.print "#{prompt}: "
+      @in.gets.strip!
     end
 
     def confirm(msg)
-      @output.print "#{msg} [yN] "
-      confirmation = @input.gets.strip
+      @out.print "#{msg} [yN] "
+      confirmation = @in.gets.strip
       confirmation.downcase[0, 1] == "y"
     end
 
     def show_status_preview(status)
-      @output.puts <<-END
+      @out.puts <<-END
 
 #{format_status(status)}
 
@@ -73,14 +84,14 @@ module Tweetwine
     end
 
     def show_record_as_user(record)
-      @output.puts <<-END
+      @out.puts <<-END
 #{format_user(record[:from_user])}
 
       END
     end
 
     def show_record_as_user_with_status(record)
-      @output.puts <<-END
+      @out.puts <<-END
 #{format_record_header(record[:from_user], record[:to_user], record[:created_at])}
 #{format_status(record[:status])}
 
