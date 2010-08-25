@@ -58,6 +58,11 @@ module Tweetwine
       def fixture_file(filename)
         File.dirname(__FILE__) << "/fixture/" << filename
       end
+
+      def mock_ui
+        @ui = mock
+        CLI.stubs(:ui).returns(@ui)
+      end
     end
 
     module Assertion
