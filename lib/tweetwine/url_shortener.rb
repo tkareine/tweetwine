@@ -2,29 +2,31 @@
 
 module Tweetwine
   class UrlShortener
-    def initialize(http_client, options)
-      @http_client = http_client
-      options = Options.new(options, "URL shortening")
-      @method = (options[:method] || :get).to_sym
-      @service_url = options.require :service_url
-      @url_param_name = options.require :url_param_name
-      @extra_params = options[:extra_params] || {}
+    def initialize(config)
+      @method         = (config[:method] || :get).to_sym
+      @service_url    = config[:service_url] || raise_error(:service_url)
+      @url_param_name = config[:url_param_name] || raise_error(:url_param_name)
+      @xpath_selector = config[:xpath_selector] || raise_error(:xpath_selector)
+      @extra_params   = config[:extra_params] || {}
       if @method == :get
         tmp = []
         @extra_params.each_pair { |k, v| tmp << "#{k}=#{v}" }
         @extra_params = tmp
       end
-      @xpath_selector = options.require :xpath_selector
     end
 
     def shorten(url)
       require "nokogiri"
-      response = @http_client.send(@method, *get_service_url_and_params(url))
+      response = CLI.http.send(@method, *get_service_url_and_params(url))
       doc = Nokogiri::HTML(response)
       doc.xpath(@xpath_selector).first.to_s
     end
 
     private
+
+    def raise_error(key)
+      raise RequiredOptionError.new(key, :url_shortener)
+    end
 
     def get_service_url_and_params(url_to_shorten)
       case @method
