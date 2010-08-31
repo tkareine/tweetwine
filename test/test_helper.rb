@@ -59,6 +59,11 @@ module Tweetwine
         File.dirname(__FILE__) << "/fixture/" << filename
       end
 
+      def mock_http
+        @http = mock
+        CLI.stubs(:http).returns(@http)
+      end
+
       def mock_ui
         @ui = mock
         CLI.stubs(:ui).returns(@ui)
