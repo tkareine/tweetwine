@@ -5,27 +5,37 @@ require "yaml"
 module Tweetwine
   class Config
     def self.read(args = [], env_lookouts = nil, config_file = nil, default_config = {}, &cmd_option_parser)
-      new(parse_options(args, env_lookouts, config_file, default_config, &cmd_option_parser))
+      options = parse_options(args, env_lookouts, config_file, default_config, &cmd_option_parser)
+      new(config_file, options)
     end
 
     def [](key)
       @options[key]
     end
 
+    def []=(key, value)
+      @options[key] = value
+    end
+
     def keys
       @options.keys
     end
 
+    def save
+      File.open(@file, 'w') { |f| YAML.dump(@options, f) }
+    end
+
     private
 
-    def initialize(options)
+    def initialize(file, options)
+      @file = file
       @options = options
     end
 
     def self.parse_options(args, env_lookouts, config_file, default_config, &cmd_option_parser)
       cmd_options  = if cmd_option_parser then cmd_option_parser.call(args) else {} end
       env_options  = if env_lookouts then parse_env_vars(env_lookouts) else {} end
-      file_options = if config_file && File.exists?(config_file) then parse_config_file(config_file) else {} end
+      file_options = if config_file && File.exist?(config_file) then parse_config_file(config_file) else {} end
       default_config.merge(file_options.merge(env_options.merge(cmd_options)))
     end
 

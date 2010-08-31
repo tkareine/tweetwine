@@ -2,6 +2,9 @@
 
 require "test_helper"
 
+require "fileutils"
+require "tempfile"
+
 module Tweetwine
 
 class ConfigTest < TweetwineTestCase
@@ -155,13 +158,49 @@ class ConfigTest < TweetwineTestCase
     end
   end
 
-  context "when handling nonexistent config file" do
+  context "for handling the config file" do
     setup do
-      @config = Config.read([], [], "no_such_file")
+      @tmp_dir = Dir.mktmpdir
     end
 
-    should "ignore the config file" do
-      assert @config.keys.empty?
+    teardown do
+      FileUtils.remove_entry_secure @tmp_dir
+    end
+
+    context "when config file does not exist" do
+      setup do
+        @file = @tmp_dir + '/no_such_file'
+        @config = Config.read([], [], @file)
+      end
+
+      should "ignore the config file" do
+        assert @config.keys.empty?
+      end
+
+      should "save the config file as a new file" do
+        @config[:foo] = 'bar'
+        @config.save
+        assert_equal({:foo => 'bar'}, YAML.load_file(@file))
+      end
+    end
+
+    context "when updating the config file" do
+      setup do
+        @file = @tmp_dir + '/config.yaml'
+        FileUtils.cp CONFIG_FILE, @file
+        @config = Config.read([], [], @file)
+      end
+
+      should "save the config file, overwriting the previous" do
+        @config[:fileopt] = 'bar'
+        @config.save
+        expected = {
+          :opt      => 'file_opt',
+          :fileopt  => 'bar',
+          :defopt   => 'file_defopt'
+        }
+        assert_equal expected, YAML.load_file(@file)
+      end
     end
   end
 end
