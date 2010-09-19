@@ -73,6 +73,11 @@ module Tweetwine
         @url_shortener = mock
         CLI.stubs(:url_shortener).returns(@url_shortener)
       end
+
+      def stub_config(options = {})
+        @config = options
+        CLI.stubs(:config).returns(@config)
+      end
     end
 
     module Assertion
