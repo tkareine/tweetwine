@@ -24,6 +24,18 @@ class UITest < TweetwineTestCase
       @ui.info("foo")
     end
 
+    should "output info message in process style when given a block" do
+      inform = sequence('inform')
+      @out.expects(:print).with("processing...").in_sequence(inform)
+      @out.expects(:puts).with(" done.").in_sequence(inform)
+      @ui.info("processing...") { true }
+    end
+
+    should "output empty line as info message" do
+      @out.expects(:puts).with("\n")
+      @ui.info
+    end
+
     should "output warning message" do
       @out.expects(:puts).with("Warning: monkey patching ahead")
       @ui.warn("monkey patching ahead")

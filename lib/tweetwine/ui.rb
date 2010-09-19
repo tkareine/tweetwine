@@ -22,7 +22,7 @@ module Tweetwine
       @colors = options[:colors]  || false
     end
 
-    def info(start_msg, end_msg = " done.")
+    def info(start_msg = "\n", end_msg = " done.")
       if block_given?
         @out.print start_msg
         yield
