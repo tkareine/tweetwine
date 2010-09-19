@@ -72,7 +72,7 @@ module Tweetwine
       end
 
       def [](suburl)
-        new(@wrapped[suburl])
+        self.class.new(@wrapped[suburl])
       end
 
       def get(*args)

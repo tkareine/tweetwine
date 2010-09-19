@@ -94,6 +94,17 @@ class HttpResourceTest < TweetwineTestCase
     @resource.post("https://site.org", { :key => "value" })
   end
 
+  should "allow nesting of URL parts" do
+    site_resource = mock
+    page_resource = mock
+    @wrapped.expects(:[]).with("https://site.org/").returns(site_resource)
+    site_resource.expects(:[]).with("page").returns(page_resource)
+    page_resource.expects(:get)
+    site = @resource["https://site.org/"]
+    page = site["page"]
+    page.get
+  end
+
   should "raise HttpError for an invalid request" do
     @wrapped.expects(:get).raises(RestClient::Unauthorized)
     assert_raise(HttpError) { @resource.get }
