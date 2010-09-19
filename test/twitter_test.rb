@@ -282,6 +282,32 @@ class ClientTest < TweetwineTestCase
           )
         end
 
+        should "not shorten URLs if not configured" do
+          stub_config
+          status = "reading http://www.w3.org/TR/1999/REC-xpath-19991116"
+          twitter_records, internal_records = create_test_twitter_status_records_from_rest_api(
+            {
+              :from_user  => @username,
+              :status     => status,
+              :created_at => Time.at(1).to_s,
+              :to_user    => nil
+            }
+          )
+          http_subresource = mock
+          http_subresource.expects(:post).
+              with({ :status => status }).
+              returns(twitter_records[0].to_json)
+          @url_shortener.expects(:shorten).never
+          @rest_api.expects(:[]).
+              with("statuses/update.json").
+              returns(http_subresource)
+          @ui.expects(:confirm).with("Really send?").returns(true)
+          @ui.expects(:show_status_preview).with(status)
+          @ui.expects(:info).with("Sent status update.\n\n")
+          @ui.expects(:show_record).with(internal_records[0])
+          @twitter.update(status)
+        end
+
         should "shorten URLs, avoiding truncation with long URLs" do
           long_urls = ["http://www.google.fi/search?q=ruby+nokogiri&ie=utf-8&oe=utf-8&aq=t&rls=org.mozilla:en-US:official&client=firefox-a", "http://www.w3.org/TR/1999/REC-xpath-19991116"]
           long_status = long_urls.join(" and ")
