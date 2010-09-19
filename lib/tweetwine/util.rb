@@ -8,6 +8,10 @@ module Tweetwine
   module Util
     extend self
 
+    def blank?(str)
+      str.nil? || str.empty?
+    end
+
     def humanize_time_diff(from, to)
       from = Time.parse(from.to_s) unless from.is_a? Time
       to = Time.parse(to.to_s) unless to.is_a? Time

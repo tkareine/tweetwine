@@ -8,6 +8,12 @@ module Tweetwine
 class UtilTest < TweetwineTestCase
   include Util
 
+  context "for checking whether a string is blank" do
+    should("return true for nil")               { assert blank?(nil)  }
+    should("return true for empty string")      { assert blank?('')   }
+    should("return false for nonempty string")  { assert !blank?('a') }
+  end
+
   context "for humanizing time differences" do
     should "use second granularity for time differences smaller than a minute" do
       assert_equal [1,  "sec"], humanize_time_diff(Time.parse("2009-01-01 00:00:59").to_s, Time.parse("2009-01-01 00:01:00"))
