@@ -158,7 +158,7 @@ class ConfigTest < TweetwineTestCase
     end
   end
 
-  context "for handling the config file" do
+  context "when handling the config file" do
     setup do
       @tmp_dir = Dir.mktmpdir
     end
@@ -199,6 +199,14 @@ class ConfigTest < TweetwineTestCase
           :fileopt  => 'bar',
           :defopt   => 'file_defopt'
         }
+        assert_equal expected, YAML.load_file(@file)
+      end
+
+      should "exclude saving selected keys" do
+        @config.exclude_on_save :fileopt, :defopt
+        @config[:fileopt] = 'bar'
+        @config.save
+        expected = { :opt => 'file_opt' }
         assert_equal expected, YAML.load_file(@file)
       end
     end
