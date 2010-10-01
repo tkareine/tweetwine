@@ -92,7 +92,7 @@ module Tweetwine
     end
 
     def search_api
-      @search_api ||= CLI.http.as_resource "http://search.twitter.com/search.json"
+      @search_api ||= CLI.http.as_resource "http://search.twitter.com"
     end
 
     def get_from_rest_api(sub_url, params = common_rest_api_query_params)
@@ -112,7 +112,7 @@ module Tweetwine
     def get_from_search_api(query, params = common_search_api_query_params)
       CLI.oauth.authenticate do
         query = "q=#{Util.percent_encode(query)}&" << format_query_params(params)
-        JSON.parse(search_api["?#{query}"].get)
+        JSON.parse(search_api["search.json?#{query}"].get)
       end
     end
 

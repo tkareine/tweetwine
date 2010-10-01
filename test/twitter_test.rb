@@ -44,7 +44,7 @@ class ClientTest < TweetwineTestCase
       @rest_api = mock
       @search_api = mock
       @http.stubs(:as_resource).with("https://api.twitter.com/1").returns(@rest_api)
-      @http.stubs(:as_resource).with("http://search.twitter.com/search.json").returns(@search_api)
+      @http.stubs(:as_resource).with("http://search.twitter.com").returns(@search_api)
       @twitter = Twitter.new(:username => @username)
       @rest_api_status_query_str = "count=#{Twitter::DEFAULT_NUM_STATUSES}&page=#{Twitter::DEFAULT_PAGE_NUM}"
       @search_api_query_str = "rpp=#{Twitter::DEFAULT_NUM_STATUSES}&page=#{Twitter::DEFAULT_PAGE_NUM}"
@@ -511,7 +511,7 @@ class ClientTest < TweetwineTestCase
           }
         )
         @search_api.expects(:[]).
-            with("?q=%23greets%20%40foo&#{@search_api_query_str}").
+            with("search.json?q=%23greets%20%40foo&#{@search_api_query_str}").
             returns(stub(:get => twitter_response.to_json))
         @ui.expects(:show_record).with(internal_records[0])
         @ui.expects(:show_record).with(internal_records[1])
@@ -534,7 +534,7 @@ class ClientTest < TweetwineTestCase
           }
         )
         @search_api.expects(:[]).
-            with("?q=%23habits%20OR%20%23neurotic&#{@search_api_query_str}").
+            with("search.json?q=%23habits%20OR%20%23neurotic&#{@search_api_query_str}").
             returns(stub(:get => twitter_response.to_json))
         @ui.expects(:show_record).with(internal_records[0])
         @ui.expects(:show_record).with(internal_records[1])
