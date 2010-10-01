@@ -495,30 +495,35 @@ class ClientTest < TweetwineTestCase
         assert_raise(ArgumentError) { @twitter.search }
       end
 
-      should "search tweets matching all the given words" do
-        twitter_response, internal_records = create_test_twitter_records_from_search_api(
-          {
-            :from_user  => "zanzibar",
-            :status     => "@foo, wassup? #greets",
-            :created_at => Time.at(1).to_s,
-            :to_user    => "foo"
-          },
-          {
-            :from_user  => "spoonman",
-            :status     => "@foo long time no see #greets",
-            :created_at => Time.at(1).to_s,
-            :to_user    => "foo"
-          }
-        )
-        @search_api.expects(:[]).
-            with("search.json?q=%23greets%20%40foo&#{@search_api_query_str}").
-            returns(stub(:get => twitter_response.to_json))
-        @ui.expects(:show_record).with(internal_records[0])
-        @ui.expects(:show_record).with(internal_records[1])
-        @twitter.search(["#greets", "@foo"])
+      [
+        [nil,   "no operator"],
+        [:and,  "and operator"]
+      ].each do |op, desc|
+        should "search tweets matching all the given words with #{desc}" do
+          twitter_response, internal_records = create_test_twitter_records_from_search_api(
+            {
+              :from_user  => "zanzibar",
+              :status     => "@foo, wassup? #greets",
+              :created_at => Time.at(1).to_s,
+              :to_user    => "foo"
+            },
+            {
+              :from_user  => "spoonman",
+              :status     => "@foo long time no see #greets",
+              :created_at => Time.at(1).to_s,
+              :to_user    => "foo"
+            }
+          )
+          @search_api.expects(:[]).
+              with("search.json?q=%23greets%20%40foo&#{@search_api_query_str}").
+              returns(stub(:get => twitter_response.to_json))
+          @ui.expects(:show_record).with(internal_records[0])
+          @ui.expects(:show_record).with(internal_records[1])
+          @twitter.search(["#greets", "@foo"], op)
+        end
       end
 
-      should "search tweets matching any of the given words" do
+      should "search tweets matching any of the given words with or operator" do
         twitter_response, internal_records = create_test_twitter_records_from_search_api(
           {
             :from_user  => "zanzibar",

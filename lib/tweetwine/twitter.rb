@@ -37,8 +37,9 @@ module Tweetwine
       show_statuses_from_rest_api(*response)
     end
 
-    def search(words = [], operator = :and)
+    def search(words = [], operator = nil)
       raise ArgumentError, "No search words" if words.empty?
+      operator = :and unless operator
       query = operator == :and ? words.join(' ') : words.join(' OR ')
       response = get_from_search_api query
       show_statuses_from_search_api(*response["results"])
