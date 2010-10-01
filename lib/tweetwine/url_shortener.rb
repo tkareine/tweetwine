@@ -2,12 +2,12 @@
 
 module Tweetwine
   class UrlShortener
-    def initialize(config)
-      @method         = (config[:method] || :get).to_sym
-      @service_url    = require_option config, :service_url
-      @url_param_name = require_option config, :url_param_name
-      @xpath_selector = require_option config, :xpath_selector
-      @extra_params   = config[:extra_params] || {}
+    def initialize(options)
+      @method         = (options[:method] || :get).to_sym
+      @service_url    = require_option options, :service_url
+      @url_param_name = require_option options, :url_param_name
+      @xpath_selector = require_option options, :xpath_selector
+      @extra_params   = options[:extra_params] || {}
       if @method == :get
         tmp = []
         @extra_params.each_pair { |k, v| tmp << "#{k}=#{v}" }
@@ -24,8 +24,8 @@ module Tweetwine
 
     private
 
-    def require_option(config, key)
-      config[key] or raise RequiredOptionError.new(key, :url_shortener)
+    def require_option(options, key)
+      options[key] or raise RequiredOptionError.new(key, :url_shortener)
     end
 
     def get_service_url_and_params(url_to_shorten)
