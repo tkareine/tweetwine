@@ -19,29 +19,29 @@ module Tweetwine
 
     def followers
       response = get_from_rest_api "statuses/followers"
-      show_users_from_rest_api *response
+      show_users_from_rest_api(*response)
     end
 
     def friends
       response = get_from_rest_api "statuses/friends"
-      show_users_from_rest_api *response
+      show_users_from_rest_api(*response)
     end
 
     def home
       response = get_from_rest_api "statuses/home_timeline"
-      show_statuses_from_rest_api *response
+      show_statuses_from_rest_api(*response)
     end
 
     def mentions
       response = get_from_rest_api "statuses/mentions"
-      show_statuses_from_rest_api *response
+      show_statuses_from_rest_api(*response)
     end
 
     def search(words = [], operator = :and)
       raise ArgumentError, "No search words" if words.empty?
       query = operator == :and ? words.join(' ') : words.join(' OR ')
       response = get_from_search_api query
-      show_statuses_from_search_api *response["results"]
+      show_statuses_from_search_api(*response["results"])
     end
 
     def update(msg = nil)
@@ -64,7 +64,7 @@ module Tweetwine
         "statuses/user_timeline",
         common_rest_api_query_params.merge!({ :screen_name => who })
       )
-      show_statuses_from_rest_api *response
+      show_statuses_from_rest_api(*response)
     end
 
     private
