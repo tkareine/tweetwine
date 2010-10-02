@@ -9,7 +9,7 @@ Mocha::Configuration.prevent(:stubbing_non_existent_method)
 module Tweetwine
   module Test
     module Helper
-      module_function
+      extend self
 
       def create_test_twitter_status_records_from_rest_api(*internal_records)
         twitter_records = internal_records.map do |internal_record|
@@ -93,7 +93,7 @@ module Tweetwine
     end
   end
 
-  class TweetwineTestCase < ::Test::Unit::TestCase
+  class UnitTestCase < ::Test::Unit::TestCase
     include Tweetwine
     include Test
     include Test::Helper

@@ -4,7 +4,7 @@ require "test_helper"
 
 module Tweetwine
 
-class UrlShortenerTest < TweetwineTestCase
+class UrlShortenerTest < UnitTestCase
   setup do
     mock_http
   end

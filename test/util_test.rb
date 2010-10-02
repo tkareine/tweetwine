@@ -5,7 +5,7 @@ require "time"
 
 module Tweetwine
 
-class UtilTest < TweetwineTestCase
+class UtilTest < UnitTestCase
   include Util
 
   context "for checking whether a string is blank" do

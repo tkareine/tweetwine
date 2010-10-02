@@ -4,7 +4,7 @@ require "test_helper"
 
 module Tweetwine
 
-class UITest < TweetwineTestCase
+class UITest < UnitTestCase
   context "An UI instance" do
     setup do
       @in  = mock

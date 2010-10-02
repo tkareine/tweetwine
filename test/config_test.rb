@@ -7,7 +7,7 @@ require "tempfile"
 
 module Tweetwine
 
-class ConfigTest < TweetwineTestCase
+class ConfigTest < UnitTestCase
   CONFIG_FILE = Helper.fixture_file("test_config.yaml")
 
   context "when given command line arguments, no environment variables, no config file" do

@@ -9,7 +9,7 @@ end
 
 module Tweetwine
 
-class HttpModuleTest < TweetwineTestCase
+class HttpModuleTest < UnitTestCase
   setup do
     Http.proxy = "http://proxy.net:8080"
   end
@@ -23,7 +23,7 @@ class HttpModuleTest < TweetwineTestCase
   end
 end
 
-class HttpClientTest < TweetwineTestCase
+class HttpClientTest < UnitTestCase
   setup do
     mock_ui
     @client = Http::Client.new
@@ -77,7 +77,7 @@ class HttpClientTest < TweetwineTestCase
   end
 end
 
-class HttpResourceTest < TweetwineTestCase
+class HttpResourceTest < UnitTestCase
   setup do
     mock_ui
     @wrapped = mock
