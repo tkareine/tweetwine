@@ -126,8 +126,15 @@ class UtilTest < UnitTestCase
   end
 
   context "for percent-encoding strings" do
-    %w{a B 3 . - _}.each do |char|
-      should "not encode safe characters, case '#{char}'" do
+    [
+      %w{a a},
+      %w{B B},
+      %w{3 3},
+      %w{. period},
+      %w{- dash},
+      %w{_ underscore},
+    ].each do |char, desc|
+      should "not encode safe characters, case #{desc}" do
         assert_equal char, percent_encode(char)
       end
     end
@@ -137,22 +144,30 @@ class UtilTest < UnitTestCase
     end
 
     [
-      %w{& %26},
-      %w{? %3F},
-      %w{/ %2F},
-      %w{: %3A},
-      %w{, %2C}
-    ].each do |input, expected|
-      should "encode unsafe characters that URI.encode leaves by default unencoded, case '#{input}'" do
-        assert_equal input, URI.encode(input)
-        assert_equal expected, percent_encode(input)
+      %w{& %26 ampersand},
+      %w{? %3F question mark},
+      %w{/ %2F slash},
+      %w{: %3A colon},
+      %w{, %2C comma}
+    ].each do |char, expected, desc|
+      should "encode unsafe characters that URI.encode leaves by default unencoded, case #{desc}" do
+        assert_equal char, URI.encode(char)
+        assert_equal expected, percent_encode(char)
       end
     end
   end
 
   context "for unescaping HTML" do
-    %w{a B 3 . - _ +}.each do |char|
-      should "not affect already unescaped characters, case '#{char}'" do
+    [
+      %w{a a},
+      %w{B B},
+      %w{3 3},
+      %w{. period},
+      %w{- dash},
+      %w{_ underscore},
+      %w{+ plus}
+    ].each do |char, desc|
+      should "not affect already unescaped characters, case #{desc}" do
         assert_equal char, unescape_html(char)
       end
     end
