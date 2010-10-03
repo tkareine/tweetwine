@@ -85,7 +85,7 @@ module Tweetwine
     end
 
     def format_query_params(params)
-      params.each_pair.map { |k, v| "#{k}=#{v}" }.join('&')
+      params.each_pair.map { |k, v| "#{k}=#{v}" }.sort.join('&')
     end
 
     def rest_api

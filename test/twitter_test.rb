@@ -47,7 +47,7 @@ class ClientTest < UnitTestCase
       @http.stubs(:as_resource).with("http://search.twitter.com").returns(@search_api)
       @twitter = Twitter.new(:username => @username)
       @rest_api_status_query_str = "count=#{Twitter::DEFAULT_NUM_STATUSES}&page=#{Twitter::DEFAULT_PAGE_NUM}"
-      @search_api_query_str = "rpp=#{Twitter::DEFAULT_NUM_STATUSES}&page=#{Twitter::DEFAULT_PAGE_NUM}"
+      @search_api_query_str = "page=#{Twitter::DEFAULT_PAGE_NUM}&rpp=#{Twitter::DEFAULT_NUM_STATUSES}"
     end
 
     should "fetch friends' statuses (home view)" do
