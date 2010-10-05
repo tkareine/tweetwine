@@ -12,9 +12,10 @@ module Tweetwine
     end
 
     def parse(args = ARGV)
-      @options.clear
       @parser.order! args
-      @options.dup
+      result = @options.dup
+      @options.clear
+      result
     rescue ::OptionParser::ParseError => e
       raise CommandLineError, e.message
     end
