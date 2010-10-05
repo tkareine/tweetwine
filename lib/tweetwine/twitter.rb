@@ -183,7 +183,7 @@ module Tweetwine
         status.gsub!(url_pair.first, url_pair.last)
       end
     rescue HttpError, LoadError => e
-      CLI.ui.warn "#{e}. Skipping URL shortening..."
+      CLI.ui.warn "#{e}\nSkipping URL shortening..."
     end
 
     def truncate_status(status)
