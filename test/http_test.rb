@@ -44,14 +44,14 @@ class HttpClientTest < UnitTestCase
     assert_raise(HttpError) { @client.get("https://charlie:42@authorization.org") }
   end
 
-  should "raise HttpError when connection cannot be established" do
+  should "raise ConnectionError when connection cannot be established" do
     RestClient.expects(:get).with("https://unreachable.org").raises(Errno::ECONNABORTED)
-    assert_raise(HttpError) { @client.get("https://unreachable.org") }
+    assert_raise(ConnectionError) { @client.get("https://unreachable.org") }
   end
 
-  should "raise HttpError when host cannot be resolved" do
+  should "raise ConnectionError when host cannot be resolved" do
     RestClient.expects(:get).with("https://unresolved.org").raises(SocketError)
-    assert_raise(HttpError) { @client.get("https://unresolved.org") }
+    assert_raise(ConnectionError) { @client.get("https://unresolved.org") }
   end
 
   [Errno::ECONNRESET, RestClient::RequestTimeout].each do |error_class|
@@ -110,14 +110,14 @@ class HttpResourceTest < UnitTestCase
     assert_raise(HttpError) { @resource.get }
   end
 
-  should "raise HttpError when connection cannot be established" do
+  should "raise ConnectionError when connection cannot be established" do
     @wrapped.expects(:get).raises(Errno::ECONNABORTED)
-    assert_raise(HttpError) { @resource.get }
+    assert_raise(ConnectionError) { @resource.get }
   end
 
-  should "raise HttpError when host cannot be resolved" do
+  should "raise ConnectionError when host cannot be resolved" do
     @wrapped.expects(:get).raises(SocketError)
-    assert_raise(HttpError) { @resource.get }
+    assert_raise(ConnectionError) { @resource.get }
   end
 
   [Errno::ECONNRESET, RestClient::RequestTimeout].each do |error_class|

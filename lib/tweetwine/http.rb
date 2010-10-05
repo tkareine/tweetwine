@@ -40,8 +40,10 @@ module Tweetwine
           else
             raise HttpError, e
           end
-        rescue RestClient::Exception, SocketError, SystemCallError => e
+        rescue RestClient::Exception => e
           raise HttpError, e
+        rescue SocketError, SystemCallError => e
+          raise ConnectionError, e
         end
       end
     end
