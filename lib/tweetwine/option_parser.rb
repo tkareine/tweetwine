@@ -3,6 +3,10 @@
 require "optparse"
 
 module Tweetwine
+  # A wrapper for OptionParser in standard library that returns parsing
+  # results as a Hash.
+  #
+  # Not threadsafe.
   class OptionParser
     def initialize(&blk)
       @options = {}
