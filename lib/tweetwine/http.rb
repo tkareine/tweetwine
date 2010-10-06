@@ -4,6 +4,13 @@ require "rest_client"
 
 module Tweetwine
   module Http
+    def self.when_requesting(modifier)
+      RestClient.add_before_execution_proc(&modifier)
+      yield
+    ensure
+      RestClient.before_execution_procs.clear
+    end
+
     def self.proxy=(url)
       RestClient.proxy = url
     end

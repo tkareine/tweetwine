@@ -1,6 +1,7 @@
 # coding: utf-8
 
 require "test_helper"
+require 'webmock/test_unit'
 require "rest_client"
 
 class Object
@@ -10,16 +11,37 @@ end
 module Tweetwine
 
 class HttpModuleTest < UnitTestCase
-  setup do
-    Http.proxy = "http://proxy.net:8080"
-  end
+  include WebMock
 
   should "pass HTTP proxy configuration to RestClient" do
+    Http.proxy = "http://proxy.net:8080"
     assert_equal "http://proxy.net:8080", RestClient.proxy
+    Http.proxy = nil
   end
 
-  teardown do
-    Http.proxy = nil
+  context "for request modification just before sending it" do
+    setup do
+      stub_request(:any, 'http://example.com/')
+      @headers = { 'X-Custom' => 'false' }
+      @modifier = lambda { |request, _| request['X-Custom'] = 'true' }
+      @client = Http::Client.new
+    end
+
+    should "allow request modification just before sending it" do
+      Http.when_requesting(@modifier) do
+        @client.get('http://example.com/', @headers)
+      end
+      assert_requested(:get, 'http://example.com/', :headers => {'X-Custom' => 'true'}, :times => 1)
+    end
+
+    should "not affect later requests" do
+      Http.when_requesting(@modifier) do
+        @client.get('http://example.com/', @headers)
+      end
+      assert_requested(:get, 'http://example.com/', :headers => {'X-Custom' => 'true'}, :times => 1)
+      @client.get('http://example.com/', @headers)
+      assert_requested(:get, 'http://example.com/', :headers => @headers, :times => 1)
+    end
   end
 end
 
