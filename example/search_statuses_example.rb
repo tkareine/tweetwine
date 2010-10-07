@@ -3,8 +3,6 @@
 require "example_helper"
 
 Feature "search tweets" do
-  include ExampleTestFixture
-
   in_order_to "search statuses"
   as_a "authenticated user"
   i_want_to "see tweets matching the search"

@@ -3,8 +3,6 @@
 require "example_helper"
 
 Feature "using HTTP proxy" do
-  include ExampleTestFixture
-
   in_order_to "tweet behind an HTTP proxy"
   as_a "authenticated user"
   i_want_to "tweet as before"

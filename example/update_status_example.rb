@@ -3,8 +3,6 @@
 require "example_helper"
 
 Feature "update my status (send new tweet)" do
-  include ExampleTestFixture
-
   in_order_to "tell something about me to the world"
   as_a "authenticated user"
   i_want_to "update my status"

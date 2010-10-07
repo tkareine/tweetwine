@@ -3,8 +3,6 @@
 require "example_helper"
 
 Feature "show user's tweets" do
-  include ExampleTestFixture
-
   in_order_to "to see what's going on with a specific user"
   as_a "authenticated user"
   i_want_to "see that user's tweets"

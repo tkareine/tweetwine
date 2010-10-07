@@ -3,8 +3,6 @@
 require "example_helper"
 
 Feature "show tweets mentioning the user" do
-  include ExampleTestFixture
-
   in_order_to "know if someone has mentioned me"
   as_a "authenticated user"
   i_want_to "see the tweets mentioning me"

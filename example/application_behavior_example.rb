@@ -3,8 +3,6 @@
 require "example_helper"
 
 Feature "application behavior" do
-  include ExampleTestFixture
-
   in_order_to "know about the application"
   as_a "user"
   i_want_to "see helpful messages"

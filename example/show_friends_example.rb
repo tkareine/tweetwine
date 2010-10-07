@@ -3,8 +3,6 @@
 require "example_helper"
 
 Feature "show friends" do
-  include ExampleTestFixture
-
   in_order_to "to see who I follow"
   as_a "authenticated user"
   i_want_to "see my friends"

@@ -2,15 +2,14 @@
 
 %w{
   coulda
-  fakeweb
   matchy
   open4
   stringio
   time
   timecop
+  webmock/test_unit
 }.each { |lib| require lib }
 
-FakeWeb.allow_net_connect = false
 Timecop.freeze(Time.parse("2009-10-14 01:56:15 +0300"))
 
 require "tweetwine"
@@ -18,6 +17,8 @@ require "tweetwine"
 module Tweetwine
   module Example
     module Helper
+      include WebMock
+
       CONFIG_FILE = File.expand_path('../fixture/config.yaml', __FILE__)
       PROXY_URL = "http://proxy.net:8080"
       USER = "fooman"
@@ -46,13 +47,8 @@ module Tweetwine
       def stub_http_request(url, options = {})
         method = options[:method] || :get
         body = options[:body]
-        FakeWeb.register_uri(method, url, :body => body)
-      end
-    end
-
-    module ExampleTestFixture
-      def setup
-        FakeWeb.clean_registry
+        status = options[:status] || 200
+        stub_request(method, url).to_return(:body => body, :status => status)
       end
     end
   end
