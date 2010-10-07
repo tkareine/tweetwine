@@ -37,7 +37,6 @@ Gem::Specification.new do |s|
   s.add_dependency("json",        ">= 1.0.0") if RUBY_VERSION < "1.9"
   s.add_development_dependency("contest", "~> 0.1.2")
   s.add_development_dependency("coulda",  "~> 0.5.3")
-  s.add_development_dependency("fakeweb", "~> 1.3.0")
   s.add_development_dependency("gem-man", "~> 0.2.0")
   s.add_development_dependency("matchy",  "~> 0.5.2")
   s.add_development_dependency("mocha",   "~> 0.9.8")
