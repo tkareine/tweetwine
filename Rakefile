@@ -43,25 +43,21 @@ namespace :man do
 end
 
 namespace :test do
-  require "rake/testtask"
+  def create_test_task(type, file_glob, options = {})
+    test_dir  = file_glob[%r{(\w+)/}, 1]
+    test_desc = options[:desc] || "Run #{type} tests"
+    includes  = ['lib', test_dir].map { |dir| "-I #{dir}" }.join(' ')
+    warn_opt  = options[:warn] ? "-w" : ""
 
-  desc "Run unit tests"
-  Rake::TestTask.new(:unit) do |t|
-    t.test_files = FileList["test/**/*_test.rb"]
-    t.verbose = true
-    t.warning = true
-    t.ruby_opts << "-rrubygems"
-    t.libs << "test"
+    desc test_desc
+    task type do
+      tests = FileList[file_glob].map { |f| "\"#{f[test_dir.size+1 .. -4]}\"" }.join(' ')
+      sh %{ruby -rubygems #{warn_opt} #{includes} -e 'ARGV.each { |f| require f }' #{tests}}
+    end
   end
 
-  desc "Run integration/example tests"
-  Rake::TestTask.new(:example) do |t|
-    t.test_files = FileList["example/**/*_example.rb"]
-    t.verbose = true
-    t.warning = false
-    t.ruby_opts << "-rrubygems"
-    t.libs << "example"
-  end
+  create_test_task :unit,     'test/**/*_test.rb',        :warn => true
+  create_test_task :example,  'example/**/*_example.rb',  :warn => false, :desc => "Run integration/example tests"
 
   desc "Run all tests"
   task :all => [:unit, :example]
