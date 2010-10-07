@@ -1,16 +1,15 @@
 #!/usr/bin/env ruby
 # coding: utf-8
 
-EXIT_SIGINT = 6
-
-trap("INT") do
-  puts "\nAbort"
-  exit(EXIT_SIGINT)
-end
-
 require "tweetwine"
+include Tweetwine
 
-exec_name = File.basename($0)
-config_file = ENV["HOME"] + "/.#{exec_name}"
-
-Tweetwine::CLI.launch(ARGV, exec_name, config_file)
+begin
+  CLI.start ARGV
+rescue Error => e
+  CLI.ui.error e.message
+  exit e.status_code
+rescue Interrupt
+  puts "Abort."
+  exit 1
+end
