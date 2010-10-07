@@ -4,7 +4,7 @@ require "rake/clean"
 
 $LOAD_PATH.unshift(File.expand_path("../lib/", __FILE__))
 name = "tweetwine"
-require "#{name}/meta"
+require name
 version = Tweetwine::VERSION.dup
 
 namespace :gem do
