@@ -2,19 +2,24 @@
 
 require "example_helper"
 
-FakeWeb.register_uri(:get, "https://#{TEST_AUTH}@twitter.com/statuses/home_timeline.json?count=20&page=1", :body => fixture("home.json"))
+Feature "show tweets from home timeline" do
+  include ExampleTestFixture
 
-Feature "show the latest statuses in the home timeline for the user" do
-  in_order_to "stay up-to-date"
+  in_order_to "stay up-to-date of other people's doings"
   as_a "authenticated user"
-  i_want_to "see the latest statuses in the home view"
+  i_want_to "see my home timeline"
 
-  Scenario "see home with colorization disabled" do
-    When "application is launched with no command" do
-      @output = launch_cli(%W{-a #{TEST_AUTH} --no-colors})
+  def setup
+    super
+    stub_http_request "https://api.twitter.com/1/statuses/home_timeline.json?count=20&page=1", :body => fixture("home.json")
+  end
+
+  Scenario "with colorization disabled" do
+    When "I start the application with no command" do
+      @output = start_cli %w{--no-colors}
     end
 
-    Then "the latest statuses in the home view are shown" do
+    Then "the application shows tweets from home timeline without colors" do
       @output[0].should == "pelit, 11 days ago:"
       @output[1].should == "F1-kausi alkaa marraskuussa http://bit.ly/1qQwjQ"
       @output[2].should == ""
@@ -23,12 +28,12 @@ Feature "show the latest statuses in the home timeline for the user" do
     end
   end
 
-  Scenario "see home with colorization enabled" do
-    When "application is launched with no command" do
-      @output = launch_cli(%W{-a #{TEST_AUTH} --colors})
+  Scenario "with colorization enabled" do
+    When "I start the application with no command" do
+      @output = start_cli %w{--colors}
     end
 
-    Then "the latest statuses in the home view are shown" do
+    Then "the application shows tweets from home timeline with colors" do
       @output[0].should == "\e[32mpelit\e[0m, 11 days ago:"
       @output[1].should == "F1-kausi alkaa marraskuussa \e[36mhttp://bit.ly/1qQwjQ\e[0m"
       @output[2].should == ""
@@ -38,11 +43,11 @@ Feature "show the latest statuses in the home timeline for the user" do
   end
 
   Scenario "the command for showing the home view is the default command" do
-    When "application is launched with 'home' command" do
-      @output = launch_cli(%W{-a #{TEST_AUTH} --no-colors home})
+    When "I start the application with 'home' command" do
+      @output = start_cli %w{--no-colors home}
     end
 
-    Then "the latest statuses in the home view are shown" do
+    Then "the application shows tweets from home timeline" do
       @output[0].should == "pelit, 11 days ago:"
       @output[1].should == "F1-kausi alkaa marraskuussa http://bit.ly/1qQwjQ"
       @output[2].should == ""

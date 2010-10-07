@@ -2,9 +2,9 @@
 
 require "example_helper"
 
-FakeWeb.register_uri(:post, "https://#{TEST_AUTH}@twitter.com/statuses/update.json", :body => fixture("update.json"))
+Feature "update my status (send new tweet)" do
+  include ExampleTestFixture
 
-Feature "update my status" do
   in_order_to "tell something about me to the world"
   as_a "authenticated user"
   i_want_to "update my status"
@@ -12,55 +12,70 @@ Feature "update my status" do
   STATUS = "bored. going to sleep."
 
   Scenario "update my status from command line with colorization disabled" do
-    When "application is launched 'update' command" do
-      @output = launch_cli(%W{-a #{TEST_AUTH} --no-colors update '#{STATUS}'}, "y")
+    When "I start the application with 'update' command" do
+      stub_http_request "https://api.twitter.com/1/statuses/update.json", :method => :post, :body => fixture("update.json")
+      @output = start_cli %W{--no-colors update '#{STATUS}'}, "y"
     end
 
-    Then "the status sent is shown" do
-      @output[5].should == "#{TEST_USER}, 9 hours ago:"
+    Then "the application sends and shows the status" do
+      @output[5].should == "#{USER}, 9 hours ago:"
       @output[6].should == "#{STATUS}"
     end
   end
 
   Scenario "update my status from command line with colorization enabled" do
-    When "application is launched 'update' command" do
-      @output = launch_cli(%W{-a #{TEST_AUTH} --colors update '#{STATUS}'}, "y")
+    When "I start the application with 'update' command" do
+      stub_http_request "https://api.twitter.com/1/statuses/update.json", :method => :post, :body => fixture("update.json")
+      @output = start_cli %W{--colors update '#{STATUS}'}, "y"
     end
 
-    Then "the status sent is shown" do
-      @output[5].should == "\e[32m#{TEST_USER}\e[0m, 9 hours ago:"
+    Then "the application sends and shows the status" do
+      @output[5].should == "\e[32m#{USER}\e[0m, 9 hours ago:"
       @output[6].should == "#{STATUS}"
     end
   end
 
-  Scenario "cancel a status from command line" do
-    When "application is launched 'update' command" do
-      @output = launch_cli(%W{-a #{TEST_AUTH} --colors update '#{STATUS}'}, "n")
+  Scenario "update my status from command line when message is spread over multiple arguments" do
+    When "I start the application with 'update' command" do
+      stub_http_request "https://api.twitter.com/1/statuses/update.json", :method => :post, :body => fixture("update.json")
+      @output = start_cli %W{--no-colors update #{STATUS}}, "y"
     end
 
-    Then "a cancellation message is shown" do
+    Then "the application sends and shows the status" do
+      @output[5].should == "#{USER}, 9 hours ago:"
+      @output[6].should == "#{STATUS}"
+    end
+  end
+
+  Scenario "cancel status update from command line" do
+    When "I start the application with 'update' command" do
+      @output = start_cli %W{update '#{STATUS}'}, "n"
+    end
+
+    Then "the application shows a cancellation message" do
       @output[3].should =~ /Cancelled./
     end
   end
 
   Scenario "update my status from STDIN" do
-    When "application is launched 'update' command" do
-      @output = launch_cli(%W{-a #{TEST_AUTH} --no-colors update}, STATUS, "y")
+    When "I start the application with 'update' command" do
+      stub_http_request "https://api.twitter.com/1/statuses/update.json", :method => :post, :body => fixture("update.json")
+      @output = start_cli %W{update}, STATUS, "y"
     end
 
-    Then "the status sent is shown" do
+    Then "the application sends and shows the status" do
       @output[0].should == "Status update: "
-      @output[5].should == "#{TEST_USER}, 9 hours ago:"
+      @output[5].should == "#{USER}, 9 hours ago:"
       @output[6].should == "#{STATUS}"
     end
   end
 
   Scenario "cancel a status update from STDIN" do
-    When "application is launched 'update' command" do
-      @output = launch_cli(%W{-a #{TEST_AUTH} --no-colors update}, STATUS, "n")
+    When "I start the application with 'update' command" do
+      @output = start_cli %W{update}, STATUS, "n"
     end
 
-    Then "a cancellation message is shown" do
+    Then "the application shows a cancellation message" do
       @output[3].should =~ /Cancelled./
     end
   end
