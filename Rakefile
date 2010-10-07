@@ -10,12 +10,12 @@ version = Tweetwine::VERSION.dup
 namespace :gem do
   CLOBBER.include "#{name}-*.gem"
 
-  file "#{name}.gem" => :"man:build" do |f|
+  file "#{name}-#{version}.gem" do |f|
     sh %{gem build #{name}.gemspec}
   end
 
   desc "Package the software as a gem"
-  task :build => [:"test:all", "#{name}.gem"]
+  task :build => [:"man:build", :"test:all", "#{name}-#{version}.gem"]
 
   desc "Install the software as a gem"
   task :install => :build do
