@@ -1,10 +1,9 @@
-_tweetwine_completion ()
-{
+_tweetwine_completion() {
     local cur prev cmds gopts
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
     cmds="followers friends home mentions search update user"
-    gopts="--auth --colors --num --no-colors --no-url-shorten --page --version"
+    gopts="--colors --help --http-proxy --num --no-colors --no-http-proxy --no-url-shorten --page --version"
 
     case "${prev}" in
     followers | friends | home | mentions | search | update | user)
