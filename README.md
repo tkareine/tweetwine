@@ -3,10 +3,10 @@ tweetwine -- a simple Twitter command line agent
 
 ## DESCRIPTION
 
-Tweetwine supports showing the home timeline of the authenticated user, the
-latest statuses of friends and followers, and the latest statuses that mention
-the user. If that's not enough, statuses can be searched with arbitrary terms.
-In addition, new statuses can be sent.
+Tweetwine shows the home timeline of the authenticated user, the latest tweets
+of friends and followers, and the latest tweets that mention the user. If
+that's not enough, you can search statuses with arbitrary terms. In addition,
+you can send new tweets with it.
 
 Features:
 
@@ -22,11 +22,11 @@ Install Tweetwine with RubyGems:
 
     $ gem install tweetwine
 
-The program is compatible with both Ruby 1.8 and 1.9.
+The program is tested with Ruby 1.8.7 and 1.9.
 
 The program requires [rest-client](http://github.com/archiloque/rest-client)
-gem to be installed. In addition, the program needs
-[json](http://json.rubyforge.org/) gem on Ruby 1.8.
+and [oauth](http://oauth.rubyforge.org/) gems to be installed. In addition,
+the program needs [json](http://json.rubyforge.org/) gem on Ruby 1.8.
 
 Documentation is provided as gem man pages. Use
 [gem-man](http://github.com/defunkt/gem-man) to see them:
@@ -35,21 +35,32 @@ Documentation is provided as gem man pages. Use
 
 ## BASIC USAGE AND CONFIGURATION
 
+The program uses OAuth to authenticate the user to Twitter. For that, you need
+to register yourself a personal application at
+[Twitter's developer site](http://dev.twitter.com/apps). After registration
+you have access to the consumer key and secret for the application. But those
+are not enough: at the site, click "My access token" link. There you will find
+your personal access key and secret that correspond to the consumer key and
+secret. You will need all the four tokens.
+
+Create a configuration file, `~/tweetwine`, and insert the four OAuth
+authentication tokens into it:
+
+    :oauth:
+      :consumer_key: aaaaaaaaaaaaaaaaaaaa
+      :consumer_secret: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+      :access_key: cccccccccccccccccccccccccccccccccccccccccccccccc
+      :access_secret: dddddddddddddddddddddddddddddddddddddddd
+
+The configuration file must be in in YAML syntax. In addition to the OAuth
+tokens, the program recognizes the following settings:
+
+    :username: <your_username>
+    :colors: true|false
+
 In the command line, run the program by entering
 
-    $ tweetwine [ <GLOBAL_OPTIONS> ] [ <COMMAND> ] [ <COMMAND_OPTIONS> ]
-
-The program needs the user's username and password for authentication. This
-information can be supplied either via a configuration file or as an option
-(`-a USERNAME:PASSWORD`) to the program. It is recommended to use the former
-method over the latter.
-
-The configuration file, in `~/.tweetwine`, is in YAML syntax. The program
-recognizes the following basic settings:
-
-    username: <your_username>
-    password: <your_password>
-    colors: true|false
+    $ tweetwine [global_options..] [command] [command_options...]
 
 For all the global options and commands, see:
 
@@ -57,36 +68,36 @@ For all the global options and commands, see:
 
 For information about a specific command and its options, enter:
 
-    $ tweetwine help <COMMAND>
+    $ tweetwine help <command>
 
-### URL shortening for status update
+### URL shortening for a status update
 
-Before actually sending a status update, it is possible for the software to
-shorten the URLs in the update by using an external web service. This can be
-enabled via the `shorten_urls` key in configuration file; for example:
+Before actually sending a new status update, it is possible for the software
+to shorten the URLs in the tweet by using an external web service. This can be
+enabled via the `:shorten_urls` key in configuration file; for example:
 
-    username: spoonman
-    password: withyourhands
-    colors: true
-    shorten_urls:
-      enable: true
-      service_url: http://is.gd/create.php
-      method: post
-      url_param_name: URL
-      xpath_selector: //input[@id='short_url']/@value
+    :oauth:
+      :consumer_key: aaaaaaaaaaaaaaaaaaaa
+      :consumer_secret: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+      :access_key: cccccccccccccccccccccccccccccccccccccccccccccccc
+      :access_secret: dddddddddddddddddddddddddddddddddddddddd
+    :username: spoonman
+    :colors: true
+    :shorten_urls:
+      :service_url: http://is.gd/create.php
+      :method: post
+      :url_param_name: URL
+      :xpath_selector: //input[@id='short_url']/@value
 
 The supported methods (in `method`) are `get` and `post`. The method chosen
-affects whether parameters are passed as URL query parameters or as payload
-in the HTTP request, respectively. Extra parameters can be given via
-`extra_params` key, as a hash.
+affects whether parameters are passed as URL query parameters or as payload in
+the HTTP request, respectively. Extra parameters can be given via
+`:extra_params` key, as a hash.
 
 The `xpath_selector` is needed to extract the shortened URL from the result.
 
-URL shortening can be disabled by
-
-* not defining `shorten_urls` key in the configuration file,
-* setting key `enable` to `false`, or
-* using the command line option `--no-url-shorten`.
+URL shortening can be disabled by not defining `shorten_urls` key in the
+configuration file, or using the command line option `--no-url-shorten`.
 
 *NOTE:* The use of the feature requires [nokogiri](http://nokogiri.org/) gem
 to be installed.
@@ -115,8 +126,8 @@ snippet to your Bash initialization script (such as `~/.bashrc`):
 
 ## COPYRIGHT
 
-Tweetwine is Copyright (c) 2009-2010 Tuomas Kareinen
+Tweetwine is Copyright (c) 2009-2010 Tuomas Kareinen.
 
 ## SEE ALSO
 
-tweetwine(1), <http://github.com/tuomas/tweetwine>
+<http://github.com/tuomas/tweetwine>
