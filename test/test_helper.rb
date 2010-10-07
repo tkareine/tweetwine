@@ -9,7 +9,7 @@ Mocha::Configuration.prevent(:stubbing_non_existent_method)
 module Tweetwine
   module Test
     module Helper
-      module_function
+      extend self
 
       def create_test_twitter_status_records_from_rest_api(*internal_records)
         twitter_records = internal_records.map do |internal_record|
@@ -58,6 +58,26 @@ module Tweetwine
       def fixture_file(filename)
         File.dirname(__FILE__) << "/fixture/" << filename
       end
+
+      def mock_http
+        @http = mock
+        CLI.stubs(:http).returns(@http)
+      end
+
+      def mock_ui
+        @ui = mock
+        CLI.stubs(:ui).returns(@ui)
+      end
+
+      def mock_url_shortener
+        @url_shortener = mock
+        CLI.stubs(:url_shortener).returns(@url_shortener)
+      end
+
+      def stub_config(options = {})
+        @config = options
+        CLI.stubs(:config).returns(@config)
+      end
     end
 
     module Assertion
@@ -73,7 +93,7 @@ module Tweetwine
     end
   end
 
-  class TweetwineTestCase < ::Test::Unit::TestCase
+  class UnitTestCase < ::Test::Unit::TestCase
     include Tweetwine
     include Test
     include Test::Helper

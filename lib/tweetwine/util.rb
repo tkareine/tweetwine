@@ -6,7 +6,13 @@ require "uri"
 
 module Tweetwine
   module Util
-    def self.humanize_time_diff(from, to)
+    extend self
+
+    def blank?(str)
+      str.nil? || str.empty?
+    end
+
+    def humanize_time_diff(from, to)
       from = Time.parse(from.to_s) unless from.is_a? Time
       to = Time.parse(to.to_s) unless to.is_a? Time
 
@@ -22,7 +28,7 @@ module Tweetwine
       [value, pluralize_unit(value, unit)]
     end
 
-    def self.symbolize_hash_keys(hash)
+    def symbolize_hash_keys(hash)
       hash.inject({}) do |result, pair|
         value = pair.last
         value = symbolize_hash_keys(value) if value.is_a? Hash
@@ -31,7 +37,7 @@ module Tweetwine
       end
     end
 
-    def self.parse_int_gt(value, default, min, name_for_error)
+    def parse_int_gt(value, default, min, name_for_error)
       if value
         value = value.to_i
         if value >= min
@@ -44,7 +50,7 @@ module Tweetwine
       end
     end
 
-    def self.str_gsub_by_group(str, regexp)
+    def str_gsub_by_group(str, regexp)
       dup_str = str.dup
       str_pos, dup_pos = 0, 0
       while str_pos < str.size && (match_data = regexp.match(str[str_pos..-1]))
@@ -64,15 +70,15 @@ module Tweetwine
       dup_str
     end
 
-    def self.percent_encode(str)
+    def percent_encode(str)
       URI.escape(str.to_s, /[^#{URI::PATTERN::UNRESERVED}]/)
     end
 
-    def self.unescape_html(str)
+    def unescape_html(str)
       CGI.unescapeHTML(str.gsub('&nbsp;', ' '))
     end
 
-    def self.find_hash_path(hash, path)
+    def find_hash_path(hash, path)
       return nil if hash.nil?
       path = [path] unless path.is_a? Array
       path.inject(hash) do |result, key|
@@ -83,14 +89,14 @@ module Tweetwine
 
     private
 
-    def self.pluralize_unit(value, unit)
+    def pluralize_unit(value, unit)
       if ["hour", "day"].include?(unit) && value > 1
         unit = unit + "s"
       end
       unit
     end
 
-    def self.indexes_of_filled_matches(match_data)
+    def indexes_of_filled_matches(match_data)
       if match_data.size > 1
         (1...match_data.size).to_a.reject { |i| match_data[i].nil? }
       else

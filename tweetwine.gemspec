@@ -2,7 +2,7 @@
 
 $LOAD_PATH.unshift(File.expand_path("../lib/", __FILE__))
 name = "tweetwine"
-require "#{name}/meta"
+require name
 version = Tweetwine::VERSION.dup
 
 Gem::Specification.new do |s|
@@ -21,10 +21,10 @@ Gem::Specification.new do |s|
   s.email = "tkareine@gmail.com"
 
   s.files = Dir[
-    "*.rdoc",
+    "*.md",
     "LICENSE.txt",
     "Rakefile",
-    "README.md",
+    "tweetwine.gemspec",
     "{bin,contrib,example,lib,test}/**/*",
     "man/**/*.[1-9]",
     "man/**/*.ronn"
@@ -32,17 +32,19 @@ Gem::Specification.new do |s|
   s.require_paths = %w{lib}
   s.executables = %w{tweetwine}
 
-  s.add_dependency("rest-client", ">= 1.0.0")
-  s.add_dependency("json", ">= 1.0.0") if RUBY_VERSION < "1.9"
-  s.add_development_dependency("contest", ">= 0.1.2")
-  s.add_development_dependency("coulda",  ">= 0.5.3")
-  s.add_development_dependency("fakeweb", ">= 1.2.8")
-  s.add_development_dependency("gem-man", ">= 0.2.0")
-  s.add_development_dependency("matchy",  ">= 0.3.3")
-  s.add_development_dependency("mocha",   ">= 0.9.8")
-  s.add_development_dependency("open4",   "~> 1.0")
-  s.add_development_dependency("ronn",    ">= 0.5.0")
-  s.add_development_dependency("timecop", ">= 0.3.4")
+  s.add_dependency("oauth",       "~> 0.4.3")
+  s.add_dependency("rest-client", "~> 1.6.1")
+  s.add_dependency("json",        ">= 1.0.0") if RUBY_VERSION < "1.9"
+  s.add_development_dependency("contest", "~> 0.1.2")
+  s.add_development_dependency("coulda",  "~> 0.5.3")
+  s.add_development_dependency("fakeweb", "~> 1.3.0")
+  s.add_development_dependency("gem-man", "~> 0.2.0")
+  s.add_development_dependency("matchy",  "~> 0.5.2")
+  s.add_development_dependency("mocha",   "~> 0.9.8")
+  s.add_development_dependency("open4",   "~> 1.0.1")
+  s.add_development_dependency("ronn",    "~> 0.7.3")
+  s.add_development_dependency("timecop", "~> 0.3.5")
+  s.add_development_dependency("webmock", "~> 1.3.5")
 
   s.has_rdoc = true
   s.extra_rdoc_files = Dir["*.rdoc", "LICENSE.txt"]

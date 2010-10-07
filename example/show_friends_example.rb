@@ -2,19 +2,20 @@
 
 require "example_helper"
 
-FakeWeb.register_uri(:get, "https://#{TEST_AUTH}@twitter.com/statuses/friends/#{TEST_USER}.json", :body => fixture("users.json"))
+Feature "show friends" do
+  include ExampleTestFixture
 
-Feature "show friends and their latest statuses" do
   in_order_to "to see who I follow"
   as_a "authenticated user"
-  i_want_to "see my friends and their latest statuses, if any"
+  i_want_to "see my friends"
 
-  Scenario "see friends and their latest statuses" do
-    When "application is launched 'friends' command" do
-      @output = launch_cli(%W{-a #{TEST_AUTH} --no-colors friends})
+  Scenario "show friends" do
+    When "I start the application with 'followers' command" do
+      stub_http_request "https://api.twitter.com/1/statuses/friends.json?count=20&page=1", :body => fixture("users.json")
+      @output = start_cli %w{friends}
     end
 
-    Then "my friends and their latest statuses are shown" do
+    Then "the application shows friends and their latest tweets (if any)" do
       @output[0].should == "jillv, 12 hours ago:"
       @output[1].should == "choosing next target"
       @output[2].should == ""

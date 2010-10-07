@@ -2,19 +2,20 @@
 
 require "example_helper"
 
-FakeWeb.register_uri(:get, "http://search.twitter.com/search.json?q=braid%20game&rpp=2&page=1", :body => fixture("search.json"))
+Feature "search tweets" do
+  include ExampleTestFixture
 
-Feature "search statuses" do
   in_order_to "search statuses"
-  as_a "any user"
-  i_want_to "see latest statuses that match the search"
+  as_a "authenticated user"
+  i_want_to "see tweets matching the search"
 
-  Scenario "see statuses that match the search" do
-    When "application is launched 'search' command and search words as extra arguments" do
-      @output = launch_cli(%W{-a anyuser:anypwd --no-colors -n 2 search braid game})
+  Scenario "search words" do
+    When "I start the application with command 'search' and search words" do
+      stub_http_request "http://search.twitter.com/search.json?q=braid%20game&rpp=2&page=1", :body => fixture("search.json")
+      @output = start_cli %w{-n 2 search braid game}
     end
 
-    Then "the latest statuses that match the search are shown" do
+    Then "the application shows tweets matching all the words" do
       @output[0].should == "thatswhatshesaid, in reply to hatguy, 5 hours ago:"
       @output[1].should == "@hatguy braid, perhaps the best indie game of 2009"
       @output[2].should == ""
@@ -23,16 +24,46 @@ Feature "search statuses" do
     end
   end
 
-  Scenario "attempt searching without specifying search word" do
-    When "application is launched 'search' command without extra arguments" do
-      @status = launch_app("-a anyuser:anypwd --no-colors -n 2 search") do |pid, stdin, stdout|
-        @output = stdout.readlines
+  Scenario "search tweets matching all words" do
+    When "I start the application with command 'search', option '-a', and search words" do
+      stub_http_request "http://search.twitter.com/search.json?q=braid%20game&rpp=2&page=1", :body => fixture("search.json")
+      @output = start_cli %w{-n 2 search -a braid game}
+    end
+
+    Then "the application shows tweets matching all the words" do
+      @output[0].should == "thatswhatshesaid, in reply to hatguy, 5 hours ago:"
+      @output[1].should == "@hatguy braid, perhaps the best indie game of 2009"
+      @output[2].should == ""
+      @output[3].should == "jillv, 11 hours ago:"
+      @output[4].should == "braid is even better than of the games i'm in, expect re4"
+    end
+  end
+
+  Scenario "search tweets matching any words" do
+    When "I start the application with command 'search', option '-o', and search words" do
+      stub_http_request "http://search.twitter.com/search.json?q=braid%20OR%20game&rpp=2&page=1", :body => fixture("search.json")
+      @output = start_cli %w{-n 2 search -o braid game}
+    end
+
+    Then "the application shows tweets matching any of the words" do
+      @output[0].should == "thatswhatshesaid, in reply to hatguy, 5 hours ago:"
+      @output[1].should == "@hatguy braid, perhaps the best indie game of 2009"
+      @output[2].should == ""
+      @output[3].should == "jillv, 11 hours ago:"
+      @output[4].should == "braid is even better than of the games i'm in, expect re4"
+    end
+  end
+
+  Scenario "search without words" do
+    When "I start the application with 'search' command without search words" do
+      @status = start_app %w{-n 2 search} do |_, _, _, stderr|
+        @output = stderr.gets
       end
     end
 
-    Then "the latest statuses that match the search are shown" do
-      @output[0].should == "Error: No search word\n"
-      @status.exitstatus.should == CLI::EXIT_ERROR
+    Then "the application shows error message and exists with error status" do
+      @output.should == "ERROR: No search words.\n"
+      @status.exitstatus.should == CommandLineError.status_code
     end
   end
 end

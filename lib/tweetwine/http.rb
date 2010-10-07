@@ -3,9 +3,14 @@
 require "rest_client"
 
 module Tweetwine
-  class HttpError < RuntimeError; end
+  module Http
+    def self.when_requesting(modifier)
+      RestClient.add_before_execution_proc(&modifier)
+      yield
+    ensure
+      RestClient.before_execution_procs.clear
+    end
 
-  module RetryingHttp
     def self.proxy=(url)
       RestClient.proxy = url
     end
@@ -36,21 +41,23 @@ module Tweetwine
           if retries < MAX_RETRIES
             retries += 1
             timeout = RETRY_BASE_WAIT_TIMEOUT**retries
-            @io.warn("Could not connect -- retrying in #{timeout} seconds") if @io
+            CLI.ui.warn("Could not connect -- retrying in #{timeout} seconds")
             sleep timeout
             retry
           else
             raise HttpError, e
           end
-        rescue RestClient::Exception, SocketError, SystemCallError => e
+        rescue RestClient::Exception => e
           raise HttpError, e
+        rescue SocketError, SystemCallError => e
+          raise ConnectionError, e
         end
       end
     end
 
     class Client < Base
-      def initialize(io)
-        @io = io
+      def initialize(options = {})
+        Http.proxy = options[:http_proxy] if options[:http_proxy]
       end
 
       def get(*args)
@@ -62,19 +69,19 @@ module Tweetwine
       end
 
       def as_resource(url, options = {})
-        Resource.new(RestClient::Resource.new(url, options), @io)
+        Resource.new(RestClient::Resource.new(url, options))
       end
 
       use_retries_with :get, :post
     end
 
     class Resource < Base
-      def initialize(wrapped_resource, io)
-        @wrapped, @io = wrapped_resource, io
+      def initialize(wrapped_resource)
+        @wrapped = wrapped_resource
       end
 
       def [](suburl)
-        self.class.new(@wrapped[suburl], @io)
+        self.class.new(@wrapped[suburl])
       end
 
       def get(*args)

@@ -2,19 +2,20 @@
 
 require "example_helper"
 
-FakeWeb.register_uri(:get, "https://#{TEST_AUTH}@twitter.com/statuses/user_timeline/#{TEST_USER}.json?count=20&page=1", :body => fixture("user.json"))
+Feature "show user's tweets" do
+  include ExampleTestFixture
 
-Feature "show a specific user's latest statuses" do
-  in_order_to "to see what is going on with a specific user"
+  in_order_to "to see what's going on with a specific user"
   as_a "authenticated user"
-  i_want_to "see the latest statuses of a specific user"
+  i_want_to "see that user's tweets"
 
-  Scenario "see my latest statuses" do
-    When "application is launched 'user' command and without extra arguments" do
-      @output = launch_cli(%W{-a #{TEST_AUTH} --no-colors user})
+  Scenario "show my tweets" do
+    When "I start the application with 'user' command without extra arguments" do
+      stub_http_request "https://api.twitter.com/1/statuses/user_timeline.json?count=20&page=1&screen_name=#{USER}", :body => fixture("user.json")
+      @output = start_cli %w{user}
     end
 
-    Then "my the latest statuses are shown" do
+    Then "the application shows my tweets" do
       @output[0].should == "jillv, in reply to chris, 9 hours ago:"
       @output[1].should == "@chris wait me until the garden"
       @output[2].should == ""
@@ -23,12 +24,13 @@ Feature "show a specific user's latest statuses" do
     end
   end
 
-  Scenario "see the latest statuses of another user" do
-    When "application is launched 'user' command and the user as an extra argument" do
-      @output = launch_cli(%W{-a #{TEST_AUTH} --no-colors user #{TEST_USER}})
+  Scenario "show another user's tweets" do
+    When "I start the application with 'user' command with the user as argument" do
+      stub_http_request "https://api.twitter.com/1/statuses/user_timeline.json?count=20&page=1&screen_name=jillv", :body => fixture("user.json")
+      @output = start_cli %w{user jillv}
     end
 
-    Then "the latest statuses of the user are shown" do
+    Then "the application shows the user's tweets" do
       @output[0].should == "jillv, in reply to chris, 9 hours ago:"
       @output[1].should == "@chris wait me until the garden"
       @output[2].should == ""

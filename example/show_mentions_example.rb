@@ -2,19 +2,20 @@
 
 require "example_helper"
 
-FakeWeb.register_uri(:get, "https://#{TEST_AUTH}@twitter.com/statuses/mentions.json?count=20&page=1", :body => fixture("mentions.json"))
+Feature "show tweets mentioning the user" do
+  include ExampleTestFixture
 
-Feature "show the latest statuses mentioning the user" do
-  in_order_to "know if someone has mention me"
+  in_order_to "know if someone has mentioned me"
   as_a "authenticated user"
-  i_want_to "see the latest statuses that mention me"
+  i_want_to "see the tweets mentioning me"
 
-  Scenario "see the latest statuses that mention me" do
-    When "application is launched with 'mentions' command" do
-      @output = launch_cli(%W{-a #{TEST_AUTH} --no-colors mentions})
+  Scenario "show tweets mentioning me" do
+    When "I start the application with 'mentions' command" do
+      stub_http_request "https://api.twitter.com/1/statuses/mentions.json?count=20&page=1", :body => fixture("mentions.json")
+      @output = start_cli %w{mentions}
     end
 
-    Then "the latest statuses that mention me are shown" do
+    Then "the application shows tweets mentioning me" do
       @output[0].should == "jillv, in reply to fooman, 3 days ago:"
       @output[1].should == "@fooman, did you see their eyes glow yellow after sunset?"
       @output[2].should == ""
