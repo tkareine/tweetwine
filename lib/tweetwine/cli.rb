@@ -1,254 +1,377 @@
 # coding: utf-8
 
-require "optparse"
-
 module Tweetwine
-  class CLI
-    EXIT_HELP = 1
-    EXIT_VERSION = 2
-    EXIT_ERROR = 255
+  module CLI
+    DEFAULT_COMMAND = :home
 
-    def self.launch(args, exec_name, config_file, extra_opts = {})
-      new(args, exec_name, config_file, extra_opts, &default_dependencies).execute(args)
-    rescue ArgumentError, HttpError => e
-      puts "Error: #{e.message}"
-      exit(EXIT_ERROR)
+    DEFAULT_CONFIG = {
+      :config_file        => "#{(ENV['HOME'] || ENV['USERPROFILE'])}/.tweetwine",
+      :env_lookouts       => [],
+      :exclude_save_keys  => [:config_file, :env_lookouts, :exclude_save_keys, :exec_name],
+      :exec_name          => "tweetwine",
+      :oauth              => {},
+      :username           => ENV['USER']
+    }.freeze
+
+    class << self
+      def start(args = ARGV, overriding_default_conf = nil)
+        init(args, overriding_default_conf)
+        run(args)
+      end
+
+      def config
+        @config ||= read_config
+      end
+
+      def http
+        @http ||= Http::Client.new(config)
+      end
+
+      def oauth
+        @oauth ||= OAuth.new(config[:oauth])
+      end
+
+      def twitter
+        @twitter ||= Twitter.new(config)
+      end
+
+      def ui
+        @ui ||= UI.new(config)
+      end
+
+      def url_shortener
+        @url_shorterer ||= UrlShortener.new(config[:shorten_urls])
+      end
+
+      def commands
+        @commands ||= {
+          :primaries    => {},
+          :secondaries  => {}
+        }
+      end
+
+      def register_command(cmd_class, names)
+        commands[:primaries][names.first.to_sym] = cmd_class
+        names[1..-1].each { |name| commands[:secondaries][name.to_sym] = cmd_class }
+      end
+
+      def find_command(name)
+        name = name.to_sym
+        commands[:primaries][name] || commands[:secondaries][name]
+      end
+
+      def global_option_parser
+        @global_option_parser ||= OptionParser.new do |parser, options|
+          parser.on '-c', '--colors',                     'Enable ANSI colors for output.' do
+            options[:colors] = true
+          end
+          parser.on '-h', '--help',                       'Show this help and exit.' do
+            options[:command] = :help
+          end
+          parser.on       '--http-proxy <url>', String,   'Enable HTTP(S) proxy.' do |arg|
+            options[:http_proxy] = arg
+          end
+          parser.on       '--no-colors',                  'Disable ANSI colors for output.' do
+            options[:colors] = false
+          end
+          parser.on       '--no-http-proxy',              'Disable HTTP(S) proxy.' do
+            options[:http_proxy] = nil
+          end
+          parser.on       '--no-url-shorten',             'Disable URL shortening.' do
+            options.delete :shorten_urls
+          end
+          parser.on '-n', '--num <n>',          Integer,  "Number of statuses per page (default #{Twitter::DEFAULT_NUM_STATUSES})." do |arg|
+            options[:num_statuses] = arg
+          end
+          parser.on '-p', '--page <p>',         Integer,  "Page number for statuses (default #{Twitter::DEFAULT_PAGE_NUM})." do |arg|
+            options[:page] = arg
+          end
+          parser.on '-u', '--username <user>',  String,   "User to authenticate (default '#{DEFAULT_CONFIG[:username]}')." do |arg|
+            options[:username] = arg
+          end
+          parser.on '-v', '--version',                    "Show version and exit." do
+            options[:command] = :version
+          end
+        end
+      end
+
+      private
+
+      def init(args, overriding_default_conf = nil)
+        @config = read_config(args, overriding_default_conf)
+        @http, @oauth, @twitter, @ui, @url_shortener = nil   # reset
+      end
+
+      def run(args)
+        proposed_command = config[:command]
+        found_command = find_command proposed_command
+        raise UnknownCommandError, "Unknown command: #{proposed_command}" unless found_command
+        found_command.new(args).run
+        self
+      end
+
+      def read_config(cmdline_args = [], overriding_default_config = nil)
+        default_config = overriding_default_config ? DEFAULT_CONFIG.merge(overriding_default_config) : DEFAULT_CONFIG
+        config = Config.read(cmdline_args, default_config[:env_lookouts], default_config[:config_file], default_config) do |args|
+          parse_config_from_cmdline(args)
+        end
+        config.exclude_on_save(*default_config[:exclude_save_keys])
+        config
+      end
+
+      def parse_config_from_cmdline(args)
+        options = global_option_parser.parse(args)
+        unless options[:command]
+          cmd_via_arg = args.shift
+          options[:command] = cmd_via_arg ? cmd_via_arg.to_sym : DEFAULT_COMMAND
+        end
+        options
+      end
+    end
+  end
+
+  class Command
+    class << self
+      def inherited(child)
+        # Silence warnings about uninitialized variables if a child does not
+        # set its about, name, or usage.
+        child.instance_eval do
+          @about, @name, @usage = nil
+        end
+      end
+
+      def about(description = nil)
+        return @about unless description
+        @about = description.chomp
+      end
+
+      def register(*names)
+        @name = names.first
+        CLI.register_command(self, names)
+      end
+
+      def name
+        @name
+      end
+
+      # Usage description for the command, use if overriding #parse.
+      def usage(description = nil)
+        return @usage unless description
+        @usage = description
+      end
+
+      def show_usage(about_cmd = self)
+        about = about_cmd.about
+        exec_name = CLI.config[:exec_name]
+        name = about_cmd.name
+        usage = about_cmd.usage
+        result = <<-END
+#{about}
+
+Usage: #{exec_name} #{name} #{usage}
+        END
+        CLI.ui.info result.strip!
+      end
+
+      def abort_with_usage
+        show_usage
+        exit CommandLineError.status_code
+      end
     end
 
-    def execute(args)
-      if @config.command != :help
-        cmd_options = parse_command_options(@config.command, args)
-        @client.send(@config.command, args, cmd_options)
+    def initialize(args)
+      parsing_succeeded = parse(args)
+      self.class.abort_with_usage unless parsing_succeeded
+    end
+
+    # Default behavior, which succeeds always; override for real argument
+    # parsing if the command needs arguments.
+    def parse(args)
+      true
+    end
+  end
+
+  class HelpCommand < Command
+    register "help"
+    about "Show help and exit. Try it with <command> argument."
+    usage <<-END
+[<command>]
+
+  If <command> is given, show specific help about that command. If no
+  <command> is given, show general help.
+    END
+
+    def parse(args)
+      # Did we arrive here via '-h' option? If so, we cannot have
+      # +proposed_command+ because '-h' does not take an argument. Otherwise,
+      # try to read the argument.
+      proposed_command = args.include?('-h') ? nil : args.shift
+      if proposed_command
+        @command = CLI.find_command proposed_command
+        CLI.ui.error "Unknown command.\n\n" unless @command
+        @command
       else
-        show_help_command_and_exit(args)
+        @command = nil
+        true
+      end
+    end
+
+    def run
+      if @command
+        show_command_help
+      else
+        show_general_help
       end
     end
 
     private
 
-    def self.default_dependencies
-      lambda do |options|
-        io = Tweetwine::IO.new(options)
-        http_client = RetryingHttp::Client.new(io)
-        url_shortener = lambda { |opts| UrlShortener.new(http_client, opts) }
-        Client::Dependencies.new(io, http_client, url_shortener)
-      end
+    def show_command_help
+      self.class.show_usage @command
     end
 
-    def initialize(args, exec_name, config_file, extra_opts = {}, &dependencies_blk)
-      @global_option_parser = create_global_option_parser(exec_name)
-      @config = StartupConfig.new(Client::COMMANDS + [:help], Client::DEFAULT_COMMAND, extra_opts)
-      @config.parse(args, [:http_proxy], config_file, &@global_option_parser)
-      @client = Client.new(yield(@config.options), @config.options) if @config.command != :help
-    end
+    def show_general_help
+      exec_name = CLI.config[:exec_name]
+      command_descriptions = CLI.commands[:primaries].
+        entries.
+        sort     { |a, b| a.first.to_s <=> b.first.to_s }.
+        map      { |cmd, klass| [cmd, klass.about] }
+      CLI.ui.info <<-END
+A simple but tasty Twitter agent for command line use, made for fun.
 
-    def show_help_command_and_exit(args)
-      help_about_cmd = args.shift
-      if help_about_cmd
-        help_about_cmd = help_about_cmd.to_sym
-        parse_command_options(help_about_cmd, ["-h"]) if Client::COMMANDS.include?(help_about_cmd)
-      end
-      @global_option_parser.call(["-h"])
-    end
+Usage: #{exec_name} [global_options...] [<command>] [command_options...]
 
-    def self.create_option_parser
-      lambda do |args|
-        parsed_options = {}
-        begin
-          parser = OptionParser.new do |opt|
-            opt.on_tail("-h", "--help", "Show this help message and exit") {
-              puts opt
-              exit(EXIT_HELP)
-            }
-            schema = yield parsed_options
-            opt.banner = schema[:help]
-            schema[:opts].each do |opt_schema|
-              opt.on(*option_schema_to_ary(opt_schema), &opt_schema[:action])
-            end if schema[:opts]
-          end.order!(args)
-        rescue OptionParser::ParseError => e
-          raise ArgumentError, e.message
+  Global options:
+
+#{CLI.global_option_parser.help}
+
+  Commands:
+
+#{command_descriptions.map { |cmd, desc| "    %-14s%s" % [cmd, desc] }.join("\n") }
+      END
+    end
+  end
+
+  class HomeCommand < Command
+    register "home", "h"
+    about "Show authenticated user's home timeline (the default command)."
+
+    def run
+      CLI.twitter.home
+    end
+  end
+
+  class FollowersCommand < Command
+    register "followers", "fo"
+    about "Show authenticated user's followers and their latest tweets."
+
+    def run
+      CLI.twitter.followers
+    end
+  end
+
+  class FriendsCommand < Command
+    register "friends", "fr"
+    about "Show authenticated user's friends and their latest tweets."
+
+    def run
+      CLI.twitter.friends
+    end
+  end
+
+  class MentionsCommand < Command
+    register "mentions", "men", "m"
+    about "Show latest tweets that mention or are replies to the authenticated user."
+
+    def run
+      CLI.twitter.mentions
+    end
+  end
+
+  class SearchCommand < Command
+    def self.parser
+      @parser ||= OptionParser.new do |parser, options|
+        parser.on '-a', '--and',  'All words match (default).' do
+          options[:operator] = :and
         end
-        parsed_options
+        parser.on '-o', '--or',   'Any word matches.' do
+          options[:operator] = :or
+        end
       end
     end
 
-    def self.option_schema_to_ary(opt_schema)
-      [:short, :long, :type, :desc].inject([]) do |result, key|
-        result << opt_schema[key] if opt_schema[key]
-        result
+    register "search", "s"
+    about "Search latest public tweets."
+    usage(Promise.new {<<-END
+[--all | --or] <word>...
+
+  Command options:
+
+#{parser.help}
+      END
+    })
+
+    def parse(args)
+      options = self.class.parser.parse(args)
+      @operator = options[:operator]
+      @words = args
+      if @words.empty?
+        CLI.ui.error "No search words.\n\n"
+        false
+      else
+        true
       end
     end
 
-    def create_global_option_parser(exec_name)
-      self.class.create_option_parser do |parsed|
-        {
-          :help => \
-"A simple but tasty Twitter agent for command line use, made for fun.
+    def run
+      CLI.twitter.search @words, @operator
+    end
+  end
 
-Usage: #{exec_name} [global_options...] [command] [command_options...]
+  class UpdateCommand < Command
+    register "update", "up"
+    about "Send new tweet."
+    usage <<-END
+[<status>]
 
-  [command] is one of
-    * #{Client::COMMANDS[0...-1].join(",\n    * ")}, or
-    * #{Client::COMMANDS.last}.
+  If <status> is not given, read the contents for the tweet from STDIN.
+    END
 
-  The default command is #{Client::DEFAULT_COMMAND}.
-
-  [global_options]:
-",
-          :opts => [
-            {
-              :short  => "-a",
-              :long   => "--auth USERNAME:PASSWORD",
-              :desc   => "Authentication",
-              :action => lambda { |arg| parsed[:username], parsed[:password] = arg.split(":", 2) }
-            },
-            {
-              :short  => "-c",
-              :long   => "--colors",
-              :desc   => "Colorize output with ANSI escape codes",
-              :action => lambda { |arg| parsed[:colors] = true }
-            },
-            {
-              :short  => "-n",
-              :long   => "--num N",
-              :type   => Integer,
-              :desc   => "The number of statuses in page, default #{Client::DEFAULT_NUM_STATUSES}",
-              :action => lambda { |arg| parsed[:num_statuses] = arg }
-            },
-            {
-              :long   => "--no-colors",
-              :desc   => "Do not use ANSI colors",
-              :action => lambda { |arg| parsed[:colors] = false }
-            },
-            {
-              :long   => "--no-http-proxy",
-              :desc   => "Do not use proxy for HTTP and HTTPS",
-              :action => lambda { |arg| parsed[:http_proxy] = nil }
-            },
-            {
-              :long   => "--no-url-shorten",
-              :desc   => "Do not shorten URLs for status update",
-              :action => lambda { |arg| parsed[:shorten_urls] = { :enable => false } }
-            },
-            {
-              :short  => "-p",
-              :long   => "--page N",
-              :type   => Integer,
-              :desc   => "The page number for statuses, default #{Client::DEFAULT_PAGE_NUM}",
-              :action => lambda { |arg| parsed[:page_num] = arg }
-            },
-            {
-              :long   => "--http-proxy URL",
-              :type   => String,
-              :desc   => "Use proxy for HTTP and HTTPS",
-              :action => lambda { |arg| parsed[:http_proxy] = arg }
-            },
-            {
-              :short  => "-v",
-              :long   => "--version",
-              :desc   => "Show version information and exit",
-              :action => lambda do |arg|
-                puts "#{exec_name} #{Tweetwine::VERSION}"
-                exit(EXIT_VERSION)
-              end
-            }
-          ]
-        }
-      end
+    def parse(args)
+      @msg = args.join(' ')
+      args.clear
+      true
     end
 
-    def self.create_command_option_parser(command_name, schema)
-      create_option_parser do |parsed|
-        {
-          :help => \
-"#{command_name} [command_options...] #{schema[:help][:rest_args]}
+    def run
+      CLI.twitter.update @msg
+    end
+  end
 
-#{schema[:help][:desc]}
+  class UserCommand < Command
+    register "user", "usr"
+    about "Show user's timeline."
+    usage <<-END
+[<username>]
 
-  [command_options]:
-",
-          :opts => schema[:opts]
-        }
-      end
+  If <username> is not given, show authenticated user's timeline.
+    END
+
+    def parse(args)
+      @user = args.empty? ? CLI.config[:username] : args.shift
     end
 
-    command_parser_schemas = {
-      :followers => {
-        :help => {
-          :desc => \
-"Show the followers of the authenticated user, together with the latest status
-of each follower."
-        }
-      },
-      :friends => {
-        :help => {
-          :desc => \
-"Show the friends of the authenticated user, together with the latest status of
-each friend."
-        }
-      },
-      :home => {
-        :help => {
-          :desc => \
-"Show the latest statuses of friends and own tweets (the home timeline of the
-authenticated user)."
-        }
-      },
-      :mentions => {
-        :help => {
-          :desc => \
-"Show the latest statuses that mention the authenticated user."
-        }
-      },
-      :search => {
-        :help => {
-          :rest_args  => "word_1 [word_2...]",
-          :desc       => \
-"Search the latest public statuses with one or more words."
-        },
-        :opts => [
-          {
-            :short  => "-a",
-            :long   => "--and",
-            :desc   => "All words must match",
-            :action => lambda { |arg| parsed[:bin_op] = :and }
-          },
-          {
-            :short  => "-o",
-            :long   => "--or",
-            :desc   => "Any word matches",
-            :action => lambda { |arg| parsed[:bin_op] = :or }
-          }
-        ]
-      },
-      :update => {
-        :help => {
-          :rest_args  => "[status]",
-          :desc       => \
-"Send a status update, but confirm the action first before actually sending.
-The status update can either be given as an argument or via STDIN if no
-[status] is given."
-        }
-      },
-      :user => {
-        :help => {
-          :rest_args  => "[username]",
-          :desc       => \
-"Show a specific user's latest statuses. The user is identified with [username]
-argument; if the argument is absent, the authenticated user's statuses are
-shown."
-        }
-      }
-    }
-
-    COMMAND_OPTION_PARSERS = Client::COMMANDS.inject({}) do |result, cmd|
-      result[cmd] = create_command_option_parser(cmd, command_parser_schemas[cmd])
-      result
+    def run
+      CLI.twitter.user(@user)
     end
+  end
 
-    def parse_command_options(command, args)
-      COMMAND_OPTION_PARSERS[command].call(args)
+  class VersionCommand < Command
+    register "version", "ver", "v"
+    about "Show program version and exit."
+
+    def run
+      CLI.ui.info "tweetwine #{Tweetwine::VERSION}"
     end
   end
 end
