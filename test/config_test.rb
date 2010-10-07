@@ -176,39 +176,6 @@ class ConfigTest < UnitTestCase
       should "ignore the config file" do
         assert @config.keys.empty?
       end
-
-      should "save the config file as a new file" do
-        @config[:foo] = 'bar'
-        @config.save
-        assert_equal({:foo => 'bar'}, YAML.load_file(@file))
-      end
-    end
-
-    context "when updating the config file" do
-      setup do
-        @file = @tmp_dir + '/config.yaml'
-        FileUtils.cp CONFIG_FILE, @file
-        @config = Config.read([], [], @file)
-      end
-
-      should "save the config file, overwriting the previous" do
-        @config[:fileopt] = 'bar'
-        @config.save
-        expected = {
-          :opt      => 'file_opt',
-          :fileopt  => 'bar',
-          :defopt   => 'file_defopt'
-        }
-        assert_equal expected, YAML.load_file(@file)
-      end
-
-      should "exclude saving selected keys" do
-        @config.exclude_on_save :fileopt, :defopt
-        @config[:fileopt] = 'bar'
-        @config.save
-        expected = { :opt => 'file_opt' }
-        assert_equal expected, YAML.load_file(@file)
-      end
     end
   end
 end

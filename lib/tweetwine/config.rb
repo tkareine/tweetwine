@@ -13,21 +13,8 @@ module Tweetwine
       @options[key]
     end
 
-    def []=(key, value)
-      @options[key] = value
-    end
-
     def keys
       @options.keys
-    end
-
-    def exclude_on_save(*keys)
-      @exclude_keys_on_save.concat(keys).uniq!
-    end
-
-    def save
-      opt = Hash[@options.each_pair.reject { |key, _| @exclude_keys_on_save.include? key }]
-      File.open(@file, 'w') { |f| YAML.dump(opt, f) }
     end
 
     private
@@ -35,7 +22,6 @@ module Tweetwine
     def initialize(file, options)
       @file = file
       @options = options
-      @exclude_keys_on_save = []
     end
 
     def self.parse_options(args, env_lookouts, config_file, default_config, &cmd_option_parser)

@@ -7,7 +7,6 @@ module Tweetwine
     DEFAULT_CONFIG = {
       :config_file        => "#{(ENV['HOME'] || ENV['USERPROFILE'])}/.tweetwine",
       :env_lookouts       => [],
-      :exclude_save_keys  => [:config_file, :env_lookouts, :exclude_save_keys, :exec_name],
       :exec_name          => "tweetwine",
       :oauth              => {},
       :username           => ENV['USER']
@@ -115,7 +114,6 @@ module Tweetwine
         config = Config.read(cmdline_args, default_config[:env_lookouts], default_config[:config_file], default_config) do |args|
           parse_config_from_cmdline(args)
         end
-        config.exclude_on_save(*default_config[:exclude_save_keys])
         config
       end
 
