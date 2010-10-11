@@ -69,6 +69,45 @@ Usage: tweetwine [global_options...] [<command>] [command_options...]
         @status.exitstatus.should == 0
       end
     end
+
+    Scenario "show command specific help with '#{args_desc} <command>'" do
+      When "I start the application with '#{args_desc} home'" do
+        @status = start_app args + %w{home} do |_, _, stdout|
+          @output = stdout.readlines.join
+        end
+      end
+
+      Then "the application shows help about home command and exits with success status" do
+        @output.should == <<-END
+Show authenticated user's home timeline (the default command).
+
+Usage: tweetwine home
+        END
+        @status.exitstatus.should == 0
+      end
+    end
+
+    Scenario "show help command's help with '#{args_desc} <invalid_command>'" do
+      When "I start the application with '#{args_desc} invalid'" do
+        @status = start_app args + %w{invalid} do |_, _, stdout, stderr|
+          @stdout = stdout.readlines.join
+          @stderr = stderr.readlines.join
+        end
+      end
+
+      Then "the application shows help about help command and exits with failure status" do
+        @stderr.should == "ERROR: unknown command: invalid\n\n"
+        @stdout.should == <<-END
+Show help and exit. Try it with <command> argument.
+
+Usage: tweetwine help [<command>]
+
+  If <command> is given, show specific help about that command. If no
+  <command> is given, show general help.
+        END
+        @status.exitstatus.should == CommandLineError.status_code
+      end
+    end
   end
 
   Scenario "show error and exit with failure status when invalid option" do
