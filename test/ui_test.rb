@@ -5,7 +5,7 @@ require "test_helper"
 module Tweetwine
 
 class UITest < UnitTestCase
-  context "An UI instance" do
+  context "a UI instance" do
     setup do
       @in  = mock
       @out = mock
@@ -320,7 +320,7 @@ Hi, \e[33m#{users[0]}\e[0m! You should notify \e[33m#{users[1]}\e[0m, #{email}
     end
   end
 
-  context "Username regex" do
+  context "username regex" do
     should "match a proper username reference" do
       assert_full_match UI::USERNAME_REGEX, "@nick"
       assert_full_match UI::USERNAME_REGEX, "@nick_man"
@@ -340,7 +340,7 @@ Hi, \e[33m#{users[0]}\e[0m! You should notify \e[33m#{users[1]}\e[0m, #{email}
     end
   end
 
-  context "Hashtag regex" do
+  context "hashtag regex" do
     should "match a proper hashtag reference" do
       assert_full_match UI::HASHTAG_REGEX, "#mayhem"
       assert_full_match UI::HASHTAG_REGEX, "#friday_mayhem"

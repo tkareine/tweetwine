@@ -6,7 +6,7 @@ require "json"
 module Tweetwine
 
 class ClientTest < UnitTestCase
-  context "upon initialization" do
+  context "for initialization" do
     should "use default number of statuses if not configured" do
       @twitter = Twitter.new
       assert_equal Twitter::DEFAULT_NUM_STATUSES, @twitter.num_statuses
