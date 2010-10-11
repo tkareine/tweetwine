@@ -133,7 +133,7 @@ module Tweetwine
       when Regexp
         pattern
       else
-        raise "Unknown kind of pattern"
+        raise "unknown kind of pattern"
       end
       Util.str_gsub_by_group(str, regexp) { |s| colorize(color, s) }
     end

@@ -104,7 +104,7 @@ module Tweetwine
       def run(args)
         proposed_command = config[:command]
         found_command = find_command proposed_command
-        raise UnknownCommandError, "Unknown command: #{proposed_command}" unless found_command
+        raise UnknownCommandError, "unknown command: #{proposed_command}" unless found_command
         found_command.new(args).run
         self
       end
@@ -206,7 +206,7 @@ Usage: #{exec_name} #{name} #{usage}
       proposed_command = args.include?('-h') ? nil : args.shift
       if proposed_command
         @command = CLI.find_command proposed_command
-        CLI.ui.error "Unknown command.\n\n" unless @command
+        CLI.ui.error "unknown command.\n\n" unless @command
         @command
       else
         @command = nil
