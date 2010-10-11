@@ -13,7 +13,7 @@ Feature "application behavior" do
     Scenario "show version with arguments #{args_desc}" do
       When "I start the application with #{args_desc}" do
         @status = start_app args do |_, _, stdout|
-          @output = stdout.gets
+          @output = stdout.readlines.join
         end
       end
 
@@ -25,17 +25,17 @@ Feature "application behavior" do
   end
 
   [%w{-h}, %w{help}].each do |args|
-    args_desc = "'#{args.join(' ')}'"
+    args_desc = args.join(' ')
 
-    Scenario "show help with arguments #{args_desc}" do
-      When "I start the application with #{args_desc}" do
+    Scenario "show general help with arguments '#{args_desc}'" do
+      When "I start the application with '#{args_desc}'" do
         @status = start_app args do |_, _, stdout|
-          @output = stdout.readlines
+          @output = stdout.readlines.join
         end
       end
 
       Then "the application shows help and exists with success status" do
-        @output.join.should == <<-END
+        @output.should == <<-END
 A simple but tasty Twitter agent for command line use, made for fun.
 
 Usage: tweetwine [global_options...] [<command>] [command_options...]
@@ -70,26 +70,28 @@ Usage: tweetwine [global_options...] [<command>] [command_options...]
     end
   end
 
-  Scenario "upon invalid option, exit with failure status" do
+  Scenario "show error and exit with failure status when invalid option" do
     When "I start the application with invalid option" do
-      @status = start_app %w{-X} do |_, _, stdout|
-        @output = stdout.readlines
+      @status = start_app %w{-X} do |_, _, _, stderr|
+        @output = stderr.readlines.join.chomp
       end
     end
 
     Then "the application exists with failure status" do
+      @output.should == 'ERROR: invalid option: -X'
       @status.exitstatus.should == CommandLineError.status_code
     end
   end
 
-  Scenario "upon invalid command, exit with failure status" do
+  Scenario "show error and exit with failure status when invalid command" do
     When "I start the application with invalid command" do
-      @status = start_app %w{invalid} do |_, _, stdout|
-        @output = stdout.readlines
+      @status = start_app %w{invalid} do |_, _, _, stderr|
+        @output = stderr.readlines.join.chomp
       end
     end
 
     Then "the application exists with failure status" do
+      @output.should == 'ERROR: unknown command: invalid'
       @status.exitstatus.should == UnknownCommandError.status_code
     end
   end
