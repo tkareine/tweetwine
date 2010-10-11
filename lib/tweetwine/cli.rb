@@ -111,7 +111,7 @@ module Tweetwine
 
       def read_config(cmdline_args = [], overriding_default_config = nil)
         default_config = overriding_default_config ? DEFAULT_CONFIG.merge(overriding_default_config) : DEFAULT_CONFIG
-        config = Config.read(cmdline_args, default_config[:env_lookouts], default_config[:config_file], default_config) do |args|
+        config = Config.read(cmdline_args, default_config) do |args|
           parse_config_from_cmdline(args)
         end
         config

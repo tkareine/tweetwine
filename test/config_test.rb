@@ -14,7 +14,7 @@ class ConfigTest < UnitTestCase
     setup do
       @args = %w{--opt cmd_opt --defopt cmd_defopt left overs}
       default_config = {:defopt => 'defopt'}
-      @config = Config.read(@args, [], nil, default_config) do |args|
+      @config = Config.read(@args, default_config) do |args|
         args.slice!(0..3)
         {:opt => 'cmd_opt', :defopt => 'cmd_defopt'}
       end
@@ -39,8 +39,8 @@ class ConfigTest < UnitTestCase
       ENV['defopt'] = 'env_defopt'
       ENV['envopt'] = 'env_envopt'
       @args = %w{--opt cmd_opt}
-      default_config = {:defopt => 'defopt'}
-      @config = Config.read(@args, [:defopt, :envopt, :opt], nil, default_config) do |args|
+      default_config = {:defopt => 'defopt', :env_lookouts => [:defopt, :envopt, :opt]}
+      @config = Config.read(@args, default_config) do |args|
         args.slice!(0..1)
         {:opt => 'cmd_opt'}
       end
@@ -68,8 +68,8 @@ class ConfigTest < UnitTestCase
   context "when given command line arguments, no environment variables, config file" do
     setup do
       @args = %w{--opt cmd_opt}
-      default_config = {:defopt => 'defopt'}
-      @config = Config.read(@args, [], CONFIG_FILE, default_config) do |args|
+      default_config = {:config_file => CONFIG_FILE, :defopt => 'defopt'}
+      @config = Config.read(@args, default_config) do |args|
         args.slice!(0..1)
         {:opt => 'cmd_opt'}
       end
@@ -93,7 +93,7 @@ class ConfigTest < UnitTestCase
       @args = %w{--opt2 cmd_opt2}
       ENV['opt']  = 'env_opt'
       ENV['opt2'] = 'env_opt2'
-      @config = Config.read(@args, [:opt, :opt2], CONFIG_FILE) do |args|
+      @config = Config.read(@args, :config_file => CONFIG_FILE, :env_lookouts => [:opt, :opt2]) do |args|
         args.slice!(0..2)
         {:opt2 => 'cmd_opt2'}
       end
@@ -117,8 +117,8 @@ class ConfigTest < UnitTestCase
     setup do
       ENV['opt'] = 'env_opt'
       @args = %w{--opt cmd_opt --defopt cmd_defopt}
-      default_config = {:defopt => 'defopt'}
-      @config = Config.read(@args, [:opt], CONFIG_FILE, default_config)
+      default_config = {:config_file => CONFIG_FILE, :defopt => 'defopt', :env_lookouts => [:opt]}
+      @config = Config.read(@args, default_config)
     end
 
     teardown do
@@ -136,7 +136,7 @@ class ConfigTest < UnitTestCase
       ENV['visible'] = 'env_visible'
       ENV['hidden']  = 'env_hidden'
       ENV['empty']   = ''
-      @config = Config.read([], [:visible, :empty])
+      @config = Config.read([], :env_lookouts => [:visible, :empty])
     end
 
     teardown do
@@ -159,22 +159,30 @@ class ConfigTest < UnitTestCase
   end
 
   context "when handling the config file" do
-    setup do
-      @tmp_dir = Dir.mktmpdir
-    end
-
-    teardown do
-      FileUtils.remove_entry_secure @tmp_dir
+    should "allow specifying configuration file from command line arguments" do
+      @args = ['-f', CONFIG_FILE]
+      @config = Config.read(@args, {}) do
+        @args.slice!(0..1)
+        {:config_file => CONFIG_FILE}
+      end
+      assert_equal %w{config_file defopt fileopt opt}, @config.keys.map { |k| k.to_s }.sort
+      assert_equal 'file_defopt', @config[:defopt]
     end
 
     context "when config file does not exist" do
       setup do
+        @tmp_dir = Dir.mktmpdir
         @file = @tmp_dir + '/no_such_file'
-        @config = Config.read([], [], @file)
+        @config = Config.read([], :config_file => @file)
+      end
+
+      teardown do
+        FileUtils.remove_entry_secure @tmp_dir
       end
 
       should "ignore the config file" do
-        assert @config.keys.empty?
+        # config should contain just config file location
+        assert_equal @config.keys, [:config_file]
       end
     end
   end
