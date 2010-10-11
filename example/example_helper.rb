@@ -26,7 +26,7 @@ module Tweetwine
       def start_app(args, &blk)
         lib = File.dirname(__FILE__) << "/../lib"
         executable = File.dirname(__FILE__) << "/../bin/tweetwine"
-        launch_cmd = "env USER='#{USER}' ruby -rubygems -I#{lib} -- #{executable} #{args.join(' ')}"
+        launch_cmd = "env USER='#{USER}' ruby -rubygems -I#{lib} -- #{executable} -f #{CONFIG_FILE} #{args.join(' ')}"
         Open4::popen4(launch_cmd, &blk)
       end
 
