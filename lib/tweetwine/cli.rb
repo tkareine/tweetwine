@@ -206,7 +206,7 @@ Usage: #{exec_name} #{name} #{usage}
       proposed_command = args.include?('-h') ? nil : args.shift
       if proposed_command
         @command = CLI.find_command proposed_command
-        CLI.ui.error "unknown command.\n\n" unless @command
+        CLI.ui.error "unknown command: #{proposed_command}\n\n" unless @command
         @command
       else
         @command = nil
