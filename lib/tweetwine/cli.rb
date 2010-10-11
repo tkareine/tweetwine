@@ -64,6 +64,9 @@ module Tweetwine
           parser.on '-c', '--colors',                     'Enable ANSI colors for output.' do
             options[:colors] = true
           end
+          parser.on '-f', '--config <file>',    String,   "Configuration file (default #{DEFAULT_CONFIG[:config_file]})." do |arg|
+            options[:config_file] = arg
+          end
           parser.on '-h', '--help',                       'Show this help and exit.' do
             options[:command] = :help
           end

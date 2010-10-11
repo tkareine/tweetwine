@@ -43,6 +43,7 @@ Usage: tweetwine [global_options...] [<command>] [command_options...]
   Global options:
 
     -c, --colors                     Enable ANSI colors for output.
+    -f, --config <file>              Configuration file (default #{CLI::DEFAULT_CONFIG[:config_file]}).
     -h, --help                       Show this help and exit.
         --http-proxy <url>           Enable HTTP(S) proxy.
         --no-colors                  Disable ANSI colors for output.
