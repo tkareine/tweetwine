@@ -7,12 +7,10 @@ Feature "application behavior" do
   as_a "user"
   i_want_to "see helpful messages"
 
-  [%w{-v}, %w{version}, %w{ver}, %w{v}].each do |args|
-    args_desc = "'#{args.join(' ')}'"
-
-    Scenario "show version with arguments #{args_desc}" do
-      When "I start the application with #{args_desc}" do
-        @status = start_app args do |_, _, stdout|
+  %w{-v version ver v}.each do |arg|
+    Scenario "show version with '#{arg}'" do
+      When "I start the application with '#{arg}'" do
+        @status = start_app [arg] do |_, _, stdout|
           @output = stdout.readlines.join
         end
       end
@@ -24,12 +22,10 @@ Feature "application behavior" do
     end
   end
 
-  [%w{-h}, %w{help}].each do |args|
-    args_desc = args.join(' ')
-
-    Scenario "show general help with arguments '#{args_desc}'" do
-      When "I start the application with '#{args_desc}'" do
-        @status = start_app args do |_, _, stdout|
+  %w{-h help}.each do |arg|
+    Scenario "show general help with '#{arg}'" do
+      When "I start the application with '#{arg}'" do
+        @status = start_app [arg] do |_, _, stdout|
           @output = stdout.readlines.join
         end
       end
@@ -71,9 +67,9 @@ Usage: tweetwine [global_options...] [<command>] [command_options...]
     end
 
     %w{followers friends help home mentions search update user version}.each do |command|
-      Scenario "show command specific help with '#{args_desc} #{command}'" do
-        When "I start the application with '#{args_desc} #{command}'" do
-          @status = start_app args + [command] do |_, _, stdout|
+      Scenario "show command specific help with '#{arg} #{command}'" do
+        When "I start the application with '#{arg} #{command}'" do
+          @status = start_app [arg, command] do |_, _, stdout|
             @output = stdout.readlines.join
           end
         end
@@ -92,9 +88,9 @@ Usage: tweetwine [global_options...] [<command>] [command_options...]
       end
     end
 
-    Scenario "show help command's help with '#{args_desc} <invalid_command>'" do
-      When "I start the application with '#{args_desc} invalid'" do
-        @status = start_app args + %w{invalid} do |_, _, stdout, stderr|
+    Scenario "show help command's help with '#{arg} <invalid_command>'" do
+      When "I start the application with '#{arg} invalid'" do
+        @status = start_app [arg, 'invalid'] do |_, _, stdout, stderr|
           @stdout = stdout.readlines.join
           @stderr = stderr.readlines.join
         end
