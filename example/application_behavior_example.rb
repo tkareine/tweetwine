@@ -70,20 +70,25 @@ Usage: tweetwine [global_options...] [<command>] [command_options...]
       end
     end
 
-    Scenario "show command specific help with '#{args_desc} <command>'" do
-      When "I start the application with '#{args_desc} home'" do
-        @status = start_app args + %w{home} do |_, _, stdout|
-          @output = stdout.readlines.join
+    %w{followers friends help home mentions search update user version}.each do |command|
+      Scenario "show command specific help with '#{args_desc} #{command}'" do
+        When "I start the application with '#{args_desc} #{command}'" do
+          @status = start_app args + [command] do |_, _, stdout|
+            @output = stdout.readlines.join
+          end
         end
-      end
 
-      Then "the application shows help about home command and exits with success status" do
-        @output.should == <<-END
-Show authenticated user's home timeline (the default command).
+        Then "the application shows help about the command and exits with success status" do
+          cmd_class = Tweetwine::CLI.const_get("#{command.capitalize}Command")
+          expected_about = cmd_class.about
+          expected_usage = "Usage: tweetwine #{command} #{cmd_class.usage}".strip
+          @output.should == <<-END
+#{expected_about}
 
-Usage: tweetwine home
-        END
-        @status.exitstatus.should == 0
+#{expected_usage}
+          END
+          @status.exitstatus.should == 0
+        end
       end
     end
 
