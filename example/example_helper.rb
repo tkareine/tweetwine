@@ -55,9 +55,5 @@ module Tweetwine
 end
 
 include Coulda
-
-# Because of Ruby 1.8, we have to include these here instead of in
-# ExampleTestFixture.
 include Tweetwine
-include Tweetwine::Example
 include Tweetwine::Example::Helper
