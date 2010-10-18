@@ -8,7 +8,7 @@ class Object
   def sleep(timeout); end   # speed up tests
 end
 
-module Tweetwine
+module Tweetwine::Test
 
 class HttpModuleTest < UnitTestCase
   include WebMock

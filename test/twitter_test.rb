@@ -3,7 +3,7 @@
 require "test_helper"
 require "json"
 
-module Tweetwine
+module Tweetwine::Test
 
 class ClientTest < UnitTestCase
   context "for initialization" do

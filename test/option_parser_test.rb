@@ -2,7 +2,7 @@
 
 require "test_helper"
 
-module Tweetwine
+module Tweetwine::Test
 
 class OptionParserTest < UnitTestCase
   setup do

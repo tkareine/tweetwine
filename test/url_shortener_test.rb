@@ -2,7 +2,7 @@
 
 require "test_helper"
 
-module Tweetwine
+module Tweetwine::Test
 
 class UrlShortenerTest < UnitTestCase
   setup do

@@ -5,7 +5,7 @@ require "test_helper"
 require "fileutils"
 require "tempfile"
 
-module Tweetwine
+module Tweetwine::Test
 
 class ConfigTest < UnitTestCase
   CONFIG_FILE = Helper.fixture_file("test_config.yaml")

@@ -3,7 +3,7 @@
 require "test_helper"
 require "time"
 
-module Tweetwine
+module Tweetwine::Test
 
 class UtilTest < UnitTestCase
   include Util

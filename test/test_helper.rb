@@ -91,12 +91,11 @@ module Tweetwine
         assert(str != match_data.to_s, msg)
       end
     end
-  end
 
-  class UnitTestCase < ::Test::Unit::TestCase
-    include Tweetwine
-    include Test
-    include Test::Helper
-    include Test::Assertion
+    class UnitTestCase < ::Test::Unit::TestCase
+      include Tweetwine
+      include Helper
+      include Assertion
+    end
   end
 end
