@@ -17,7 +17,7 @@ require "tweetwine"
 module Tweetwine
   module Example
     module Helper
-      include WebMock
+      include WebMock::API
 
       CONFIG_FILE = File.expand_path('../fixture/config.yaml', __FILE__)
       PROXY_URL = "http://proxy.net:8080"

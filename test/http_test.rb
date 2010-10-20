@@ -11,7 +11,7 @@ end
 module Tweetwine::Test
 
 class HttpModuleTest < UnitTestCase
-  include WebMock
+  include WebMock::API
 
   should "pass HTTP proxy configuration to RestClient" do
     Http.proxy = "http://proxy.net:8080"
