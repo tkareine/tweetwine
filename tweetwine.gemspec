@@ -22,6 +22,7 @@ Gem::Specification.new do |s|
 
   s.files = Dir[
     "*.md",
+    "*.rdoc",
     "LICENSE.txt",
     "Rakefile",
     "tweetwine.gemspec",
