@@ -8,11 +8,12 @@ Feature "update my status (send new tweet)" do
   i_want_to "update my status"
 
   STATUS = "bored. going to sleep."
+  URL_ENCODED_BODY = "status=bored.%20going%20to%20sleep."
 
   Scenario "update my status from command line with colorization disabled" do
     When "I start the application with 'update' command" do
-      stub_http_request(:post, "https://api.twitter.com/1/statuses/update.json").to_return(:body => fixture("update.json"))
-      @output = start_cli %W{--no-colors update '#{STATUS}'}, "y"
+      stub_http_request(:post, "https://api.twitter.com/1/statuses/update.json").with(:body => URL_ENCODED_BODY).to_return(:body => fixture("update.json"))
+      @output = start_cli %W{--no-colors update #{STATUS}}, "y"
     end
 
     Then "the application sends and shows the status" do
@@ -23,8 +24,8 @@ Feature "update my status (send new tweet)" do
 
   Scenario "update my status from command line with colorization enabled" do
     When "I start the application with 'update' command" do
-      stub_http_request(:post, "https://api.twitter.com/1/statuses/update.json").to_return(:body => fixture("update.json"))
-      @output = start_cli %W{--colors update '#{STATUS}'}, "y"
+      stub_http_request(:post, "https://api.twitter.com/1/statuses/update.json").with(:body => URL_ENCODED_BODY).to_return(:body => fixture("update.json"))
+      @output = start_cli %W{--colors update #{STATUS}}, "y"
     end
 
     Then "the application sends and shows the status" do
@@ -35,8 +36,8 @@ Feature "update my status (send new tweet)" do
 
   Scenario "update my status from command line when message is spread over multiple arguments" do
     When "I start the application with 'update' command" do
-      stub_http_request(:post, "https://api.twitter.com/1/statuses/update.json").to_return(:body => fixture("update.json"))
-      @output = start_cli %W{--no-colors update #{STATUS}}, "y"
+      stub_http_request(:post, "https://api.twitter.com/1/statuses/update.json").with(:body => URL_ENCODED_BODY).to_return(:body => fixture("update.json"))
+      @output = start_cli(%w{--no-colors update} + STATUS.split, "y")
     end
 
     Then "the application sends and shows the status" do
@@ -47,7 +48,7 @@ Feature "update my status (send new tweet)" do
 
   Scenario "cancel status update from command line" do
     When "I start the application with 'update' command" do
-      @output = start_cli %W{update '#{STATUS}'}, "n"
+      @output = start_cli(%w{update} + STATUS.split, "n")
     end
 
     Then "the application shows a cancellation message" do
@@ -57,7 +58,7 @@ Feature "update my status (send new tweet)" do
 
   Scenario "update my status from STDIN" do
     When "I start the application with 'update' command" do
-      stub_http_request(:post, "https://api.twitter.com/1/statuses/update.json").to_return(:body => fixture("update.json"))
+      stub_http_request(:post, "https://api.twitter.com/1/statuses/update.json").with(:body => URL_ENCODED_BODY).to_return(:body => fixture("update.json"))
       @output = start_cli %w{update}, STATUS, "y"
     end
 
@@ -70,7 +71,7 @@ Feature "update my status (send new tweet)" do
 
   Scenario "cancel a status update from STDIN" do
     When "I start the application with 'update' command" do
-      @output = start_cli %W{update}, STATUS, "n"
+      @output = start_cli %w{update}, STATUS, "n"
     end
 
     Then "the application shows a cancellation message" do
