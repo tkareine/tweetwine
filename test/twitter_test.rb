@@ -269,6 +269,60 @@ class ClientTest < UnitTestCase
         @twitter.update(long_status)
       end
 
+      if "".respond_to?(:encode)
+        should "encode status in UTF-8 (String supports encoding)" do
+          status_utf8, status_latin1 = ["résumé", "résumé".encode('ISO-8859-1')]
+          twitter_records, internal_records = create_test_twitter_status_records_from_rest_api(
+            {
+              :from_user  => @username,
+              :status     => status_utf8,
+              :created_at => Time.at(1).to_s,
+              :to_user    => nil
+            }
+          )
+          http_subresource = mock
+          http_subresource.expects(:post).
+              with({ :status => status_utf8 }).
+              returns(twitter_records[0].to_json)
+          @rest_api.expects(:[]).
+              with("statuses/update.json").
+              returns(http_subresource)
+          @ui.expects(:confirm).with("Really send?").returns(true)
+          @ui.expects(:show_status_preview).with(status_latin1)
+          @ui.expects(:info).with("Sent status update.\n\n")
+          @ui.expects(:show_record).with(internal_records[0])
+          @twitter.update(status_latin1)
+        end
+      else
+        should "encode status in UTF-8 (String does not support encoding)" do
+          tmp_kcode('NONE') do
+            tmp_env(:LANG => 'ISO-8859-1') do
+              status_utf8, status_latin1 = ["r\xc3\xa9sum\xc3\xa9", "r\xe9sum\xe9"]
+              twitter_records, internal_records = create_test_twitter_status_records_from_rest_api(
+                {
+                  :from_user  => @username,
+                  :status     => status_utf8,
+                  :created_at => Time.at(1).to_s,
+                  :to_user    => nil
+                }
+              )
+              http_subresource = mock
+              http_subresource.expects(:post).
+                  with({ :status => status_utf8 }).
+                  returns(twitter_records[0].to_json)
+              @rest_api.expects(:[]).
+                  with("statuses/update.json").
+                  returns(http_subresource)
+              @ui.expects(:confirm).with("Really send?").returns(true)
+              @ui.expects(:show_status_preview).with(status_latin1)
+              @ui.expects(:info).with("Sent status update.\n\n")
+              @ui.expects(:show_record).with(internal_records[0])
+              @twitter.update(status_latin1)
+            end
+          end
+        end
+      end
+
       context "with URL shortening" do
         setup do
           mock_url_shortener

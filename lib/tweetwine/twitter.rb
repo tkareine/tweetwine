@@ -50,8 +50,9 @@ module Tweetwine
       completed = false
       unless new_status.empty?
         CLI.ui.show_status_preview(new_status)
+        status_in_utf8 = Util.transcode_to_utf8 new_status
         if CLI.ui.confirm("Really send?")
-          response = post_to_rest_api("statuses/update", :status => new_status.to_s)
+          response = post_to_rest_api("statuses/update", :status => status_in_utf8)
           CLI.ui.info "Sent status update.\n\n"
           show_statuses_from_rest_api response
           completed = true
