@@ -78,4 +78,46 @@ Feature "update my status (send new tweet)" do
       @output[3].should =~ /Cancelled./
     end
   end
+
+  if "".respond_to?(:encode)
+    Scenario "encode status in UTF-8 (String supports encoding)" do
+      When "I start the application with 'update' command" do
+        @status_utf8 = "résumé"
+        @status_latin1 = @status_utf8.encode('ISO-8859-1')
+        url_encoded_body = "status=r%C3%A9sum%C3%A9"
+        stub_http_request(:post, "https://api.twitter.com/1/statuses/update.json").with(:body => url_encoded_body).to_return(:body => fixture("update_utf8.json"))
+        @output = start_cli %W{--no-colors update #{@status_latin1}}, "y"
+      end
+
+      Then "the application sends and shows the status" do
+        # NOTE: Should be in latin-1, but StringIO converts it to UTF-8. At
+        # least on tty Ruby 1.9.2 outputs it in latin-1.
+        #@output[1].should == @status_latin1   # preview
+        @output[5].should == "#{USER}, 9 hours ago:"
+        @output[6].should == @status_utf8
+      end
+    end
+  else
+    Scenario "encode status in UTF-8 (String does not support encoding)" do
+      When "I start the application with 'update' command" do
+        @status_latin1 = "r\xe9sum\xe9"
+        @status_utf8 = "r\xc3\xa9sum\xc3\xa9"
+        url_encoded_body = "status=r%C3%A9sum%C3%A9"
+        stub_http_request(:post, "https://api.twitter.com/1/statuses/update.json").with(:body => url_encoded_body).to_return(:body => fixture("update_utf8.json"))
+        tmp_kcode('NONE') do
+          tmp_env(:LANG => 'latin1') do
+            Tweetwine::CharacterEncoding.forget_guess
+            @output = start_cli %W{--no-colors update #{@status_latin1}}, "y"
+          end
+        end
+      end
+
+      Then "the application sends and shows the status" do
+        @output[1].should == @status_latin1   # preview
+        @output[5].should == "#{USER}, 9 hours ago:"
+        # TODO: we should convert status back to latin-1
+        @output[6].should == @status_utf8
+      end
+    end
+  end
 end
