@@ -89,7 +89,9 @@ module Tweetwine
 
     if "".respond_to?(:encode)
       def transcode_to_utf8(str)
-        str.encode('UTF-8')
+        result = str.encode('UTF-8')
+        raise TranscodeError, "invalid UTF-8 byte sequence when transcoding '#{str}'" unless result.valid_encoding?
+        result
       end
     else
       def transcode_to_utf8(str)

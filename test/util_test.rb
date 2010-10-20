@@ -229,10 +229,14 @@ class UtilTest < UnitTestCase
 
   if "".respond_to?(:encode)
     context "for best effort transcoding to UTF-8 when String supports encoding" do
-      should "transcode string to utf-8" do
+      should "transcode string to UTF-8" do
         str_utf8 = "groß résumé"
         str_latin1 = str_utf8.encode('ISO-8859-1')
         assert_equal str_utf8, transcode_to_utf8(str_latin1)
+      end
+
+      should "raise exception if result is invalid UTF-8" do
+        assert_raise(TranscodeError) { transcode_to_utf8("\xa4") }
       end
     end
   else
