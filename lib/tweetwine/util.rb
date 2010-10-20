@@ -97,7 +97,7 @@ module Tweetwine
         if guess != 'UTF-8'
           begin
             require "iconv"
-            Iconv.conv('UTF-8//TRANSLIT', guess_external_encoding, str)
+            Iconv.conv('UTF-8//TRANSLIT', guess, str)
           rescue => e
             raise TranscodeError, e
           end
