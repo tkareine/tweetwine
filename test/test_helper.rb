@@ -78,6 +78,28 @@ module Tweetwine
         @config = options
         CLI.stubs(:config).returns(@config)
       end
+
+      def tmp_env(vars = {})
+        originals = {}
+        vars.each_pair do |key, value|
+          key = key.to_s
+          originals[key] = ENV[key]
+          ENV[key] = value
+        end
+        yield
+      ensure
+        originals.each_pair do |key, value|
+          ENV[key] = value
+        end
+      end
+
+      def tmp_kcode(val)
+        original = $KCODE
+        $KCODE = val
+        yield
+      ensure
+        $KCODE = original
+      end
     end
 
     module Assertion
