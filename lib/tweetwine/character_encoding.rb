@@ -24,6 +24,10 @@ module Tweetwine
         end
       end
 
+      def forget_guess
+        @guess_external_encoding = nil
+      end
+
       private
 
       def guess_external_encoding

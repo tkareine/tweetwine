@@ -29,7 +29,7 @@ class CharacterEncodingTest < UnitTestCase
       HOME_UTF8     = "\xe3\x83\x9b\xe3\x83\xbc\xe3\x83\xa0"
 
       setup do
-        CharacterEncoding.instance_variable_set(:@guess_external_encoding, nil)
+        Tweetwine::CharacterEncoding.forget_guess
       end
 
       [
