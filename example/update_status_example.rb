@@ -11,7 +11,7 @@ Feature "update my status (send new tweet)" do
 
   Scenario "update my status from command line with colorization disabled" do
     When "I start the application with 'update' command" do
-      stub_http_request "https://api.twitter.com/1/statuses/update.json", :method => :post, :body => fixture("update.json")
+      stub_http_request(:post, "https://api.twitter.com/1/statuses/update.json").to_return(:body => fixture("update.json"))
       @output = start_cli %W{--no-colors update '#{STATUS}'}, "y"
     end
 
@@ -23,7 +23,7 @@ Feature "update my status (send new tweet)" do
 
   Scenario "update my status from command line with colorization enabled" do
     When "I start the application with 'update' command" do
-      stub_http_request "https://api.twitter.com/1/statuses/update.json", :method => :post, :body => fixture("update.json")
+      stub_http_request(:post, "https://api.twitter.com/1/statuses/update.json").to_return(:body => fixture("update.json"))
       @output = start_cli %W{--colors update '#{STATUS}'}, "y"
     end
 
@@ -35,7 +35,7 @@ Feature "update my status (send new tweet)" do
 
   Scenario "update my status from command line when message is spread over multiple arguments" do
     When "I start the application with 'update' command" do
-      stub_http_request "https://api.twitter.com/1/statuses/update.json", :method => :post, :body => fixture("update.json")
+      stub_http_request(:post, "https://api.twitter.com/1/statuses/update.json").to_return(:body => fixture("update.json"))
       @output = start_cli %W{--no-colors update #{STATUS}}, "y"
     end
 
@@ -57,8 +57,8 @@ Feature "update my status (send new tweet)" do
 
   Scenario "update my status from STDIN" do
     When "I start the application with 'update' command" do
-      stub_http_request "https://api.twitter.com/1/statuses/update.json", :method => :post, :body => fixture("update.json")
-      @output = start_cli %W{update}, STATUS, "y"
+      stub_http_request(:post, "https://api.twitter.com/1/statuses/update.json").to_return(:body => fixture("update.json"))
+      @output = start_cli %w{update}, STATUS, "y"
     end
 
     Then "the application sends and shows the status" do

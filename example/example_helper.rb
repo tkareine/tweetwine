@@ -43,13 +43,6 @@ module Tweetwine
           f.readlines.join("\n")
         end
       end
-
-      def stub_http_request(url, options = {})
-        method = options[:method] || :get
-        body = options[:body]
-        status = options[:status] || 200
-        stub_request(method, url).to_return(:body => body, :status => status)
-      end
     end
   end
 end

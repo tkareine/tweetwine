@@ -9,7 +9,7 @@ Feature "show friends" do
 
   Scenario "show friends" do
     When "I start the application with 'followers' command" do
-      stub_http_request "https://api.twitter.com/1/statuses/friends.json?count=20&page=1", :body => fixture("users.json")
+      stub_http_request(:get, "https://api.twitter.com/1/statuses/friends.json?count=20&page=1").to_return(:body => fixture("users.json"))
       @output = start_cli %w{friends}
     end
 

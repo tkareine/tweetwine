@@ -9,7 +9,7 @@ Feature "search tweets" do
 
   Scenario "search words" do
     When "I start the application with command 'search' and search words" do
-      stub_http_request "http://search.twitter.com/search.json?q=braid%20game&rpp=2&page=1", :body => fixture("search.json")
+      stub_http_request(:get, "http://search.twitter.com/search.json?q=braid%20game&rpp=2&page=1").to_return(:body => fixture("search.json"))
       @output = start_cli %w{-n 2 search braid game}
     end
 
@@ -24,7 +24,7 @@ Feature "search tweets" do
 
   Scenario "search tweets matching all words" do
     When "I start the application with command 'search', option '-a', and search words" do
-      stub_http_request "http://search.twitter.com/search.json?q=braid%20game&rpp=2&page=1", :body => fixture("search.json")
+      stub_http_request(:get, "http://search.twitter.com/search.json?q=braid%20game&rpp=2&page=1").to_return(:body => fixture("search.json"))
       @output = start_cli %w{-n 2 search -a braid game}
     end
 
@@ -39,7 +39,7 @@ Feature "search tweets" do
 
   Scenario "search tweets matching any words" do
     When "I start the application with command 'search', option '-o', and search words" do
-      stub_http_request "http://search.twitter.com/search.json?q=braid%20OR%20game&rpp=2&page=1", :body => fixture("search.json")
+      stub_http_request(:get, "http://search.twitter.com/search.json?q=braid%20OR%20game&rpp=2&page=1").to_return(:body => fixture("search.json"))
       @output = start_cli %w{-n 2 search -o braid game}
     end
 

@@ -9,7 +9,7 @@ Feature "show user's tweets" do
 
   Scenario "show my tweets" do
     When "I start the application with 'user' command without extra arguments" do
-      stub_http_request "https://api.twitter.com/1/statuses/user_timeline.json?count=20&page=1&screen_name=#{USER}", :body => fixture("user.json")
+      stub_http_request(:get, "https://api.twitter.com/1/statuses/user_timeline.json?count=20&page=1&screen_name=#{USER}").to_return(:body => fixture("user.json"))
       @output = start_cli %w{user}
     end
 
@@ -24,7 +24,7 @@ Feature "show user's tweets" do
 
   Scenario "show another user's tweets" do
     When "I start the application with 'user' command with the user as argument" do
-      stub_http_request "https://api.twitter.com/1/statuses/user_timeline.json?count=20&page=1&screen_name=jillv", :body => fixture("user.json")
+      stub_http_request(:get, "https://api.twitter.com/1/statuses/user_timeline.json?count=20&page=1&screen_name=jillv").to_return(:body => fixture("user.json"))
       @output = start_cli %w{user jillv}
     end
 

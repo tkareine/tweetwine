@@ -9,7 +9,7 @@ Feature "using HTTP proxy" do
 
   def setup
     super
-    stub_http_request "https://api.twitter.com/1/statuses/home_timeline.json?count=20&page=1", :body => fixture("home.json")
+    stub_http_request(:get, "https://api.twitter.com/1/statuses/home_timeline.json?count=20&page=1").to_return(:body => fixture("home.json"))
   end
 
   Scenario "enabling proxy via environment variable" do
