@@ -4,6 +4,8 @@ module Tweetwine
   VERSION = "0.2.12".freeze
 
   class Error < StandardError
+    @code = 42
+
     # Idea got from Bundler.
     def self.status_code(code = nil)
       return @code unless code
