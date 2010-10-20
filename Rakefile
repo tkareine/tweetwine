@@ -46,7 +46,7 @@ namespace :test do
   def create_test_task(type, file_glob, options = {})
     test_dir  = file_glob[%r{(\w+)/}, 1]
     test_desc = options[:desc] || "Run #{type} tests"
-    includes  = ['lib', test_dir].map { |dir| "-I #{dir}" }.join(' ')
+    includes  = (options[:includes] || ['lib', test_dir]).map { |dir| "-I #{dir}" }.join(' ')
     warn_opt  = options[:warn] ? "-w" : ""
 
     desc test_desc
@@ -57,7 +57,7 @@ namespace :test do
   end
 
   create_test_task :unit,     'test/**/*_test.rb',        :warn => true
-  create_test_task :example,  'example/**/*_example.rb',  :warn => false, :desc => "Run integration/example tests"
+  create_test_task :example,  'example/**/*_example.rb',  :warn => false, :includes => %w{lib test example}, :desc => "Run integration/example tests"
 
   desc "Run all tests"
   task :all => [:unit, :example]

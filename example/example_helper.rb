@@ -13,11 +13,13 @@
 Timecop.freeze(Time.parse("2009-10-14 01:56:15 +0300"))
 
 require "tweetwine"
+require "test_helper"
 
 module Tweetwine
   module Example
     module Helper
       include WebMock::API
+      include Test::Helper
 
       CONFIG_FILE = File.expand_path('../fixture/config.yaml', __FILE__)
       PROXY_URL = "http://proxy.net:8080"
