@@ -271,7 +271,7 @@ class ClientTest < UnitTestCase
 
       if "".respond_to?(:encode)
         should "encode status in UTF-8 (String supports encoding)" do
-          status_utf8, status_latin1 = ["résumé", "résumé".encode('ISO-8859-1')]
+          status_utf8, status_latin1 = "résumé", "résumé".encode('ISO-8859-1')
           twitter_records, internal_records = create_test_twitter_status_records_from_rest_api(
             {
               :from_user  => @username,
@@ -297,7 +297,7 @@ class ClientTest < UnitTestCase
         should "encode status in UTF-8 (String does not support encoding)" do
           tmp_kcode('NONE') do
             tmp_env(:LANG => 'ISO-8859-1') do
-              status_utf8, status_latin1 = ["r\xc3\xa9sum\xc3\xa9", "r\xe9sum\xe9"]
+              status_utf8, status_latin1 = "r\xc3\xa9sum\xc3\xa9", "r\xe9sum\xe9"
               twitter_records, internal_records = create_test_twitter_status_records_from_rest_api(
                 {
                   :from_user  => @username,
