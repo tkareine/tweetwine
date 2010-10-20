@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
   s.summary = "A simple Twitter command line agent"
   s.description = "A simple but tasty Twitter agent for command line use, made for fun."
 
-  s.authors = %{Tuomas Kareinen}
+  s.authors = "Tuomas Kareinen"
   s.email = "tkareine@gmail.com"
 
   s.files = Dir[
