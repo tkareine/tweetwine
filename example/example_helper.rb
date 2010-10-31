@@ -22,7 +22,9 @@ module Tweetwine
       include Test::Helper
 
       CONFIG_FILE = File.expand_path('../fixture/config.yaml', __FILE__)
-      PROXY_URL = "http://proxy.net:8080"
+      PROXY_HOST = "proxy.net"
+      PROXY_PORT = 8123
+      PROXY_URL = "http://#{PROXY_HOST}:#{PROXY_PORT}"
       USER = "fooman"
 
       def start_app(args, &blk)

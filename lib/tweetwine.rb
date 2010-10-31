@@ -35,7 +35,8 @@ module Tweetwine
   end
 
   class ConnectionError     < Error; status_code(21); end
-  class HttpError           < Error; status_code(22); end
+  class TimeoutError        < Error; status_code(22); end
+  class HttpError           < Error; status_code(25); end
 
   class TranscodeError      < Error; status_code(31); end
 

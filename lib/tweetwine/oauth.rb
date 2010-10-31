@@ -26,9 +26,10 @@ module Tweetwine
       )
     end
 
-    def authenticate(&blk)
-      signer = lambda { |request, _| access_token.sign! request }
-      Http.when_requesting(signer, &blk)
+    def request_signer
+      @signer ||= lambda do |connection, request|
+        request.oauth! connection, consumer, access_token
+      end
     end
 
     private

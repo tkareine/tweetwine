@@ -6,7 +6,7 @@ module Tweetwine
 
     DEFAULT_CONFIG = {
       :config_file        => "#{(ENV['HOME'] || ENV['USERPROFILE'])}/.tweetwine",
-      :env_lookouts       => [],
+      :env_lookouts       => [:http_proxy],
       :exec_name          => "tweetwine",
       :oauth              => {},
       :username           => ENV['USER']

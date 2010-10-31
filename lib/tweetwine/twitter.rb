@@ -98,24 +98,21 @@ module Tweetwine
     end
 
     def get_from_rest_api(sub_url, params = common_rest_api_query_params)
-      CLI.oauth.authenticate do
-        query = format_query_params(params)
-        url_suffix = query.empty? ? "" : "?" << query
-        JSON.parse(rest_api[sub_url + ".json" + url_suffix].get)
-      end
+      query = format_query_params(params)
+      url_suffix = query.empty? ? "" : "?" << query
+      response = rest_api[sub_url + ".json" + url_suffix].get(&CLI.oauth.request_signer)
+      JSON.parse response
     end
 
     def post_to_rest_api(sub_url, payload)
-      CLI.oauth.authenticate do
-        JSON.parse(rest_api[sub_url + ".json"].post(payload))
-      end
+      response = rest_api[sub_url + ".json"].post(payload, &CLI.oauth.request_signer)
+      JSON.parse response
     end
 
     def get_from_search_api(query, params = common_search_api_query_params)
-      CLI.oauth.authenticate do
-        query = "q=#{Util.percent_encode(query)}&" << format_query_params(params)
-        JSON.parse(search_api["search.json?#{query}"].get)
-      end
+      query = "q=#{Util.percent_encode(query)}&" << format_query_params(params)
+      response = search_api["search.json?#{query}"].get(&CLI.oauth.request_signer)
+      JSON.parse response
     end
 
     def show_statuses_from_rest_api(*responses)
