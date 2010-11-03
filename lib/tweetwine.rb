@@ -1,5 +1,7 @@
 # coding: utf-8
 
+gem 'oauth', '~> 0.4.4'
+
 module Tweetwine
   VERSION = "0.2.12".freeze
 
