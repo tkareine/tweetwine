@@ -24,9 +24,9 @@ Install Tweetwine with RubyGems:
 
 The program is tested with Ruby 1.8.7 and 1.9.
 
-The program requires [rest-client](http://github.com/archiloque/rest-client)
-and [oauth](http://oauth.rubyforge.org/) gems to be installed. In addition,
-the program needs [json](http://json.rubyforge.org/) gem on Ruby 1.8.
+The program requires [oauth](http://oauth.rubyforge.org/) gem to be installed.
+In addition, the program needs [json](http://json.rubyforge.org/) gem on Ruby
+1.8.
 
 Documentation is provided as gem man pages. Use
 [gem-man](http://github.com/defunkt/gem-man) to see them:
