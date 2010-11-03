@@ -52,7 +52,7 @@ namespace :test do
     desc test_desc
     task type do
       tests = FileList[file_glob].map { |f| "\"#{f[test_dir.size+1 .. -4]}\"" }.join(' ')
-      sh %{ruby -rubygems #{warn_opt} #{includes} -e 'ARGV.each { |f| require f }' #{tests}}
+      sh %{bundle exec ruby #{warn_opt} #{includes} -e 'ARGV.each { |f| require f }' #{tests}}
     end
   end
 

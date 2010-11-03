@@ -1,0 +1,44 @@
+GEM
+  remote: http://rubygems.org/
+  specs:
+    addressable (2.2.2)
+    contest (0.1.2)
+    coulda (0.6.0)
+    crack (0.1.8)
+    gem-man (0.2.0)
+    hpricot (0.8.2)
+    json (1.4.6)
+    mcmire-matchy (0.5.2)
+    mocha (0.9.8)
+      rake
+    mustache (0.11.2)
+    nokogiri (1.4.3.1)
+    oauth (0.4.4)
+    open4 (1.0.1)
+    rake (0.8.7)
+    rdiscount (1.6.5)
+    ronn (0.7.3)
+      hpricot (>= 0.8.2)
+      mustache (>= 0.7.0)
+      rdiscount (>= 1.5.8)
+    timecop (0.3.5)
+    webmock (1.5.0)
+      addressable (>= 2.2.2)
+      crack (>= 0.1.7)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  contest (~> 0.1.2)
+  coulda (~> 0.6.0)
+  gem-man (~> 0.2.0)
+  json (>= 1.0.0)
+  mcmire-matchy (~> 0.5.2)
+  mocha (= 0.9.8)
+  nokogiri (~> 1.4.3)
+  oauth (~> 0.4.4)
+  open4 (~> 1.0.1)
+  ronn (~> 0.7.3)
+  timecop (~> 0.3.5)
+  webmock (~> 1.5.0)

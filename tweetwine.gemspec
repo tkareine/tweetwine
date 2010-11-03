@@ -24,6 +24,7 @@ Gem::Specification.new do |s|
     "*.md",
     "*.rdoc",
     "LICENSE.txt",
+    "Gemfile",
     "Rakefile",
     "tweetwine.gemspec",
     "{bin,contrib,example,lib,test}/**/*",

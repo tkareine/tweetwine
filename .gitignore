@@ -1,4 +1,5 @@
 /*.gem
+/.bundle/
 /coverage/
 /man/
 !/man/*.ronn
