@@ -1,6 +1,7 @@
 # coding: utf-8
 
 require "example_helper"
+require "yaml"
 
 Feature "update my status (send new tweet)" do
   in_order_to "tell something about me to the world"
@@ -122,5 +123,52 @@ Feature "update my status (send new tweet)" do
         @output[6].should == @status_utf8
       end
     end
+  end
+
+  Scenario "shorten URLs in status" do
+    When "I have configured URL shortening, start the application with 'update' command, input status containing URLs, and confirm" do
+      shorten_config = read_shorten_config
+      @urls = {
+        :rubygems => {
+          :full     => 'http://rubygems.org/',
+          :full_enc => 'http%3a%2f%2frubygems.org%2f',
+          :short    => 'http://is.gd/gGazV',
+          :body     => "#{shorten_config['url_param_name']}=http%3a%2f%2frubygems.org%2f",
+          :fixture  => 'shorten_rubygems.html'
+        },
+        :rubylang => {
+          :full     => 'http://ruby-lang.org/',
+          :full_enc => 'http%3a%2f%2fruby-lang.org%2f',
+          :short    => 'http://is.gd/gGaM3',
+          :body     => "#{shorten_config['url_param_name']}=http%3a%2f%2fruby-lang.org%2f",
+          :fixture  => 'shorten_rubylang.html'
+        }
+      }
+      @send_status = "ruby links: #{@urls[:rubygems][:full]} #{@urls[:rubylang][:full]}"
+      update_body = "status=ruby%20links%3a%20#{@urls[:rubygems][:full_enc]}%20#{@urls[:rubylang][:full_enc]}"
+      update_fixture = fixture("update_with_urls.json")
+      stub_http_request(shorten_config['method'].to_sym, shorten_config['service_url']).
+          with(:body => @urls[:rubygems][:body]).
+          to_return(:body => @urls[:rubygems][:fixture])
+      stub_http_request(shorten_config['method'].to_sym, shorten_config['service_url']).
+          with(:body => @urls[:rubylang][:body]).
+          to_return(:body => @urls[:rubylang][:fixture])
+      stub_http_request(:post, UPDATE_URL).
+          with(:body => update_body).
+          to_return(:body => update_fixture)
+      @output = start_cli %W{--no-colors update #{@send_status}}, "y"
+    end
+
+    Then "the application shortens the URLs in the status before sending it" do
+      @output[1].should == @send_status
+      @output[5].should == "#{USER}, 9 hours ago:"
+      @output[6].should == "ruby links: #{@urls[:rubygems][:short]} #{@urls[:rubylang][:short]}"
+    end
+  end
+
+  private
+
+  def read_shorten_config
+    YAML.load_file(CONFIG_FILE)['shorten_urls']
   end
 end
