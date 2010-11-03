@@ -13,7 +13,7 @@ Feature "using HTTP proxy" do
   end
 
   Scenario "enable proxy via environment variable" do
-    When "I have defined proxy in environment variable before starting the application with 'home' command" do
+    When "I have proxy in envar, and start the application with 'home' command" do
       ENV['http_proxy'] = PROXY_URL
       @output = start_cli %w{home}
     end
@@ -37,7 +37,7 @@ Feature "using HTTP proxy" do
   end
 
   Scenario "disable proxy via command line option" do
-    When "I start the application with --http-proxy option and 'home' command" do
+    When "I have proxy in envar, and start the application with --no-http-proxy option and 'home' command" do
       ENV['http_proxy'] = PROXY_URL
       @output = start_cli %w{--no-http-proxy home}
     end

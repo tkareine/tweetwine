@@ -1,13 +1,13 @@
 --- 
-:oauth: 
-  :consumer_key: 11111111111111111111
-  :consumer_secret: 222222222222222222222222222222222222222222
-  :access_key: 33333333333333333333333333333333333333333333333333
-  :access_secret: 444444444444444444444444444444444444444444
-:username: fooman
-:colors: false
-:shorten_urls: 
-  :service_url: http://is.gd/create.php
-  :method: post
-  :url_param_name: URL
-  :xpath_selector: //input[@id='short_url']/@value
+oauth: 
+  consumer_key: 11111111111111111111
+  consumer_secret: 222222222222222222222222222222222222222222
+  access_key: 33333333333333333333333333333333333333333333333333
+  access_secret: 444444444444444444444444444444444444444444
+username: fooman
+colors: false
+shorten_urls: 
+  service_url: http://is.gd/create.php
+  method: post
+  url_param_name: URL
+  xpath_selector: //input[@id='short_url']/@value
