@@ -10,10 +10,12 @@ Feature "update my status (send new tweet)" do
 
   RUBYGEMS_FIXTURE = fixture('shorten_rubygems.html')
   RUBYGEMS_FULL_URL = 'http://rubygems.org/'
+  RUBYGEMS_FULL_URL_ENC = 'http%3a%2f%2frubygems.org%2f'
   RUBYGEMS_SHORT_URL = 'http://is.gd/gGazV'
   RUBYGEMS_SHORT_URL_ENC = 'http%3a%2f%2fis.gd%2fgGazV'
   RUBYLANG_FIXTURE = fixture('shorten_rubylang.html')
   RUBYLANG_FULL_URL = 'http://ruby-lang.org/'
+  RUBYLANG_FULL_URL_ENC = 'http%3a%2f%2fruby-lang.org%2f'
   RUBYLANG_SHORT_URL = 'http://is.gd/gGaM3'
   RUBYLANG_SHORT_URL_ENC = 'http%3a%2f%2fis.gd%2fgGaM3'
   SHORTEN_CONFIG = read_shorten_config
@@ -159,6 +161,21 @@ Feature "update my status (send new tweet)" do
     Then "the application shortens the URLs in the status before sending it" do
       assert_requested(SHORTEN_METHOD, SHORTEN_CONFIG[:service_url], :body => @shorten_rubygems_body)
       assert_requested(SHORTEN_METHOD, SHORTEN_CONFIG[:service_url], :body => @shorten_rubylang_body)
+      @output[1].should == STATUS_WITH_SHORT_URLS
+      @output[5].should == "#{USER}, 9 hours ago:"
+      @output[6].should == STATUS_WITH_SHORT_URLS
+    end
+  end
+
+  Scenario "disable URL shortening for status updates" do
+    When "I have configured URL shortening, start the application with 'update' command with --no-url-shorten option, input status containing URLs, and confirm" do
+      stub_http_request(:post, UPDATE_URL).
+          with(:body => BODY_WITH_SHORT_URLS).
+          to_return(:body => UPDATE_FIXTURE_WITH_URLS)
+      @output = start_cli %W{--no-colors --no-url-shorten update #{STATUS_WITH_SHORT_URLS}}, "y"
+    end
+
+    Then "the application passes URLs as is in the status" do
       @output[1].should == STATUS_WITH_SHORT_URLS
       @output[5].should == "#{USER}, 9 hours ago:"
       @output[6].should == STATUS_WITH_SHORT_URLS
