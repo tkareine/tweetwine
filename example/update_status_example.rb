@@ -157,6 +157,8 @@ Feature "update my status (send new tweet)" do
     end
 
     Then "the application shortens the URLs in the status before sending it" do
+      assert_requested(SHORTEN_METHOD, SHORTEN_CONFIG[:service_url], :body => @shorten_rubygems_body)
+      assert_requested(SHORTEN_METHOD, SHORTEN_CONFIG[:service_url], :body => @shorten_rubylang_body)
       @output[1].should == STATUS_WITH_SHORT_URLS
       @output[5].should == "#{USER}, 9 hours ago:"
       @output[6].should == STATUS_WITH_SHORT_URLS
