@@ -8,11 +8,26 @@ Feature "update my status (send new tweet)" do
   as_a "authenticated user"
   i_want_to "update my status"
 
+  RUBYGEMS_FIXTURE = fixture('shorten_rubygems.html')
+  RUBYGEMS_FULL_URL = 'http://rubygems.org/'
+  RUBYGEMS_SHORT_URL = 'http://is.gd/gGazV'
+  RUBYGEMS_SHORT_URL_ENC = 'http%3a%2f%2fis.gd%2fgGazV'
+  RUBYLANG_FIXTURE = fixture('shorten_rubylang.html')
+  RUBYLANG_FULL_URL = 'http://ruby-lang.org/'
+  RUBYLANG_SHORT_URL = 'http://is.gd/gGaM3'
+  RUBYLANG_SHORT_URL_ENC = 'http%3a%2f%2fis.gd%2fgGaM3'
+  SHORTEN_CONFIG = read_shorten_config
+  SHORTEN_METHOD = SHORTEN_CONFIG[:method].to_sym
+  STATUS_WITH_FULL_URLS = "ruby links: #{RUBYGEMS_FULL_URL} #{RUBYLANG_FULL_URL}"
+  STATUS_WITH_SHORT_URLS = "ruby links: #{RUBYGEMS_SHORT_URL} #{RUBYLANG_SHORT_URL}"
   STATUS_WITHOUT_URLS = "bored. going to sleep."
-  BODY_WITHOUT_URLS = "status=bored.%20going%20to%20sleep."
-  UPDATE_URL = "https://api.twitter.com/1/statuses/update.json"
+  UPDATE_FIXTURE_WITH_URLS = fixture("update_with_urls.json")
   UPDATE_FIXTURE_WITHOUT_URLS = fixture("update_without_urls.json")
   UPDATE_FIXTURE_UTF8 = fixture("update_utf8.json")
+  UPDATE_URL = "https://api.twitter.com/1/statuses/update.json"
+
+  BODY_WITH_SHORT_URLS = "status=ruby%20links%3a%20#{RUBYGEMS_SHORT_URL_ENC}%20#{RUBYLANG_SHORT_URL_ENC}"
+  BODY_WITHOUT_URLS = "status=bored.%20going%20to%20sleep."
 
   Scenario "update my status from command line with colorization disabled" do
     When "I start the application with 'update' command with --no-colors option, give status in single command line argument, and confirm" do
@@ -125,50 +140,26 @@ Feature "update my status (send new tweet)" do
     end
   end
 
-  Scenario "shorten URLs in status" do
+  Scenario "shorten URLs in status update" do
     When "I have configured URL shortening, start the application with 'update' command, input status containing URLs, and confirm" do
-      shorten_config = read_shorten_config
-      @urls = {
-        :rubygems => {
-          :full     => 'http://rubygems.org/',
-          :full_enc => 'http%3a%2f%2frubygems.org%2f',
-          :short    => 'http://is.gd/gGazV',
-          :body     => "#{shorten_config['url_param_name']}=http%3a%2f%2frubygems.org%2f",
-          :fixture  => 'shorten_rubygems.html'
-        },
-        :rubylang => {
-          :full     => 'http://ruby-lang.org/',
-          :full_enc => 'http%3a%2f%2fruby-lang.org%2f',
-          :short    => 'http://is.gd/gGaM3',
-          :body     => "#{shorten_config['url_param_name']}=http%3a%2f%2fruby-lang.org%2f",
-          :fixture  => 'shorten_rubylang.html'
-        }
-      }
-      @send_status = "ruby links: #{@urls[:rubygems][:full]} #{@urls[:rubylang][:full]}"
-      update_body = "status=ruby%20links%3a%20#{@urls[:rubygems][:full_enc]}%20#{@urls[:rubylang][:full_enc]}"
-      update_fixture = fixture("update_with_urls.json")
-      stub_http_request(shorten_config['method'].to_sym, shorten_config['service_url']).
-          with(:body => @urls[:rubygems][:body]).
-          to_return(:body => @urls[:rubygems][:fixture])
-      stub_http_request(shorten_config['method'].to_sym, shorten_config['service_url']).
-          with(:body => @urls[:rubylang][:body]).
-          to_return(:body => @urls[:rubylang][:fixture])
+      @shorten_rubygems_body = "#{SHORTEN_CONFIG[:url_param_name]}=#{RUBYGEMS_FULL_URL_ENC}"
+      @shorten_rubylang_body = "#{SHORTEN_CONFIG[:url_param_name]}=#{RUBYLANG_FULL_URL_ENC}"
+      stub_http_request(SHORTEN_METHOD, SHORTEN_CONFIG[:service_url]).
+          with(:body => @shorten_rubygems_body).
+          to_return(:body => RUBYGEMS_FIXTURE)
+      stub_http_request(SHORTEN_METHOD, SHORTEN_CONFIG[:service_url]).
+          with(:body => @shorten_rubylang_body).
+          to_return(:body => RUBYLANG_FIXTURE)
       stub_http_request(:post, UPDATE_URL).
-          with(:body => update_body).
-          to_return(:body => update_fixture)
-      @output = start_cli %W{--no-colors update #{@send_status}}, "y"
+          with(:body => BODY_WITH_SHORT_URLS).
+          to_return(:body => UPDATE_FIXTURE_WITH_URLS)
+      @output = start_cli %W{--no-colors update #{STATUS_WITH_FULL_URLS}}, "y"
     end
 
     Then "the application shortens the URLs in the status before sending it" do
-      @output[1].should == @send_status
+      @output[1].should == STATUS_WITH_SHORT_URLS
       @output[5].should == "#{USER}, 9 hours ago:"
-      @output[6].should == "ruby links: #{@urls[:rubygems][:short]} #{@urls[:rubylang][:short]}"
+      @output[6].should == STATUS_WITH_SHORT_URLS
     end
-  end
-
-  private
-
-  def read_shorten_config
-    YAML.load_file(CONFIG_FILE)['shorten_urls']
   end
 end
