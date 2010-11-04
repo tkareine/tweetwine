@@ -5,11 +5,12 @@ module Tweetwine
     DEFAULT_COMMAND = :home
 
     DEFAULT_CONFIG = {
-      :config_file        => "#{(ENV['HOME'] || ENV['USERPROFILE'])}/.tweetwine",
-      :env_lookouts       => [:http_proxy],
-      :exec_name          => "tweetwine",
-      :oauth              => {},
-      :username           => ENV['USER']
+      :config_file  => "#{(ENV['HOME'] || ENV['USERPROFILE'])}/.tweetwine",
+      :env_lookouts => [:http_proxy],
+      :exec_name    => "tweetwine",
+      :shorten_urls => {},
+      :oauth        => {},
+      :username     => ENV['USER']
     }.freeze
 
     class << self
@@ -80,7 +81,8 @@ module Tweetwine
             options[:http_proxy] = nil
           end
           parser.on       '--no-url-shorten',             'Disable URL shortening.' do
-            options.delete :shorten_urls
+            options[:shorten_urls] ||= {}
+            options[:shorten_urls][:disable] = true
           end
           parser.on '-n', '--num <n>',          Integer,  "Number of statuses per page (default #{Twitter::DEFAULT_NUM_STATUSES})." do |arg|
             options[:num_statuses] = arg

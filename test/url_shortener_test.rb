@@ -10,6 +10,17 @@ class UrlShortenerTest < UnitTestCase
   end
 
   context "for initialization" do
+    should "raise exception if service should be disabled" do
+      assert_raise(RuntimeError) do
+        UrlShortener.new(
+          :disable          => true,
+          :service_url      => "http://shorten.it/create",
+          :url_param_name   => "url",
+          :xpath_selector   => "//input[@id='short_url']/@value"
+        )
+      end
+    end
+
     should "raise exception if service URL is not given" do
       assert_raise(RequiredOptionError) do
         UrlShortener.new(

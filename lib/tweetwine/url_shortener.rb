@@ -3,6 +3,7 @@
 module Tweetwine
   class UrlShortener
     def initialize(options)
+      raise "UrlShortener should be disabled" if options[:disable]
       @method         = (options[:method] || :get).to_sym
       @service_url    = require_option options, :service_url
       @url_param_name = require_option options, :url_param_name
