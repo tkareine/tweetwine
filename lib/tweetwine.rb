@@ -6,12 +6,12 @@ module Tweetwine
   VERSION = "0.2.12".freeze
 
   class Error < StandardError
-    @code = 42
+    @status_code = 42
 
     # Idea got from Bundler.
     def self.status_code(code = nil)
-      return @code unless code
-      @code = code
+      return @status_code unless code
+      @status_code = code
     end
 
     def status_code
