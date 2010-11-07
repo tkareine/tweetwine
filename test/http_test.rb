@@ -53,50 +53,52 @@ class HttpClientTest < UnitTestCase
     assert_requested(:post, NEW_ARTICLE_URL, :body => PAYLOAD, :headers => CUSTOM_HEADERS)
   end
 
-  should "raise HttpError when failed response" do
-    stub_request(:get, LATEST_ARTICLES_URL).to_return(:status => [500, "Internal Server Error"])
-    assert_raise(HttpError) { @client.get(LATEST_ARTICLES_URL) }
-  end
-
-  should "retry connection upon connection timeout" do
-    stub_request(:get, LATEST_ARTICLES_URL).to_timeout.then.to_return(:body => RESPONSE_BODY)
-    @ui.expects(:warn).with("Could not connect -- retrying in 4 seconds")
-    @client.get(LATEST_ARTICLES_URL)
-    assert_equal(RESPONSE_BODY, @client.get(LATEST_ARTICLES_URL))
-  end
-
-  should "retry connection a maximum of certain number of times upon connection timeout" do
-    stub_request(:get, LATEST_ARTICLES_URL).to_timeout
-    io_calls = sequence("IO")
-    Http::Client::MAX_RETRIES.times { @ui.expects(:warn).in_sequence(io_calls) }
-    assert_raise(TimeoutError) { @client.get(LATEST_ARTICLES_URL) }
-  end
-
-  [
-    [Errno::ECONNABORTED, 'abort'],
-    [Errno::ECONNRESET,   'reset']
-  ].each do |error, desc|
-    should "retry connection upon connection #{desc}" do
-      stub_request(:get, LATEST_ARTICLES_URL).to_raise(error).then.to_return(:body => RESPONSE_BODY)
-      @ui.expects(:warn).with("Could not connect -- retrying in 4 seconds")
-      @client.get(LATEST_ARTICLES_URL)
-      assert_equal(RESPONSE_BODY, @client.get(LATEST_ARTICLES_URL))
+  [:get, :post].each do |method|
+    should "raise HttpError when failed response to #{method} request" do
+      stub_request(method, LATEST_ARTICLES_URL).to_return(:status => [500, "Internal Server Error"])
+      assert_raise(HttpError) { @client.send(method, LATEST_ARTICLES_URL) }
     end
 
-    should "retry connection a maximum of certain number of times upon connection #{desc}" do
-      stub_request(:get, LATEST_ARTICLES_URL).to_raise(error)
+    should "retry connection upon connection timeout to #{method} request" do
+      stub_request(method, LATEST_ARTICLES_URL).to_timeout.then.to_return(:body => RESPONSE_BODY)
+      @ui.expects(:warn).with("Could not connect -- retrying in 4 seconds")
+      @client.send(method, LATEST_ARTICLES_URL)
+      assert_equal(RESPONSE_BODY, @client.send(method, LATEST_ARTICLES_URL))
+    end
+
+    should "retry connection a maximum of certain number of times upon connection timeout to #{method} request" do
+      stub_request(method, LATEST_ARTICLES_URL).to_timeout
       io_calls = sequence("IO")
       Http::Client::MAX_RETRIES.times { @ui.expects(:warn).in_sequence(io_calls) }
-      assert_raise(ConnectionError) { @client.get(LATEST_ARTICLES_URL) }
+      assert_raise(TimeoutError) { @client.send(method, LATEST_ARTICLES_URL) }
     end
-  end
 
-  should "allow access to the request object just before sending it" do
-    stub_request(:get, LATEST_ARTICLES_URL)
-    @client.get(LATEST_ARTICLES_URL) do |_, request|
-      request['X-Quote'] = 'You monster.'
+    [
+      [Errno::ECONNABORTED, 'abort'],
+      [Errno::ECONNRESET,   'reset']
+    ].each do |error, desc|
+      should "retry connection upon connection #{desc} to #{method} request" do
+        stub_request(method, LATEST_ARTICLES_URL).to_raise(error).then.to_return(:body => RESPONSE_BODY)
+        @ui.expects(:warn).with("Could not connect -- retrying in 4 seconds")
+        @client.send(method, LATEST_ARTICLES_URL)
+        assert_equal(RESPONSE_BODY, @client.send(method, LATEST_ARTICLES_URL))
+      end
+
+      should "retry connection a maximum of certain number of times upon connection #{desc} to #{method} request" do
+        stub_request(method, LATEST_ARTICLES_URL).to_raise(error)
+        io_calls = sequence("IO")
+        Http::Client::MAX_RETRIES.times { @ui.expects(:warn).in_sequence(io_calls) }
+        assert_raise(ConnectionError) { @client.send(method, LATEST_ARTICLES_URL) }
+      end
     end
-    assert_requested(:get, LATEST_ARTICLES_URL, :headers => {'X-Quote' => 'You monster.'})
+
+    should "allow access to the #{method} request object just before sending it" do
+      stub_request(method, LATEST_ARTICLES_URL)
+      @client.send(method, LATEST_ARTICLES_URL) do |_, request|
+        request['X-Quote'] = 'You monster.'
+      end
+      assert_requested(method, LATEST_ARTICLES_URL, :headers => {'X-Quote' => 'You monster.'})
+    end
   end
 
   context "for proxy support" do
