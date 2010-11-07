@@ -124,8 +124,8 @@ class UrlShortenerTest < UnitTestCase
       end
     end
 
-    context "in erroenous situations" do
-      should "raise HttpError upon connection error" do
+    context "in erroenous network situations" do
+      should "pass exceptions through" do
         url_shortener = UrlShortener.new(
           :method           => "post",
           :service_url      => "http://shorten.it/create",
@@ -134,7 +134,7 @@ class UrlShortenerTest < UnitTestCase
         )
         @http.expects(:post).
             with("http://shorten.it/create", :url => "http://www.ruby-doc.org/core/").
-            raises(HttpError, "connection error")
+            raises(HttpError.new(404, "Not Found"))
         assert_raise(HttpError) { url_shortener.shorten("http://www.ruby-doc.org/core/") }
       end
     end

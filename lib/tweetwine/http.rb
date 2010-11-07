@@ -78,7 +78,7 @@ module Tweetwine
         connection = @http.new(uri.host, uri.port)
         connection.use_ssl = https_scheme?(uri)
         response = yield connection, uri
-        raise HttpError, "#{response.code} #{response.message}" unless response.is_a? Net::HTTPSuccess
+        raise HttpError.new(response.code, response.message) unless response.is_a? Net::HTTPSuccess
         response.body
       rescue Errno::ECONNABORTED, Errno::ECONNRESET => e
         raise ConnectionError, e

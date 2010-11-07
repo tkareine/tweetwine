@@ -486,7 +486,7 @@ class ClientTest < UnitTestCase
             @rest_api.expects(:[]).
                 with("statuses/update.json").
                 returns(http_subresource)
-            @url_shortener.expects(:shorten).with(@url).raises(HttpError, "connection error")
+            @url_shortener.expects(:shorten).with(@url).raises(HttpError.new(404, "Not Found"))
             @ui.expects(:warn)
             @ui.expects(:show_status_preview).with(@status)
             @ui.expects(:confirm).with("Really send?").returns(true)

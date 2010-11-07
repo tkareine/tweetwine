@@ -53,6 +53,19 @@ class HttpClientTest < UnitTestCase
     assert_requested(:post, NEW_ARTICLE_URL, :body => PAYLOAD, :headers => CUSTOM_HEADERS)
   end
 
+  should "store response code and message in HttpError when failed response" do
+    code, message = 501, 'Not Implemented'
+    stub_request(:get, LATEST_ARTICLES_URL).to_return(:status => [code, message])
+    begin
+      @client.send(:get, LATEST_ARTICLES_URL)
+    rescue HttpError => e
+      assert_equal(code, e.http_code)
+      assert_equal(message, e.http_message)
+    else
+      flunk 'Should have raised HttpError'
+    end
+  end
+
   [:get, :post].each do |method|
     should "raise HttpError when failed response to #{method} request" do
       stub_request(method, LATEST_ARTICLES_URL).to_return(:status => [500, "Internal Server Error"])
