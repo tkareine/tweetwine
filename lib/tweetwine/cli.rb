@@ -4,6 +4,7 @@ module Tweetwine
   module CLI
     DEFAULT_COMMAND = :home
     DEFAULT_CONFIG = {
+      :colors       => :false,
       :config_file  => "#{(ENV['HOME'] || ENV['USERPROFILE'])}/.tweetwine",
       :env_lookouts => [:http_proxy],
       :oauth        => {},
