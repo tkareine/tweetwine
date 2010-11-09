@@ -216,6 +216,24 @@ class ConfigTest < UnitTestCase
         stored = YAML.load_file @file
         assert_equal(@expected_config, stored)
       end
+
+      should "set config file permissions accessible only to the user when saving" do
+        @config.save
+        assert_equal 0600, file_mode(@file)
+      end
+
+      context "when config file exists" do
+        setup do
+          FileUtils.touch @file
+          @original_mode = 0644
+          File.chmod @original_mode, @file
+        end
+
+        should "not set config file permissions when saving" do
+          @config.save
+          assert_equal @original_mode, file_mode(@file)
+        end
+      end
     end
   end
 end

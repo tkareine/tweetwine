@@ -55,6 +55,10 @@ module Tweetwine
         [twitter_records, internal_records]
       end
 
+      def file_mode(file)
+        File.stat(file).mode & 0777
+      end
+
       def fixture_file(filename)
         File.dirname(__FILE__) << "/fixture/" << filename
       end
