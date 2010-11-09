@@ -34,7 +34,7 @@ Feature "application behavior" do
         @output.should == <<-END
 A simple but tasty Twitter agent for command line use, made for fun.
 
-Usage: tweetwine [global_options...] [<command>] [command_options...]
+Usage: #{CLI::EXEC_NAME} [global_options...] [<command>] [command_options...]
 
   Global options:
 

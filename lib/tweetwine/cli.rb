@@ -3,15 +3,14 @@
 module Tweetwine
   module CLI
     DEFAULT_COMMAND = :home
-
     DEFAULT_CONFIG = {
       :config_file  => "#{(ENV['HOME'] || ENV['USERPROFILE'])}/.tweetwine",
       :env_lookouts => [:http_proxy],
-      :exec_name    => "tweetwine",
       :oauth        => {},
       :shorten_urls => {:disable => true},
       :username     => ENV['USER']
     }.freeze
+    EXEC_NAME = 'tweetwine'
 
     class << self
       def start(args = ARGV, overriding_default_conf = nil)
@@ -165,13 +164,12 @@ module Tweetwine
 
       def show_usage(about_cmd = self)
         about = about_cmd.about
-        exec_name = CLI.config[:exec_name]
         name = about_cmd.name
         usage = about_cmd.usage
         result = <<-END
 #{about}
 
-Usage: #{exec_name} #{name} #{usage}
+Usage: #{CLI::EXEC_NAME} #{name} #{usage}
         END
         CLI.ui.info result.strip!
       end
@@ -234,7 +232,6 @@ Usage: #{exec_name} #{name} #{usage}
     end
 
     def show_general_help
-      exec_name = CLI.config[:exec_name]
       command_descriptions = CLI.commands[:primaries].
         entries.
         sort     { |a, b| a.first.to_s <=> b.first.to_s }.
@@ -242,7 +239,7 @@ Usage: #{exec_name} #{name} #{usage}
       CLI.ui.info <<-END
 A simple but tasty Twitter agent for command line use, made for fun.
 
-Usage: #{exec_name} [global_options...] [<command>] [command_options...]
+Usage: #{CLI::EXEC_NAME} [global_options...] [<command>] [command_options...]
 
   Global options:
 
