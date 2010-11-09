@@ -24,7 +24,7 @@ module Tweetwine
     def save
       raise "No config file specified" unless @file
       to_file = @options.reject { |key, _| @excludes.include? key }
-      File.open(@file, 'w') { |io| YAML.dump(to_file, io) }
+      File.open(@file, 'w') { |io| YAML.dump(Util.stringify_hash_keys(to_file), io) }
     end
 
     private

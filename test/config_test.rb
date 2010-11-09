@@ -182,7 +182,7 @@ class ConfigTest < UnitTestCase
         @excludes = [:secret]
         @default_config = {:config_file => @file, :env_lookouts => [:envopt], :excludes => @excludes}
         @config = Config.read([], @default_config)
-        @expected_config = {:new_opt => 'to_file'}
+        @expected_config = {'new_opt' => 'to_file'}
       end
 
       teardown do
