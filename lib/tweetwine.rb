@@ -62,6 +62,7 @@ module Tweetwine
   autoload :Config,             "tweetwine/config"
   autoload :Http,               "tweetwine/http"
   autoload :OAuth,              "tweetwine/oauth"
+  autoload :Obfuscate,          "tweetwine/obfuscate"
   autoload :OptionParser,       "tweetwine/option_parser"
   autoload :Promise,            "tweetwine/promise"
   autoload :Twitter,            "tweetwine/twitter"
