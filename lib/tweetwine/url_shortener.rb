@@ -4,7 +4,10 @@ module Tweetwine
   class UrlShortener
     def initialize(options)
       raise "UrlShortener should be disabled" if options[:disable]
-      @method         = (options[:method] || :get).to_sym
+      @method = (options[:method] || :get).to_sym
+      unless [:get, :post].include? @method
+        raise CommandLineError, "Unsupported HTTP request method for URL shortening: #{@method}"
+      end
       @service_url    = require_option options, :service_url
       @url_param_name = require_option options, :url_param_name
       @xpath_selector = require_option options, :xpath_selector
@@ -41,7 +44,7 @@ module Tweetwine
         params = @extra_params.merge({ @url_param_name.to_sym => url_to_shorten })
         [service_url, params]
       else
-        raise "Unrecognized HTTP request method"
+        raise "Unrecognized HTTP request method; should have been supported"
       end
     end
   end

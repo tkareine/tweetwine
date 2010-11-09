@@ -55,6 +55,16 @@ class UrlShortenerTest < UnitTestCase
       @http.expects(:get)
       url_shortener.shorten("http://www.ruby-doc.org/core/")
     end
+
+    should "raise exception if given HTTP request method is unsupported" do
+      assert_raise(CommandLineError) do
+        UrlShortener.new(
+          :method           => "put",
+          :service_url      => "http://shorten.it/create",
+          :url_param_name   => "url",
+          :xpath_selector   => "//input[@id='short_url']/@value")
+      end
+    end
   end
 
   context "at runtime" do
