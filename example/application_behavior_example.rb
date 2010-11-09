@@ -136,17 +136,4 @@ Usage: tweetwine help [<command>]
       @status.exitstatus.should == UnknownCommandError.status_code
     end
   end
-
-  Scenario "show error and exit with failure status when no OAuth credentials" do
-    When "I start the application without having credentials in configuration file" do
-      @status = start_app %w{-f no-such-config} do |_, _, _, stderr|
-        @output = stderr.readlines.join.chomp
-      end
-    end
-
-    Then "the application exists with failure status" do
-      @output.should == 'ERROR: consumer_key is required for oauth'
-      @status.exitstatus.should == RequiredOptionError.status_code
-    end
-  end
 end
