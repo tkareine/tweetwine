@@ -16,8 +16,7 @@ class UrlShortenerTest < UnitTestCase
           :disable          => true,
           :service_url      => "http://shorten.it/create",
           :url_param_name   => "url",
-          :xpath_selector   => "//input[@id='short_url']/@value"
-        )
+          :xpath_selector   => "//input[@id='short_url']/@value")
       end
     end
 
@@ -26,8 +25,7 @@ class UrlShortenerTest < UnitTestCase
         UrlShortener.new(
           :service_url      => nil,
           :url_param_name   => "url",
-          :xpath_selector   => "//input[@id='short_url']/@value"
-        )
+          :xpath_selector   => "//input[@id='short_url']/@value")
       end
     end
 
@@ -36,8 +34,7 @@ class UrlShortenerTest < UnitTestCase
         UrlShortener.new(
           :service_url      => "http://shorten.it/create",
           :url_param_name   => nil,
-          :xpath_selector   => "//input[@id='short_url']/@value"
-        )
+          :xpath_selector   => "//input[@id='short_url']/@value")
       end
     end
 
@@ -46,8 +43,7 @@ class UrlShortenerTest < UnitTestCase
         UrlShortener.new(
           :service_url      => "http://shorten.it/create",
           :url_param_name   => "url",
-          :xpath_selector   => nil
-        )
+          :xpath_selector   => nil)
       end
     end
 
@@ -55,8 +51,7 @@ class UrlShortenerTest < UnitTestCase
       url_shortener = UrlShortener.new(
         :service_url      => "http://shorten.it/create",
         :url_param_name   => "url",
-        :xpath_selector   => "//input[@id='short_url']/@value"
-      )
+        :xpath_selector   => "//input[@id='short_url']/@value")
       @http.expects(:get)
       url_shortener.shorten("http://www.ruby-doc.org/core/")
     end
@@ -69,8 +64,7 @@ class UrlShortenerTest < UnitTestCase
           :method           => "get",
           :service_url      => "http://shorten.it/create",
           :url_param_name   => "url",
-          :xpath_selector   => "//input[@id='short_url']/@value"
-        )
+          :xpath_selector   => "//input[@id='short_url']/@value")
         @http.expects(:get).
           with("http://shorten.it/create?url=http://www.ruby-doc.org/core/")
         url_shortener.shorten("http://www.ruby-doc.org/core/")
@@ -84,8 +78,7 @@ class UrlShortenerTest < UnitTestCase
           :extra_params     => {
             :token => "xyz"
           },
-          :xpath_selector   => "//input[@id='short_url']/@value"
-        )
+          :xpath_selector   => "//input[@id='short_url']/@value")
         @http.expects(:get).
             with("http://shorten.it/create?token=xyz&url=http://www.ruby-doc.org/core/")
         url_shortener.shorten("http://www.ruby-doc.org/core/")
@@ -98,8 +91,7 @@ class UrlShortenerTest < UnitTestCase
           :method           => "post",
           :service_url      => "http://shorten.it/create",
           :url_param_name   => "url",
-          :xpath_selector   => "//input[@id='short_url']/@value"
-        )
+          :xpath_selector   => "//input[@id='short_url']/@value")
         @http.expects(:post).
             with("http://shorten.it/create", {:url => "http://www.ruby-doc.org/core/"})
         url_shortener.shorten("http://www.ruby-doc.org/core/")
@@ -113,13 +105,11 @@ class UrlShortenerTest < UnitTestCase
           :extra_params     => {
             :token => "xyz"
           },
-          :xpath_selector   => "//input[@id='short_url']/@value"
-        )
+          :xpath_selector   => "//input[@id='short_url']/@value")
         @http.expects(:post).
             with("http://shorten.it/create",
               :token => "xyz",
-              :url   => "http://www.ruby-doc.org/core/"
-            )
+              :url   => "http://www.ruby-doc.org/core/")
         url_shortener.shorten("http://www.ruby-doc.org/core/")
       end
     end
@@ -130,8 +120,7 @@ class UrlShortenerTest < UnitTestCase
           :method           => "post",
           :service_url      => "http://shorten.it/create",
           :url_param_name   => "url",
-          :xpath_selector   => "//input[@id='short_url']/@value"
-        )
+          :xpath_selector   => "//input[@id='short_url']/@value")
         @http.expects(:post).
             with("http://shorten.it/create", :url => "http://www.ruby-doc.org/core/").
             raises(HttpError.new(404, "Not Found"))
