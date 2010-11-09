@@ -28,13 +28,12 @@ module Tweetwine
       [value, pluralize_unit(value, unit)]
     end
 
+    def stringify_hash_keys(hash)
+      recursive_copy_hash(hash) { |key, value| [key.to_s, value] }
+    end
+
     def symbolize_hash_keys(hash)
-      hash.inject({}) do |result, pair|
-        value = pair.last
-        value = symbolize_hash_keys(value) if value.is_a? Hash
-        result[pair.first.to_sym] = value
-        result
-      end
+      recursive_copy_hash(hash) { |key, value| [key.to_sym, value] }
     end
 
     def parse_int_gt(value, default, min, name_for_error)
@@ -88,6 +87,16 @@ module Tweetwine
     end
 
     private
+
+    def recursive_copy_hash(hash, &pair_modifier)
+      hash.inject({}) do |result, pair|
+        value = pair.last
+        value = recursive_copy_hash(value, &pair_modifier) if value.is_a? Hash
+        key, value = pair_modifier.call(pair.first, value)
+        result[key] = value
+        result
+      end
+    end
 
     def pluralize_unit(value, unit)
       if ["hour", "day"].include?(unit) && value > 1

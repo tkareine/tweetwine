@@ -43,27 +43,55 @@ class UtilTest < UnitTestCase
     end
   end
 
-  context "for recursively symbolizing keys in a hash" do
-    should "symbolize hash keys correctly" do
+  context "for recursively copying a hash" do
+    ALL_KEYS_STRINGS = {
+      'alpha'   => 'A',
+      'beta'    => 'B',
+      'charlie' => 'C',
+      'delta'   => {
+        'echelon' => 'E',
+        'fox'     => 'F'
+      }
+    }
+    ALL_KEYS_SYMBOLS = {
+      :alpha    => 'A',
+      :beta     => 'B',
+      :charlie  => 'C',
+      :delta    => {
+        :echelon => 'E',
+        :fox     => 'F'
+      }
+    }
+
+    should "stringify hash keys" do
       given = {
-        "alpha"   => "A",
-        :beta     => "B",
-        "charlie" => "C",
-        "delta"   => {
-          "echelon" => "E",
-          "fox"     => "F"
-        }
-      }
-      expected = {
-        :alpha    => "A",
-        :beta     => "B",
-        :charlie  => "C",
+        :alpha    => 'A',
+        'beta'    => 'B',
+        :charlie  => 'C',
         :delta    => {
-          :echelon => "E",
-          :fox     => "F"
+          :echelon  => 'E',
+          'fox'     => 'F'
         }
       }
-      assert_equal expected, symbolize_hash_keys(given)
+      assert_equal ALL_KEYS_STRINGS, stringify_hash_keys(given)
+    end
+
+    should "symbolize hash keys" do
+      given = {
+        'alpha'   => 'A',
+        :beta     => 'B',
+        'charlie' => 'C',
+        'delta'   => {
+          'echelon' => 'E',
+          :fox      => 'F'
+        }
+      }
+      assert_equal ALL_KEYS_SYMBOLS, symbolize_hash_keys(given)
+    end
+
+    should "have symmetric property for stringify and symbolize" do
+      assert_equal ALL_KEYS_STRINGS, stringify_hash_keys(symbolize_hash_keys(ALL_KEYS_STRINGS))
+      assert_equal ALL_KEYS_SYMBOLS, symbolize_hash_keys(stringify_hash_keys(ALL_KEYS_SYMBOLS))
     end
   end
 
