@@ -4,6 +4,7 @@ require "test_helper"
 
 require "fileutils"
 require "tempfile"
+require "yaml"
 
 module Tweetwine::Test
 
@@ -169,20 +170,51 @@ class ConfigTest < UnitTestCase
       assert_equal 'file_defopt', @config[:defopt]
     end
 
+    should "raise exception when trying to save and no config file is specified" do
+      @config = Config.read()
+      assert_raise(RuntimeError) { @config.save }
+    end
+
     context "when config file does not exist" do
       setup do
         @tmp_dir = Dir.mktmpdir
-        @file = @tmp_dir + '/no_such_file'
-        @config = Config.read([], :config_file => @file)
+        @file = @tmp_dir + '/.tweetwine'
+        @excludes = [:secret]
+        @default_config = {:config_file => @file, :env_lookouts => [:envopt], :excludes => @excludes}
+        @config = Config.read([], @default_config)
+        @expected_config = {:new_opt => 'to_file'}
       end
 
       teardown do
         FileUtils.remove_entry_secure @tmp_dir
       end
 
-      should "ignore the config file" do
-        # config should contain just config file location
-        assert_equal @config.keys, [:config_file]
+      should "ignore nonexisting config file for initial read" do
+        assert_equal @config.keys, @default_config.keys
+      end
+
+      should "save config to the file, implicitly without config file, env lookouts, and excludes set itself" do
+        @config[:new_opt] = 'to_file'
+        @config.save
+        stored = YAML.load_file @file
+        assert_equal(@expected_config, stored)
+      end
+
+      should "save config to the file, explicitly without excluded entries" do
+        @config[@excludes.first] = 'password'
+        @config[:new_opt] = 'to_file'
+        @config.save
+        stored = YAML.load_file @file
+        assert_equal(@expected_config, stored)
+      end
+
+      should "modifying exclusions after initial read has no effect on config file location and exclusions" do
+        @config[:config_file] = @tmp_dir + '/.tweetwine.another'
+        @config[:excludes] << :new_opt
+        @config[:new_opt] = 'to_file'
+        @config.save
+        stored = YAML.load_file @file
+        assert_equal(@expected_config, stored)
       end
     end
   end

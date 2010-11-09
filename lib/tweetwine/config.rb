@@ -1,5 +1,6 @@
 # coding: utf-8
 
+require "set"
 require "yaml"
 
 module Tweetwine
@@ -12,14 +13,26 @@ module Tweetwine
       @options[key]
     end
 
+    def []=(key, value)
+      @options[key] = value
+    end
+
     def keys
       @options.keys
+    end
+
+    def save
+      raise "No config file specified" unless @file
+      to_file = @options.reject { |key, _| @excludes.include? key }
+      File.open(@file, 'w') { |io| YAML.dump(to_file, io) }
     end
 
     private
 
     def initialize(options)
       @options = options
+      @file = options[:config_file]
+      @excludes = Set.new(options[:excludes] || []).merge([:config_file, :env_lookouts, :excludes])
     end
 
     def self.parse_options(args, default_config, &cmd_option_parser)
@@ -41,7 +54,7 @@ module Tweetwine
     end
 
     def self.parse_config_file(config_file)
-      options = YAML.load_file(config_file)
+      options = File.open(config_file, 'r') { |io| YAML.load(io) }
       Util.symbolize_hash_keys(options)
     end
   end

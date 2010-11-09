@@ -7,6 +7,7 @@ module Tweetwine
       :config_file  => "#{(ENV['HOME'] || ENV['USERPROFILE'])}/.tweetwine",
       :env_lookouts => [:http_proxy],
       :oauth        => {},
+      :excludes     => [:command],
       :shorten_urls => {:disable => true},
       :username     => ENV['USER']
     }.freeze
