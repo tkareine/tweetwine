@@ -10,8 +10,7 @@ module Tweetwine
       :green    => 32,
       :magenta  => 35,
       :yellow   => 33
-    }
-
+    }.freeze
     HASHTAG_REGEX = /#[\w-]+/
     USERNAME_REGEX = /^(@\w+)|\s+(@\w+)/
 
