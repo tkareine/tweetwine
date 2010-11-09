@@ -22,41 +22,18 @@ Install Tweetwine with RubyGems:
 
     $ gem install tweetwine
 
-The program is tested with Ruby 1.8.7 and 1.9.
+The program is tested with Ruby 1.8.7 and 1.9.2.
 
 The program requires [oauth](http://oauth.rubyforge.org/) gem to be installed.
 In addition, the program needs [json](http://json.rubyforge.org/) gem on Ruby
 1.8.
 
-Documentation is provided as gem man pages. Use
-[gem-man](http://github.com/defunkt/gem-man) to see them:
+This documentation page is also provided as a manual page. Use
+[gem-man](http://github.com/defunkt/gem-man) to see it:
 
     $ gem man tweetwine
 
 ## BASIC USAGE AND CONFIGURATION
-
-The program uses OAuth to authenticate the user to Twitter. For that, you need
-to register yourself a personal application at
-[Twitter's developer site](http://dev.twitter.com/apps). After registration
-you have access to the consumer key and secret for the application. But those
-are not enough: at the site, click "My access token" link. There you will find
-your personal access key and secret that correspond to the consumer key and
-secret. You will need all the four tokens.
-
-Create a configuration file, `~/tweetwine`, and insert the four OAuth
-authentication tokens into it:
-
-    :oauth:
-      :consumer_key: aaaaaaaaaaaaaaaaaaaa
-      :consumer_secret: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
-      :access_key: cccccccccccccccccccccccccccccccccccccccccccccccc
-      :access_secret: dddddddddddddddddddddddddddddddddddddddd
-
-The configuration file must be in in YAML syntax. In addition to the OAuth
-tokens, the program recognizes the following settings:
-
-    :username: <your_username>
-    :colors: true|false
 
 In the command line, run the program by entering
 
@@ -70,17 +47,30 @@ For information about a specific command and its options, enter:
 
     $ tweetwine help <command>
 
+In order to use to use the program, you must authorize it to access your
+account on Twitter. This is done with
+[OAuth](http://dev.twitter.com/pages/oauth_faq) protocol, and it is required
+when the program is launched for the first time. After that, Tweetwine
+remembers the access you granted by storing the access token into
+`~/.tweetwine`. The file serves as your configuration file.
+
+Because the access token is sensitive information, Tweetwine obfuscates it
+when storing it into the file. While this prevents simple plain text reading
+attempts of the access token, it is not secure. You restrict access to the
+file only to yourself.
+
+The configuration file is in YAML syntax. In addition to the OAuth access
+token, the program recognizes the following settings:
+
+    :colors: true|false
+    :username: <your_username>
+
 ### URL shortening for a status update
 
 Before actually sending a new status update, it is possible for the software
 to shorten the URLs in the tweet by using an external web service. This can be
 enabled via the `:shorten_urls` key in configuration file; for example:
 
-    :oauth:
-      :consumer_key: aaaaaaaaaaaaaaaaaaaa
-      :consumer_secret: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
-      :access_key: cccccccccccccccccccccccccccccccccccccccccccccccc
-      :access_secret: dddddddddddddddddddddddddddddddddddddddd
     :username: spoonman
     :colors: true
     :shorten_urls:
@@ -88,16 +78,20 @@ enabled via the `:shorten_urls` key in configuration file; for example:
       :method: post
       :url_param_name: URL
       :xpath_selector: //input[@id='short_url']/@value
+      :disable: false
 
-The supported methods (in `method`) are `get` and `post`. The method chosen
-affects whether parameters are passed as URL query parameters or as payload in
-the HTTP request, respectively. Extra parameters can be given via
-`:extra_params` key, as a hash.
+The supported HTTP request methods (in `method` field) are `get` and `post`.
+The method chosen affects whether parameters are passed as URL query
+parameters or as payload in the HTTP request, respectively. Extra parameters
+can be given via `:extra_params` field, as a hash.
 
-The `xpath_selector` is needed to extract the shortened URL from the result.
+The `xpath_selector` field is needed to locate the HTML element which contains
+the shortened URL from the HTTP response.
 
 URL shortening can be disabled by not defining `shorten_urls` key in the
-configuration file, or using the command line option `--no-url-shorten`.
+configuration file, setting field `disable` to true, or by using the command
+line option `--no-url-shorten`. The last option is useful for disabling URL
+shortening only temporarily.
 
 *NOTE:* The use of the feature requires [nokogiri](http://nokogiri.org/) gem
 to be installed.
@@ -105,9 +99,9 @@ to be installed.
 ### HTTP proxy setting
 
 If `$http_proxy` environment variable is set, Tweetwine attempts to use the
-URL in the environment variable as HTTP proxy for all its HTTP connections.
-This setting can be overridden with `--http-proxy` and `--no-http-proxy`
-command line options.
+URL in the environment variable as HTTP proxy for its HTTP connections. This
+setting can be overridden with `--http-proxy` and `--no-http-proxy` command
+line options.
 
 ### Bash command line completion support
 
