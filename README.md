@@ -55,46 +55,48 @@ remembers the access you granted by storing the access token into
 `~/.tweetwine`. The file serves as your configuration file.
 
 Because the access token is sensitive information, Tweetwine obfuscates it
-when storing it into the file. While this prevents simple plain text reading
-attempts of the access token, it is not secure. You restrict access to the
-file only to yourself.
+when storing it into the configuration file. While this prevents simple plain
+text reading attempts of the access token, it is not secure. You should
+restrict access to the file only to yourself. If the configuration file does
+not exist before running the program, Tweetwine sets the file accessible only
+to you when storing the access token.
 
 The configuration file is in YAML syntax. In addition to the OAuth access
 token, the program recognizes the following settings:
 
-    :colors: true|false
-    :username: <your_username>
+    colors: true|false
+    username: <your_username>
 
 ### URL shortening for a status update
 
 Before actually sending a new status update, it is possible for the software
 to shorten the URLs in the tweet by using an external web service. This can be
-enabled via the `:shorten_urls` key in configuration file; for example:
+enabled via `shorten_urls` field in the configuration file; for example:
 
-    :username: spoonman
-    :colors: true
-    :shorten_urls:
-      :service_url: http://is.gd/create.php
-      :method: post
-      :url_param_name: URL
-      :xpath_selector: //input[@id='short_url']/@value
-      :disable: false
+    username: spoonman
+    colors: true
+    shorten_urls:
+      service_url: http://is.gd/create.php
+      method: post
+      url_param_name: URL
+      xpath_selector: //input[@id='short_url']/@value
+      disable: false    # optional
 
 The supported HTTP request methods (in `method` field) are `get` and `post`.
 The method chosen affects whether parameters are passed as URL query
 parameters or as payload in the HTTP request, respectively. Extra parameters
-can be given via `:extra_params` field, as a hash.
+can be given via `extra_params` field, as a hash.
 
 The `xpath_selector` field is needed to locate the HTML element which contains
 the shortened URL from the HTTP response.
 
-URL shortening can be disabled by not defining `shorten_urls` key in the
-configuration file, setting field `disable` to true, or by using the command
-line option `--no-url-shorten`. The last option is useful for disabling URL
-shortening only temporarily.
+URL shortening can be disabled by not defining `shorten_urls` field in the
+configuration file, or by setting optional field `disable` to true. In order
+to disable shortening only temporarily, use the command line option
+`--no-url-shorten`.
 
-*NOTE:* The use of the feature requires [nokogiri](http://nokogiri.org/) gem
-to be installed.
+*NOTE:* The use of URL shortening requires [nokogiri](http://nokogiri.org/)
+gem to be installed.
 
 ### HTTP proxy setting
 
