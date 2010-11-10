@@ -109,7 +109,7 @@ module Tweetwine
       end
     end
 
-    module Assertion
+    module Assertions
       def assert_full_match(regex, str, msg = "")
         match_data = regex.match(str)
         assert(str == match_data.to_s, msg)
@@ -125,7 +125,7 @@ module Tweetwine
       include WebMock::API
       include Tweetwine
       include Helper
-      include Assertion
+      include Assertions
     end
   end
 end
