@@ -98,25 +98,24 @@ module Tweetwine
     end
 
     def get_from_rest_api(sub_url, params = common_rest_api_query_params)
+      query = format_query_params(params)
+      url_suffix = query.empty? ? "" : "?" << query
+      resource = rest_api["#{sub_url}.json#{url_suffix}"]
       authorize_on_demand do
-        query = format_query_params(params)
-        url_suffix = query.empty? ? "" : "?" << query
-        response = rest_api[sub_url + ".json" + url_suffix].get(&CLI.oauth.request_signer)
-        JSON.parse response
+        JSON.parse resource.get(&CLI.oauth.request_signer)
       end
     end
 
     def post_to_rest_api(sub_url, payload)
+      resource = rest_api["#{sub_url}.json"]
       authorize_on_demand do
-        response = rest_api[sub_url + ".json"].post(payload, &CLI.oauth.request_signer)
-        JSON.parse response
+        JSON.parse resource.post(payload, &CLI.oauth.request_signer)
       end
     end
 
     def get_from_search_api(query, params = common_search_api_query_params)
       query = "q=#{Util.percent_encode(query)}&" << format_query_params(params)
-      response = search_api["search.json?#{query}"].get
-      JSON.parse response
+      JSON.parse search_api["search.json?#{query}"].get
     end
 
     def authorize_on_demand
