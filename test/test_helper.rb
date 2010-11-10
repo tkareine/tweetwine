@@ -91,22 +91,22 @@ module Tweetwine
 
     module Doubles
       def mock_http
-        @http = mock
+        @http = mock('Http')
         CLI.stubs(:http).returns(@http)
       end
 
       def mock_oauth
-        @oauth = mock
+        @oauth = mock('OAuth')
         CLI.stubs(:oauth).returns(@oauth)
       end
 
       def mock_ui
-        @ui = mock
+        @ui = mock('UI')
         CLI.stubs(:ui).returns(@ui)
       end
 
       def mock_url_shortener
-        @url_shortener = mock
+        @url_shortener = mock('UrlShortener')
         CLI.stubs(:url_shortener).returns(@url_shortener)
       end
 

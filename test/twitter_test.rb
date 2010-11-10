@@ -42,8 +42,8 @@ class ClientTest < UnitTestCase
       mock_oauth
       mock_ui
       @username = "spiky"
-      @rest_api = mock
-      @search_api = mock
+      @rest_api = mock("Http's REST API")
+      @search_api = mock("Http's Search API")
       @http.stubs(:as_resource).with("https://api.twitter.com/1").returns(@rest_api)
       @http.stubs(:as_resource).with("http://search.twitter.com").returns(@search_api)
       @twitter = Twitter.new(:username => @username)
