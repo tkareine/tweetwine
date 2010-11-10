@@ -115,7 +115,7 @@ module Tweetwine
 
     def get_from_search_api(query, params = common_search_api_query_params)
       query = "q=#{Util.percent_encode(query)}&" << format_query_params(params)
-      response = search_api["search.json?#{query}"].get(&CLI.oauth.request_signer)
+      response = search_api["search.json?#{query}"].get
       JSON.parse response
     end
 
