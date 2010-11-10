@@ -4,7 +4,7 @@ require "test_helper"
 
 module Tweetwine::Test
 
-class HttpClientTest < UnitTestCase
+class HttpTest < UnitTestCase
   RESPONSE_BODY = "resp"
   CUSTOM_HEADERS = {'X-Custom' => 'true'}
   SITE_URL = "https://site.org"
