@@ -90,6 +90,11 @@ module Tweetwine
     end
 
     module Doubles
+      def mock_config
+        @config = mock('Config')
+        CLI.stubs(:config).returns(@config)
+      end
+
       def mock_http
         @http = mock('Http')
         CLI.stubs(:http).returns(@http)

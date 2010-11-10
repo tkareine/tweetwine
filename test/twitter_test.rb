@@ -619,6 +619,41 @@ class ClientTest < UnitTestCase
         @twitter.search(["#habits", "#neurotic"], :or)
       end
     end
+
+    context "when authorization fails with HTTP 401 response" do
+      setup do
+        mock_config
+      end
+
+      should "authorize with OAuth and save config" do
+        twitter_records, internal_records = create_test_twitter_status_records_from_rest_api(
+          {
+            :from_user  => @username,
+            :status     => "wassup?",
+            :created_at => Time.at(1).to_s,
+            :to_user    => nil
+          }
+        )
+        access_token = 'access token'
+        user_has_authorized = states('User has authorized?').starts_as(false)
+        @oauth.expects(:request_signer).twice
+        @oauth.expects(:authorize).
+            yields(access_token).
+            then(user_has_authorized.is(true))
+        http_subresource = mock
+        http_subresource.expects(:get).
+            raises(HttpError.new(401, 'Unauthorized')).
+            when(user_has_authorized.is(false))
+        http_subresource.expects(:get).
+            returns(twitter_records.to_json).
+            when(user_has_authorized.is(true))
+        @rest_api.expects(:[]).returns(http_subresource)
+        @config.expects(:[]=).with(:oauth_access, access_token)
+        @config.expects(:save)
+        @ui.expects(:show_record).with(internal_records[0])
+        @twitter.home
+      end
+    end
   end
 end
 
