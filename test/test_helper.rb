@@ -66,26 +66,6 @@ module Tweetwine
         File.dirname(__FILE__) << "/fixture/" << filename
       end
 
-      def mock_http
-        @http = mock
-        CLI.stubs(:http).returns(@http)
-      end
-
-      def mock_ui
-        @ui = mock
-        CLI.stubs(:ui).returns(@ui)
-      end
-
-      def mock_url_shortener
-        @url_shortener = mock
-        CLI.stubs(:url_shortener).returns(@url_shortener)
-      end
-
-      def stub_config(options = {})
-        @config = options
-        CLI.stubs(:config).returns(@config)
-      end
-
       def tmp_env(vars = {})
         originals = {}
         vars.each_pair do |key, value|
@@ -109,6 +89,28 @@ module Tweetwine
       end
     end
 
+    module Doubles
+      def mock_http
+        @http = mock
+        CLI.stubs(:http).returns(@http)
+      end
+
+      def mock_ui
+        @ui = mock
+        CLI.stubs(:ui).returns(@ui)
+      end
+
+      def mock_url_shortener
+        @url_shortener = mock
+        CLI.stubs(:url_shortener).returns(@url_shortener)
+      end
+
+      def stub_config(options = {})
+        @config = options
+        CLI.stubs(:config).returns(@config)
+      end
+    end
+
     module Assertions
       def assert_full_match(regex, str, msg = "")
         match_data = regex.match(str)
@@ -125,6 +127,7 @@ module Tweetwine
       include WebMock::API
       include Tweetwine
       include Helper
+      include Doubles
       include Assertions
     end
   end
