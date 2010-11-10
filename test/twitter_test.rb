@@ -38,8 +38,9 @@ class ClientTest < UnitTestCase
 
   context "at runtime" do
     setup do
-      mock_ui
       mock_http
+      mock_oauth
+      mock_ui
       @username = "spiky"
       @rest_api = mock
       @search_api = mock
@@ -65,6 +66,7 @@ class ClientTest < UnitTestCase
           :to_user    => nil
         }
       )
+      @oauth.expects(:request_signer)
       @rest_api.expects(:[]).
           with("statuses/home_timeline.json?#{@rest_api_status_query_str}").
           returns(stub(:get => twitter_records.to_json))
@@ -88,6 +90,7 @@ class ClientTest < UnitTestCase
           :to_user    => @username
         }
       )
+      @oauth.expects(:request_signer)
       @rest_api.expects(:[]).
           with("statuses/mentions.json?#{@rest_api_status_query_str}").
           returns(stub(:get => twitter_records.to_json))
@@ -106,6 +109,7 @@ class ClientTest < UnitTestCase
           :to_user    => nil
         }
       )
+      @oauth.expects(:request_signer)
       @rest_api.expects(:[]).
           with("statuses/user_timeline.json?#{@rest_api_status_query_str}&screen_name=#{username}").
           returns(stub(:get => twitter_records.to_json))
@@ -122,6 +126,7 @@ class ClientTest < UnitTestCase
           :to_user    => nil
         }
       )
+      @oauth.expects(:request_signer)
       @rest_api.expects(:[]).
           with("statuses/user_timeline.json?#{@rest_api_status_query_str}&screen_name=#{@username}").
           returns(stub(:get => twitter_records.to_json))
@@ -140,6 +145,7 @@ class ClientTest < UnitTestCase
             :to_user    => nil
           }
         )
+        @oauth.expects(:request_signer)
         http_subresource = mock
         http_subresource.expects(:post).
             with({ :status => status }).
@@ -164,6 +170,7 @@ class ClientTest < UnitTestCase
             :to_user    => nil
           }
         )
+        @oauth.expects(:request_signer)
         http_subresource = mock
         http_subresource.expects(:post).
             with({ :status => status }).
@@ -229,6 +236,7 @@ class ClientTest < UnitTestCase
             :to_user    => nil
           }
         )
+        @oauth.expects(:request_signer)
         http_subresource = mock
         http_subresource.expects(:post).
             with({ :status => stripped_status }).
@@ -254,6 +262,7 @@ class ClientTest < UnitTestCase
             :to_user    => nil
           }
         )
+        @oauth.expects(:request_signer)
         http_subresource = mock
         http_subresource.expects(:post).
             with({ :status => truncated_status }).
@@ -280,6 +289,7 @@ class ClientTest < UnitTestCase
               :to_user    => nil
             }
           )
+          @oauth.expects(:request_signer)
           http_subresource = mock
           http_subresource.expects(:post).
               with({ :status => status_utf8 }).
@@ -306,6 +316,7 @@ class ClientTest < UnitTestCase
                   :to_user    => nil
                 }
               )
+              @oauth.expects(:request_signer)
               http_subresource = mock
               http_subresource.expects(:post).
                   with({ :status => status_utf8 }).
@@ -347,6 +358,7 @@ class ClientTest < UnitTestCase
               :to_user    => nil
             }
           )
+          @oauth.expects(:request_signer)
           http_subresource = mock
           http_subresource.expects(:post).
               with({ :status => status }).
@@ -375,6 +387,7 @@ class ClientTest < UnitTestCase
               :to_user    => nil
             }
           )
+          @oauth.expects(:request_signer)
           http_subresource = mock
           http_subresource.expects(:post).
               with({ :status => shortened_status }).
@@ -403,6 +416,7 @@ class ClientTest < UnitTestCase
               :to_user    => nil
             }
           )
+          @oauth.expects(:request_signer)
           http_subresource = mock
           http_subresource.expects(:post).
               with({ :status => status }).
@@ -432,6 +446,7 @@ class ClientTest < UnitTestCase
               :to_user    => nil
             }
           )
+          @oauth.expects(:request_signer)
           http_subresource = mock
           http_subresource.expects(:post).
               with({ :status => short_status }).
@@ -462,6 +477,7 @@ class ClientTest < UnitTestCase
           end
 
           should "skip shortening URLs if required libraries are not found" do
+            @oauth.expects(:request_signer)
             http_subresource = mock
             http_subresource.expects(:post).
                 with({ :status => @status }).
@@ -479,6 +495,7 @@ class ClientTest < UnitTestCase
           end
 
           should "skip shortening URLs upon connection error to the URL shortening service" do
+            @oauth.expects(:request_signer)
             http_subresource = mock
             http_subresource.expects(:post).
                 with({ :status => @status }).
@@ -513,6 +530,7 @@ class ClientTest < UnitTestCase
           :to_user    => "foo"
         }
       )
+      @oauth.expects(:request_signer)
       @rest_api.expects(:[]).
           with("statuses/friends.json?#{@rest_api_status_query_str}").
           returns(stub(:get => twitter_records.to_json))
@@ -536,6 +554,7 @@ class ClientTest < UnitTestCase
           :to_user    => nil
         }
       )
+      @oauth.expects(:request_signer)
       @rest_api.expects(:[]).
           with("statuses/followers.json?#{@rest_api_status_query_str}").
           returns(stub(:get => twitter_records.to_json))

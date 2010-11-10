@@ -95,6 +95,11 @@ module Tweetwine
         CLI.stubs(:http).returns(@http)
       end
 
+      def mock_oauth
+        @oauth = mock
+        CLI.stubs(:oauth).returns(@oauth)
+      end
+
       def mock_ui
         @ui = mock
         CLI.stubs(:ui).returns(@ui)
