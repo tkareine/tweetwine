@@ -2,9 +2,12 @@
 
 require "tweetwine"
 require "contest"
+require "json"              # for webmock
 require "mocha"
+require "webmock/test_unit"
 
 Mocha::Configuration.prevent(:stubbing_non_existent_method)
+WebMock.disable_net_connect!
 
 module Tweetwine
   module Test
@@ -119,6 +122,7 @@ module Tweetwine
     end
 
     class UnitTestCase < ::Test::Unit::TestCase
+      include WebMock::API
       include Tweetwine
       include Helper
       include Assertion

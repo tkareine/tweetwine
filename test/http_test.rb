@@ -1,14 +1,10 @@
 # coding: utf-8
 
-require "json"              # for webmock
 require "test_helper"
-require "webmock/test_unit"
 
 module Tweetwine::Test
 
 class HttpClientTest < UnitTestCase
-  include WebMock::API
-
   RESPONSE_BODY = "resp"
   CUSTOM_HEADERS = {'X-Custom' => 'true'}
   SITE_URL = "https://site.org"
