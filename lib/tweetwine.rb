@@ -54,6 +54,7 @@ module Tweetwine
   end
 
   class TranscodeError      < Error; status_code(31); end
+  class AuthorizationError  < Error; status_code(32); end
 
   require "tweetwine/basic_object"
 
