@@ -76,7 +76,7 @@ module Tweetwine
       def requesting(url)
         uri = URI.parse(url)
         connection = @http.new(uri.host, uri.port)
-        connection.use_ssl = https_scheme?(uri)
+        configure_for_ssl(connection) if https_scheme?(uri)
         response = yield connection, uri
         raise HttpError.new(response.code, response.message) unless response.is_a? Net::HTTPSuccess
         response.body
@@ -90,6 +90,11 @@ module Tweetwine
 
       def https_scheme?(uri)
         uri.scheme == 'https'
+      end
+
+      def configure_for_ssl(connection)
+        connection.use_ssl = true
+        connection.verify_mode = OpenSSL::SSL::VERIFY_NONE
       end
     end
 
