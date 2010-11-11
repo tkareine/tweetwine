@@ -1,3 +1,10 @@
+=== 0.3.0 released 2010-11-11
+
+* OAuth for authentication and authorization
+* Almost complete rewrite of the implementation with a lot of tests
+* Configurable config file location with <tt>-f</tt> option
+* Ensure encoding status update in UTF-8
+
 === 0.2.12 released 2010-04-17
 
 * Since this is a command line application, provide documentation as gem
