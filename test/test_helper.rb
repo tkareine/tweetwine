@@ -122,6 +122,12 @@ module Tweetwine
     end
 
     module Assertions
+      def assert_contains_in_order(expected, actual, msg = "", &sorter)
+        expected = block_given? ? expected.sort(&sorter) : expected.sort
+        actual   = block_given? ? actual.sort(&sorter)   : actual.sort
+        assert_equal(expected, actual, msg)
+      end
+
       def assert_full_match(regex, str, msg = "")
         match_data = regex.match(str)
         assert(str == match_data.to_s, msg)

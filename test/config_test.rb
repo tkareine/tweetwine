@@ -190,7 +190,10 @@ class ConfigTest < UnitTestCase
       end
 
       should "ignore nonexisting config file for initial read" do
-        assert_equal @config.keys, @default_config.keys
+        assert_contains_in_order(@default_config.keys, @config.keys) do |a, b|
+          # On Ruby 1.8, Symbol does not have #<=> operator for comparison.
+          a.to_s <=> b.to_s
+        end
       end
 
       should "save config to the file, implicitly without config file, env lookouts, and excludes set itself" do
