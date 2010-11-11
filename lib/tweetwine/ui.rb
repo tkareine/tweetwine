@@ -106,7 +106,7 @@ module Tweetwine
       if @colors
         status = colorize_matching(:yellow, status, USERNAME_REGEX)
         status = colorize_matching(:magenta, status, HASHTAG_REGEX)
-        status = colorize_matching(:cyan, status, URI.extract(status, ["http", "https"]).uniq)
+        status = colorize_matching(:cyan, status, URI.extract(status, %w{http https}).uniq)
       end
       status
     end
