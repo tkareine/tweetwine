@@ -193,12 +193,12 @@ module Tweetwine
     end
 
     def shorten_urls_in(status)
-      url_pairs = URI.extract(status, ["http", "https"]).uniq.map do |url_to_be_shortened|
-        [url_to_be_shortened, CLI.url_shortener.shorten(url_to_be_shortened)]
-      end
-      url_pairs.reject { |pair| Util.blank? pair.last }.each do |url_pair|
-        status.gsub!(url_pair.first, url_pair.last)
-      end
+      url_pairs = URI.
+          extract(status, %w{http http}).
+          uniq.
+          map { |full_url| [full_url, CLI.url_shortener.shorten(full_url)] }.
+          reject { |(full_url, short_url)| Util.blank? short_url }
+      url_pairs.each { |(full_url, short_url)| status.gsub!(full_url, short_url) }
     rescue HttpError, LoadError => e
       CLI.ui.warn "#{e}\nSkipping URL shortening..."
     end
