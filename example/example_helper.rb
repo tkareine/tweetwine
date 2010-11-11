@@ -5,6 +5,7 @@
   matchy
   open4
   stringio
+  tempfile
   time
   timecop
   webmock/test_unit
@@ -45,6 +46,14 @@ module Tweetwine
         filepath = File.expand_path("../fixture/#{filename}", __FILE__)
         File.open(filepath) do |f|
           f.readlines.join("\n")
+        end
+      end
+
+      def in_temp_dir
+        Dir.mktmpdir do |tmp_dir|
+          Dir.chdir(tmp_dir) do |dir|
+            yield dir
+          end
         end
       end
 
