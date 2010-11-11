@@ -12,7 +12,7 @@ module Tweetwine
     attr_reader :num_statuses, :page, :username
 
     def initialize(options = {})
-      @num_statuses = Util.parse_int_gt(options[:num_statuses], DEFAULT_NUM_STATUSES, 1, "number of statuses_to_show")
+      @num_statuses = Util.parse_int_gt(options[:num_statuses], DEFAULT_NUM_STATUSES, 1, "number of statuses to show")
       @page         = Util.parse_int_gt(options[:page], DEFAULT_PAGE_NUM, 1, "page number")
       @username     = options[:username].to_s
     end
