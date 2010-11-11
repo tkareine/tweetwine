@@ -102,8 +102,8 @@ module Tweetwine
       private
 
       def init(args, overriding_default_conf = nil)
+        @config, @http, @oauth, @twitter, @ui, @url_shortener = nil   # reset
         @config = read_config(args, overriding_default_conf)
-        @http, @oauth, @twitter, @ui, @url_shortener = nil   # reset
       end
 
       def run(args)
