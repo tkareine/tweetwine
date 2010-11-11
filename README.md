@@ -3,10 +3,13 @@ tweetwine -- a simple Twitter command line agent
 
 ## DESCRIPTION
 
-Tweetwine shows the home timeline of the authenticated user, the latest tweets
-of friends and followers, and the latest tweets that mention the user. If
-that's not enough, you can search statuses with arbitrary terms. In addition,
-you can send new tweets with it.
+Tweetwine is designed for checking the latest tweets from the command line
+quickly.
+
+The program can show the home timeline of the authenticated user, the latest
+tweets of friends and followers, and the latest tweets that mention the user.
+If that's not enough, Tweetwine can search statuses with arbitrary terms and
+send status updates.
 
 Features:
 
