@@ -7,7 +7,7 @@ require "net/http"
 module Tweetwine::Test
 
 class OAuthTest < UnitTestCase
-  include OAuthFixture
+  include Fixture::OAuth
 
   setup do
     mock_http

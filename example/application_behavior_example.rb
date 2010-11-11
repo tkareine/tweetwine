@@ -3,7 +3,7 @@
 require "example_helper"
 require "fixture/oauth"
 
-include Tweetwine::Test::OAuthFixture
+include Tweetwine::Test::Fixture::OAuth
 
 Feature "application behavior" do
   in_order_to "know about the application"
