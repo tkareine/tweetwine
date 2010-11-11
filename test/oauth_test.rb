@@ -1,20 +1,13 @@
 # coding: utf-8
 
 require "test_helper"
+require "fixture/oauth"
 require "net/http"
 
 module Tweetwine::Test
 
 class OAuthTest < UnitTestCase
-  REQUEST_TOKEN_KEY = 'ManManManManManManManManManManManManManM'
-  REQUEST_TOKEN_SECRET = '3x3x3x3x3x3x3x3x3x3x3x3x3x3x3x3x3x3x3x3x3'
-  REQUEST_TOKEN_RESPONSE = "oauth_token=#{REQUEST_TOKEN_KEY}&oauth_token_secret=#{REQUEST_TOKEN_SECRET}&oauth_callback_confirmed=true"
-  REQUEST_TOKEN_URI = 'https://api.twitter.com/oauth/request_token'
-  ACCESS_TOKEN_KEY = '111111111-XyzXyzXyzXyzXyzXyzXyzXyzXyzXyzXyzXyzXyzX'
-  ACCESS_TOKEN_SECRET = '4x4x4x4x4x4x4x4x4x4x4x4x4x4x4x4x4x4x4x4x4x'
-  ACCESS_TOKEN_RESPONSE = "oauth_token=#{ACCESS_TOKEN_KEY}&oauth_token_secret=#{ACCESS_TOKEN_SECRET}&user_id=42&screen_name=fooman"
-  ACCESS_TOKEN_URI = 'https://api.twitter.com/oauth/access_token'
-  PIN = '12345678'
+  include OAuthFixture
 
   setup do
     mock_http
@@ -27,20 +20,20 @@ class OAuthTest < UnitTestCase
     @oauth.authorize
     connection, request = *fake_http_connection_and_request
     @oauth.request_signer.call(connection, request)
-    assert_match(/^OAuth/, request['Authorization'])
+    assert_match(/^OAuth /, request['Authorization'])
     assert_match(/oauth_token="#{ACCESS_TOKEN_KEY}"/, request['Authorization'])
   end
 
   should "raise AuthorizationError if OAuth dance fails due to HTTP 4xx response" do
     @http.expects(:post).
-        with(REQUEST_TOKEN_URI).
+        with(REQUEST_TOKEN_URL).
         raises(HttpError.new(401, 'Unauthorized'))
     assert_raise(AuthorizationError) { @oauth.authorize }
   end
 
   should "pass other exceptions than due to HTTP 4xx responses through" do
     @http.expects(:post).
-        with(REQUEST_TOKEN_URI).
+        with(REQUEST_TOKEN_URL).
         raises(HttpError.new(503, 'Service Unavailable'))
     assert_raise(HttpError) { @oauth.authorize }
   end
@@ -53,7 +46,7 @@ class OAuthTest < UnitTestCase
     should "sign request with it" do
       connection, request = *fake_http_connection_and_request
       @oauth.request_signer.call(connection, request)
-      assert_match(/^OAuth/, request['Authorization'])
+      assert_match(/^OAuth /, request['Authorization'])
       assert_match(/oauth_token="#{ACCESS_TOKEN_KEY}"/, request['Authorization'])
     end
   end
@@ -62,15 +55,15 @@ class OAuthTest < UnitTestCase
 
   def expect_complete_oauth_dance
     @http.expects(:post).
-        with(REQUEST_TOKEN_URI).
+        with(REQUEST_TOKEN_URL).
         returns(REQUEST_TOKEN_RESPONSE)
     @ui.expects(:info).
-        with("Please authorize: https://api.twitter.com/oauth/authorize?oauth_token=#{REQUEST_TOKEN_KEY}")
+        with("Please authorize: #{AUTHORIZE_URL}")
     @ui.expects(:prompt).
         with('Enter PIN').
         returns(PIN)
     @http.expects(:post).
-        with(ACCESS_TOKEN_URI).
+        with(ACCESS_TOKEN_URL).
         returns(ACCESS_TOKEN_RESPONSE)
   end
 
