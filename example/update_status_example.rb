@@ -34,7 +34,7 @@ Feature "update my status (send new tweet)" do
   Scenario "update my status from command line with colorization disabled" do
     When "I start the application with 'update' command with --no-colors option, give status in single command line argument, and confirm" do
       stub_http_request(:post, UPDATE_URL).with(:body => BODY_WITHOUT_URLS).to_return(:body => UPDATE_FIXTURE_WITHOUT_URLS)
-      @output = start_cli %W{--no-colors update #{STATUS_WITHOUT_URLS}}, "y"
+      @output = start_cli %W{--no-colors update #{STATUS_WITHOUT_URLS}}, %w{y}
     end
 
     Then "the application sends and shows the status" do
@@ -46,7 +46,7 @@ Feature "update my status (send new tweet)" do
   Scenario "update my status from command line with colorization enabled" do
     When "I start the application with 'update' command with --colors option, give status in single command line argument, and confirm" do
       stub_http_request(:post, UPDATE_URL).with(:body => BODY_WITHOUT_URLS).to_return(:body => UPDATE_FIXTURE_WITHOUT_URLS)
-      @output = start_cli %W{--colors update #{STATUS_WITHOUT_URLS}}, "y"
+      @output = start_cli %W{--colors update #{STATUS_WITHOUT_URLS}}, %w{y}
     end
 
     Then "the application sends and shows the status" do
@@ -58,7 +58,7 @@ Feature "update my status (send new tweet)" do
   Scenario "update my status from command line when message is spread over multiple arguments" do
     When "I start the application with 'update' command, give status in multiple command line arguments, and confirm" do
       stub_http_request(:post, UPDATE_URL).with(:body => BODY_WITHOUT_URLS).to_return(:body => UPDATE_FIXTURE_WITHOUT_URLS)
-      @output = start_cli(%w{--no-colors update} + STATUS_WITHOUT_URLS.split, "y")
+      @output = start_cli(%w{--no-colors update} + STATUS_WITHOUT_URLS.split, %w{y})
     end
 
     Then "the application sends and shows the status" do
@@ -69,7 +69,7 @@ Feature "update my status (send new tweet)" do
 
   Scenario "cancel status update from command line" do
     When "I start the application with 'update' command, and cancel" do
-      @output = start_cli %W{--no-colors update #{STATUS_WITHOUT_URLS}}, "n"
+      @output = start_cli %W{--no-colors update #{STATUS_WITHOUT_URLS}}, %w{n}
     end
 
     Then "the application shows a cancellation message" do
@@ -80,7 +80,7 @@ Feature "update my status (send new tweet)" do
   Scenario "update my status from STDIN" do
     When "I start the application with 'update' command, give status from STDIN, and confirm" do
       stub_http_request(:post, UPDATE_URL).with(:body => BODY_WITHOUT_URLS).to_return(:body => UPDATE_FIXTURE_WITHOUT_URLS)
-      @output = start_cli %w{update}, STATUS_WITHOUT_URLS, "y"
+      @output = start_cli %w{update}, [STATUS_WITHOUT_URLS, 'y']
     end
 
     Then "the application sends and shows the status" do
@@ -92,7 +92,7 @@ Feature "update my status (send new tweet)" do
 
   Scenario "cancel a status update from STDIN" do
     When "I start the application with 'update' command, give status from STDIN, and cancel" do
-      @output = start_cli %w{update}, STATUS_WITHOUT_URLS, "n"
+      @output = start_cli %w{update}, [STATUS_WITHOUT_URLS, 'n']
     end
 
     Then "the application shows a cancellation message" do
@@ -107,7 +107,7 @@ Feature "update my status (send new tweet)" do
         @status_latin1 = @status_utf8.encode('ISO-8859-1')
         url_encoded_body = "status=r%c3%a9sum%c3%a9"
         stub_http_request(:post, UPDATE_URL).with(:body => url_encoded_body).to_return(:body => UPDATE_FIXTURE_UTF8)
-        @output = start_cli %W{--no-colors update #{@status_latin1}}, "y"
+        @output = start_cli %W{--no-colors update #{@status_latin1}}, %w{y}
       end
 
       Then "the application sends and shows the status" do
@@ -128,7 +128,7 @@ Feature "update my status (send new tweet)" do
         tmp_kcode('NONE') do
           tmp_env(:LANG => 'latin1') do
             Tweetwine::CharacterEncoding.forget_guess
-            @output = start_cli %W{--no-colors update #{@status_latin1}}, "y"
+            @output = start_cli %W{--no-colors update #{@status_latin1}}, %w{y}
           end
         end
       end
@@ -155,7 +155,7 @@ Feature "update my status (send new tweet)" do
       stub_http_request(:post, UPDATE_URL).
           with(:body => BODY_WITH_SHORT_URLS).
           to_return(:body => UPDATE_FIXTURE_WITH_URLS)
-      @output = start_cli %W{--no-colors update #{STATUS_WITH_FULL_URLS}}, "y"
+      @output = start_cli %W{--no-colors update #{STATUS_WITH_FULL_URLS}}, %w{y}
     end
 
     Then "the application shortens the URLs in the status before sending it" do
@@ -172,7 +172,7 @@ Feature "update my status (send new tweet)" do
       stub_http_request(:post, UPDATE_URL).
           with(:body => BODY_WITH_SHORT_URLS).
           to_return(:body => UPDATE_FIXTURE_WITH_URLS)
-      @output = start_cli %W{--no-colors --no-url-shorten update #{STATUS_WITH_SHORT_URLS}}, "y"
+      @output = start_cli %W{--no-colors --no-url-shorten update #{STATUS_WITH_SHORT_URLS}}, %w{y}
     end
 
     Then "the application passes URLs as is in the status" do

@@ -34,10 +34,10 @@ module Tweetwine
         Open4::popen4(launch_cmd, &blk)
       end
 
-      def start_cli(args, *input)
+      def start_cli(args, input = [], options = {:config_file => CONFIG_FILE})
         input, output = StringIO.new(input.join("\n")), StringIO.new
-        extra_opts = { :config_file => CONFIG_FILE, :in => input, :out => output }
-        CLI.start(args, extra_opts)
+        options.merge!({ :in => input, :out => output })
+        CLI.start(args, options)
         output.string.split("\n")
       end
 
