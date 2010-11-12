@@ -35,7 +35,7 @@ Gem::Specification.new do |s|
   s.executables = %w{tweetwine}
 
   s.add_dependency "oauth", "~> 0.4.4"
-  s.add_dependency "json",  ">= 1.0.0" if RUBY_VERSION < "1.9"
+  s.add_dependency "json",  ">= 1.0.0"
   s.add_development_dependency "contest", "~> 0.1.2"
   s.add_development_dependency "coulda",  "~> 0.6.0"
   s.add_development_dependency "gem-man", "~> 0.2.0"
