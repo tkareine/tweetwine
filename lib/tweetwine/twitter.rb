@@ -194,7 +194,7 @@ module Tweetwine
 
     def shorten_urls_in(status)
       url_pairs = URI.
-          extract(status, %w{http http}).
+          extract(status, %w{http https}).
           uniq.
           map { |full_url| [full_url, CLI.url_shortener.shorten(full_url)] }.
           reject { |(full_url, short_url)| Util.blank? short_url }

@@ -353,8 +353,8 @@ class ClientTest < UnitTestCase
           @twitter.update(status)
         end
 
-        should "shorten URLs, avoiding truncation with long URLs" do
-          long_urls = ["http://www.google.fi/search?q=ruby+nokogiri&ie=utf-8&oe=utf-8&aq=t&rls=org.mozilla:en-US:official&client=firefox-a", "http://www.w3.org/TR/1999/REC-xpath-19991116"]
+        should "shorten HTTP and HTTPS URLs" do
+          long_urls = ["http://www.google.fi/search?q=ruby+nokogiri&ie=utf-8&oe=utf-8&aq=t&rls=org.mozilla:en-US:official&client=firefox-a", "https://twitter.com/#!/messages"]
           long_status = long_urls.join(" and ")
           short_urls = ["http://shorten.it/2k7i8", "http://shorten.it/2k7mk"]
           shortened_status = short_urls.join(" and ")
