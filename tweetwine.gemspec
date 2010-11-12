@@ -11,7 +11,6 @@ Gem::Specification.new do |s|
 
   s.name = name
   s.version = version
-  s.date = "2010-02-28"
   s.homepage = "http://github.com/tuomas/tweetwine"
 
   s.summary = "A simple Twitter command line agent"
