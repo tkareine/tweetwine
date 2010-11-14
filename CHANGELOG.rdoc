@@ -1,3 +1,8 @@
+=== 0.3.1 released 2010-11-14
+
+* Fix regression bug: shorten HTTPS URLs also
+* Fix wrong gem creation date from gemspec
+
 === 0.3.0 released 2010-11-11
 
 * OAuth for authentication and authorization

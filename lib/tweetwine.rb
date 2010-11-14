@@ -3,7 +3,7 @@
 gem 'oauth', '~> 0.4.4'
 
 module Tweetwine
-  VERSION = '0.3.0'.freeze
+  VERSION = '0.3.1'.freeze
 
   class Error < StandardError
     @status_code = 42
