@@ -2,7 +2,6 @@
 
 require "tweetwine"
 
-require "json"              # for webmock
 require "webmock/test_unit"
 
 WebMock.disable_net_connect!

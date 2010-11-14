@@ -13,5 +13,5 @@ group :test do
   gem "open4",          "~> 1.0.1"
   gem "ronn",           "~> 0.7.3"
   gem "timecop",        "~> 0.3.5"
-  gem "webmock",        "~> 1.5.0"
+  gem "webmock",        "~> 1.6.1"
 end

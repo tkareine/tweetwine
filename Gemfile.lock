@@ -6,7 +6,7 @@ GEM
     coulda (0.6.0)
     crack (0.1.8)
     gem-man (0.2.0)
-    hpricot (0.8.2)
+    hpricot (0.8.3)
     json (1.4.6)
     mcmire-matchy (0.5.2)
     mocha (0.9.8)
@@ -22,7 +22,7 @@ GEM
       mustache (>= 0.7.0)
       rdiscount (>= 1.5.8)
     timecop (0.3.5)
-    webmock (1.5.0)
+    webmock (1.6.1)
       addressable (>= 2.2.2)
       crack (>= 0.1.7)
 
@@ -41,4 +41,4 @@ DEPENDENCIES
   open4 (~> 1.0.1)
   ronn (~> 0.7.3)
   timecop (~> 0.3.5)
-  webmock (~> 1.5.0)
+  webmock (~> 1.6.1)

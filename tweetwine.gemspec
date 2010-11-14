@@ -43,7 +43,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "open4",   "~> 1.0.1"
   s.add_development_dependency "ronn",    "~> 0.7.3"
   s.add_development_dependency "timecop", "~> 0.3.5"
-  s.add_development_dependency "webmock", "~> 1.5.0"
+  s.add_development_dependency "webmock", "~> 1.6.1"
 
   s.has_rdoc = true
   s.extra_rdoc_files = Dir["*.rdoc", "LICENSE.txt"]
