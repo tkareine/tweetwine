@@ -1,6 +1,7 @@
 # coding: utf-8
 
-require "test_helper"
+require "unit_helper"
+
 require "time"
 
 module Tweetwine::Test

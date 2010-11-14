@@ -43,21 +43,33 @@ namespace :man do
 end
 
 namespace :test do
-  def create_test_task(type, file_glob, options = {})
-    test_dir  = file_glob[%r{(\w+)/}, 1]
+  def create_test_task(type, options = {})
+    base_dir  = options[:base_dir]
+    file_glob = options[:file_glob]
     test_desc = options[:desc] || "Run #{type} tests"
-    includes  = (options[:includes] || ['lib', test_dir]).map { |dir| "-I #{dir}" }.join(' ')
-    warn_opt  = options[:warn] ? "-w" : ""
+    includes  = ['lib', 'test', base_dir].map { |dir| "-I #{dir}" }.join(' ')
+    warn_opt  = options[:warn] ? '-w' : ''
 
     desc test_desc
     task type do
-      tests = FileList[file_glob].map { |f| "\"#{f[test_dir.size+1 .. -4]}\"" }.join(' ')
+      file_name_offset = base_dir.size + 1
+      neg_dotrb_suffix = -'.rb'.size - 1
+      tests = FileList["#{base_dir}/#{file_glob}"].
+          map { |file| '"' << file[file_name_offset..neg_dotrb_suffix] << '"' }.
+          join(' ')
       sh %{bundle exec ruby #{warn_opt} #{includes} -e 'ARGV.each { |f| require f }' #{tests}}
     end
   end
 
-  create_test_task :unit,     'test/**/*_test.rb',        :warn => true
-  create_test_task :example,  'example/**/*_example.rb',  :warn => false, :includes => %w{lib test example}, :desc => "Run integration/example tests"
+  create_test_task :unit,
+      :base_dir   => 'test/unit',
+      :file_glob  => '**/*_test.rb',
+      :warn       => true
+  create_test_task :example,
+      :base_dir   => 'test/example',
+      :file_glob  => '**/*_example.rb',
+      :desc       => 'Run integration/example tests',
+      :warn       => false
 
   desc "Run all tests"
   task :all => [:unit, :example]
