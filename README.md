@@ -1,10 +1,9 @@
-tweetwine -- a simple Twitter command line agent
-================================================
+tweetwine
+=========
 
 ## DESCRIPTION
 
-Tweetwine is designed for checking the latest tweets from the command line
-quickly.
+Tweetwine shows the latest tweets from the command line quickly.
 
 The program can show the home timeline of the authenticated user, the latest
 tweets of friends and followers, and the latest tweets that mention the user.
