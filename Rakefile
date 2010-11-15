@@ -1,9 +1,9 @@
 # coding: utf-8
 
-require "rake/clean"
+require 'rake/clean'
 
-$LOAD_PATH.unshift(File.expand_path("../lib/", __FILE__))
-name = "tweetwine"
+$LOAD_PATH.unshift(File.expand_path('lib', File.dirname(__FILE__)))
+name = 'tweetwine'
 require name
 version = Tweetwine::VERSION.dup
 
