@@ -136,7 +136,6 @@ Feature "update my status (send new tweet)" do
       Then "the application sends and shows the status" do
         @output[1].should == @status_latin1   # preview
         @output[5].should == "#{USER}, 9 hours ago:"
-        # TODO: we should convert status back to latin-1
         @output[6].should == @status_utf8
       end
     end
