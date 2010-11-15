@@ -31,7 +31,7 @@ In addition, the program needs [json](http://json.rubyforge.org/) gem on Ruby
 1.8.
 
 This documentation page is also provided as a manual page. Use
-[gem-man](http://github.com/defunkt/gem-man) to see it:
+[gem-man](https://github.com/defunkt/gem-man) to see it:
 
     $ gem man tweetwine
 
@@ -128,4 +128,4 @@ Tweetwine is Copyright (c) 2009-2010 Tuomas Kareinen.
 
 ## SEE ALSO
 
-<http://github.com/tuomas/tweetwine>
+<https://github.com/tuomas/tweetwine>
