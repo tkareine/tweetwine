@@ -8,6 +8,24 @@ require "mocha"
 Mocha::Configuration.prevent(:stubbing_non_existent_method)
 
 module Tweetwine::Test
+  module Assertions
+    def assert_contains_exactly(expected, actual, msg = "", &sorter)
+      expected = block_given? ? expected.sort(&sorter) : expected.sort
+      actual   = block_given? ? actual.sort(&sorter)   : actual.sort
+      assert_equal(expected, actual, msg)
+    end
+
+    def assert_full_match(regex, str, msg = "")
+      match_data = regex.match(str)
+      assert(str == match_data.to_s, msg)
+    end
+
+    def assert_no_full_match(regex, str, msg = "")
+      match_data = regex.match(str)
+      assert(str != match_data.to_s, msg)
+    end
+  end
+
   module Doubles
     def mock_config
       @config = mock('Config')
@@ -40,29 +58,11 @@ module Tweetwine::Test
     end
   end
 
-  module Assertions
-    def assert_contains_exactly(expected, actual, msg = "", &sorter)
-      expected = block_given? ? expected.sort(&sorter) : expected.sort
-      actual   = block_given? ? actual.sort(&sorter)   : actual.sort
-      assert_equal(expected, actual, msg)
-    end
-
-    def assert_full_match(regex, str, msg = "")
-      match_data = regex.match(str)
-      assert(str == match_data.to_s, msg)
-    end
-
-    def assert_no_full_match(regex, str, msg = "")
-      match_data = regex.match(str)
-      assert(str != match_data.to_s, msg)
-    end
-  end
-
   class UnitTestCase < ::Test::Unit::TestCase
     include WebMock::API
     include Tweetwine
     include Helper
-    include Doubles
     include Assertions
+    include Doubles
   end
 end
