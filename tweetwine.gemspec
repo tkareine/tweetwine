@@ -34,7 +34,6 @@ showing the latest tweets.
   ]
   s.test_files = Dir['test/**/*']
 
-  s.add_dependency 'json',  '>= 1.0.0'
   s.add_dependency 'oauth', '~> 0.4.4'
   s.add_development_dependency 'contest',       '~> 0.1.2'
   s.add_development_dependency 'coulda',        '~> 0.6.0'
@@ -45,6 +44,13 @@ showing the latest tweets.
   s.add_development_dependency 'ronn',          '~> 0.7.3'
   s.add_development_dependency 'timecop',       '~> 0.3.5'
   s.add_development_dependency 'webmock',       '~> 1.6.1'
+
+  s.post_install_message = <<-END
+
+Tweetwine requires a JSON parser library. Ruby 1.9 comes bundled with one by
+default. For Ruby 1.8, you can install 'json' gem, for example.
+
+  END
 
   s.has_rdoc = true
   s.extra_rdoc_files = Dir['*.rdoc', 'LICENSE.txt']

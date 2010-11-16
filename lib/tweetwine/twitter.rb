@@ -1,6 +1,5 @@
 # coding: utf-8
 
-require "json"
 require "uri"
 
 module Tweetwine

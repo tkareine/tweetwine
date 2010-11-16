@@ -1,5 +1,11 @@
 # coding: utf-8
 
+begin
+  require 'json'
+rescue LoadError
+  raise 'Could not load JSON library; do you have one installed as a gem?'
+end unless defined? JSON
+
 gem 'oauth', '~> 0.4.4'
 
 module Tweetwine
