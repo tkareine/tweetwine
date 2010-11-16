@@ -89,7 +89,7 @@ module Tweetwine::Test
   end
 
   module Assertions
-    def assert_contains_in_order(expected, actual, msg = "", &sorter)
+    def assert_contains_exactly(expected, actual, msg = "", &sorter)
       expected = block_given? ? expected.sort(&sorter) : expected.sort
       actual   = block_given? ? actual.sort(&sorter)   : actual.sort
       assert_equal(expected, actual, msg)
