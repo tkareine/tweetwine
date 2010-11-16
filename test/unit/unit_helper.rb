@@ -9,18 +9,27 @@ Mocha::Configuration.prevent(:stubbing_non_existent_method)
 
 module Tweetwine::Test
   module Assertions
-    def assert_contains_exactly(expected, actual, msg = "", &sorter)
+    # Asserts whether an Enumeration like object contains all the elements.
+    # Fails unless +actual+ contains the same elements as +expected+, ignoring
+    # the order of the elements.
+    #
+    # The method sorts +expected+ and +actual+ in order to compare them. By
+    # default, this sorting is done by calling #sort for each of them. If the
+    # method is called with a block, it is passed to the #sort calls.
+    def assert_contains_exactly(expected, actual, msg = '', &sorter)
       expected = block_given? ? expected.sort(&sorter) : expected.sort
       actual   = block_given? ? actual.sort(&sorter)   : actual.sort
       assert_equal(expected, actual, msg)
     end
 
-    def assert_full_match(regex, str, msg = "")
+    # Fails unless +str+ is a full match to +regex+.
+    def assert_full_match(regex, str, msg = '')
       match_data = regex.match(str)
       assert(str == match_data.to_s, msg)
     end
 
-    def assert_no_full_match(regex, str, msg = "")
+    # Fails if +str+ is a full match to +regex+.
+    def assert_no_full_match(regex, str, msg = '')
       match_data = regex.match(str)
       assert(str != match_data.to_s, msg)
     end
