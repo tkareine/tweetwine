@@ -9,7 +9,7 @@ require "yaml"
 module Tweetwine::Test
 
 class ConfigTest < UnitTestCase
-  CONFIG_FILE = Helper.fixture_file('config_unit.yaml')
+  CONFIG_FILE = Helper.fixture_path('config_unit.yaml')
 
   context "when given command line arguments, no environment variables, no config file" do
     setup do

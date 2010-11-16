@@ -18,7 +18,7 @@ module Tweetwine::Test
   module Helper
     include WebMock::API
 
-    CONFIG_FILE = fixture_file('config_example.yaml')
+    CONFIG_FILE = fixture_path('config_example.yaml')
     PROJECT_DIR = File.expand_path('../..', File.dirname(__FILE__))
     PROXY_HOST = "proxy.net"
     PROXY_PORT = 8123
@@ -37,12 +37,6 @@ module Tweetwine::Test
       options.merge!({ :in => input, :out => output })
       CLI.start(args, options)
       output.string.split("\n")
-    end
-
-    def fixture(filename)
-      File.open(fixture_file(filename)) do |f|
-        f.readlines.join("\n")
-      end
     end
 
     def in_temp_dir

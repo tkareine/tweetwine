@@ -9,7 +9,7 @@ Feature "show tweets mentioning the user" do
 
   Scenario "show tweets mentioning me" do
     When "I start the application with 'mentions' command" do
-      stub_http_request(:get, "https://api.twitter.com/1/statuses/mentions.json?count=20&page=1").to_return(:body => fixture("mentions.json"))
+      stub_http_request(:get, "https://api.twitter.com/1/statuses/mentions.json?count=20&page=1").to_return(:body => fixture_file('mentions.json'))
       @output = start_cli %w{mentions}
     end
 

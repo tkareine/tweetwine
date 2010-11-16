@@ -9,7 +9,7 @@ Feature "show tweets from home timeline" do
 
   def setup
     super
-    stub_http_request(:get, "https://api.twitter.com/1/statuses/home_timeline.json?count=20&page=1").to_return(:body => fixture("home.json"))
+    stub_http_request(:get, "https://api.twitter.com/1/statuses/home_timeline.json?count=20&page=1").to_return(:body => fixture_file('home.json'))
   end
 
   Scenario "with colorization disabled" do

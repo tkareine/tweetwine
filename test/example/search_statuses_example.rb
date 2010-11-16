@@ -9,7 +9,7 @@ Feature "search tweets" do
 
   SEARCH_OR_URL = "http://search.twitter.com/search.json?q=braid%20game&rpp=2&page=1"
   SEARCH_AND_URL = "http://search.twitter.com/search.json?q=braid%20OR%20game&rpp=2&page=1"
-  SEARCH_FIXTURE = fixture("search.json")
+  SEARCH_FIXTURE = fixture_file('search.json')
 
   Scenario "search words" do
     When "I start the application with command 'search' and search words" do

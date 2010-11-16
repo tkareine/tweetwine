@@ -9,7 +9,7 @@ Feature "show followers" do
 
   Scenario "show followers" do
     When "I start the application with 'followers' command" do
-      stub_http_request(:get, "https://api.twitter.com/1/statuses/followers.json?count=20&page=1").to_return(:body => fixture("users.json"))
+      stub_http_request(:get, "https://api.twitter.com/1/statuses/followers.json?count=20&page=1").to_return(:body => fixture_file('users.json'))
       @output = start_cli %w{followers}
     end
 

@@ -15,8 +15,14 @@ module Tweetwine
         File.stat(file).mode & 0777
       end
 
-      def fixture_file(filename)
+      def fixture_path(filename)
         File.dirname(__FILE__) << "/fixture/" << filename
+      end
+
+      def fixture_file(filename)
+        File.open(fixture_path(filename)) do |f|
+          f.readlines.join("\n")
+        end
       end
 
       def tmp_env(vars = {})

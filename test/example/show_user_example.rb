@@ -8,7 +8,7 @@ Feature "show user's tweets" do
   i_want_to "see that user's tweets"
 
   USER_URL = "https://api.twitter.com/1/statuses/user_timeline.json?count=20&page=1&screen_name=%s"
-  USER_FIXTURE = fixture("user.json")
+  USER_FIXTURE = fixture_file('user.json')
 
   Scenario "show my tweets" do
     When "I start the application with 'user' command without extra arguments" do

@@ -147,7 +147,7 @@ Usage: tweetwine help [<command>]
       stub_http_request(METHOD, ACCESS_TOKEN_URL).to_return(:body => ACCESS_TOKEN_RESPONSE)
       stub_http_request(:get, @command_url).
           to_return(:status => [401, 'Unauthorized']).then.
-          to_return(:body => fixture("home.json"))
+          to_return(:body => fixture_file('home.json'))
       @output = nil
       @config_contents = nil
       @config_mode = nil
