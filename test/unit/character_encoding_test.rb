@@ -5,7 +5,7 @@ require "unit_helper"
 module Tweetwine::Test
 
 class CharacterEncodingTest < UnitTestCase
-  if "".respond_to?(:encode)
+  if defined? Encoding
     context "when transcoding to UTF-8 when String supports encoding" do
       should "transcode string to UTF-8" do
         str_utf8 = "groß résumé"

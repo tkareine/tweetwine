@@ -100,7 +100,7 @@ Feature "update my status (send new tweet)" do
     end
   end
 
-  if "".respond_to?(:encode)
+  if defined? Encoding
     Scenario "encode status in UTF-8 (String supports encoding)" do
       When "I start the application with 'update' command, input latin1 encoded status, and confirm" do
         @status_utf8 = "résumé"

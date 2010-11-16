@@ -263,7 +263,7 @@ class ClientTest < UnitTestCase
         @twitter.update(long_status)
       end
 
-      if "".respond_to?(:encode)
+      if defined? Encoding
         should "encode status in UTF-8 (String supports encoding)" do
           status_utf8, status_latin1 = "résumé", "résumé".encode('ISO-8859-1')
           twitter_records, internal_records = create_test_twitter_status_records_from_rest_api({

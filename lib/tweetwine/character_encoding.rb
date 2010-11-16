@@ -3,7 +3,7 @@
 module Tweetwine
   class CharacterEncoding
     class << self
-      if "".respond_to?(:encode)
+      if defined? Encoding
         def to_utf8(str)
           result = str.encode('UTF-8')
           raise TranscodeError, "invalid UTF-8 byte sequence when transcoding '#{str}'" unless result.valid_encoding?
