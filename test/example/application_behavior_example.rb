@@ -35,7 +35,7 @@ Feature "application behavior" do
 
       Then "the application shows help and exists with success status" do
         @output.should == <<-END
-A simple but tasty Twitter agent for command line use, made for fun.
+Tweetwine shows the latest tweets from the command line quickly.
 
 Usage: #{CLI::EXEC_NAME} [global_options...] [<command>] [command_options...]
 

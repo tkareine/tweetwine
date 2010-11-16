@@ -238,7 +238,7 @@ Usage: #{CLI::EXEC_NAME} #{name} #{usage}
         sort     { |a, b| a.first.to_s <=> b.first.to_s }.
         map      { |cmd, klass| [cmd, klass.about] }
       CLI.ui.info <<-END
-A simple but tasty Twitter agent for command line use, made for fun.
+Tweetwine shows the latest tweets from the command line quickly.
 
 Usage: #{CLI::EXEC_NAME} [global_options...] [<command>] [command_options...]
 
