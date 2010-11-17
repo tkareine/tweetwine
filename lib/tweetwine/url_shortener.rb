@@ -44,7 +44,7 @@ module Tweetwine
         params = @extra_params.merge({ @url_param_name.to_sym => url_to_shorten })
         [service_url, params]
       else
-        raise "Unrecognized HTTP request method; should have been supported"
+        raise "Unrecognized HTTP request method #{@method}; should have been supported"
       end
     end
   end
