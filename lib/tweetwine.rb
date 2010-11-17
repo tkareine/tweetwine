@@ -9,7 +9,7 @@ end unless defined? JSON
 gem 'oauth', '~> 0.4.4'
 
 module Tweetwine
-  VERSION = '0.3.1'.freeze
+  VERSION = '0.3.2'.freeze
 
   class << self
     def version

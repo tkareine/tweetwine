@@ -1,3 +1,9 @@
+=== 0.3.2 released 2010-11-17
+
+* Drop <tt>json</tt> gem dependency from gemspec in order to allow the user to
+  choose the JSON parser implementation
+* Minor cleanups
+
 === 0.3.1 released 2010-11-14
 
 * Fix regression bug: shorten HTTPS URLs also
