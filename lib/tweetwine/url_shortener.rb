@@ -3,7 +3,8 @@
 module Tweetwine
   class UrlShortener
     def initialize(options)
-      raise "UrlShortener should be disabled" if options[:disable]
+      raise 'UrlShortener should be disabled' if options[:disable]
+      require 'nokogiri'
       @method = (options[:method] || :get).to_sym
       unless [:get, :post].include? @method
         raise CommandLineError, "Unsupported HTTP request method for URL shortening: #{@method}"
@@ -20,7 +21,6 @@ module Tweetwine
     end
 
     def shorten(url)
-      require "nokogiri"
       response = CLI.http.send(@method, *get_service_url_and_params(url))
       doc = Nokogiri::HTML(response)
       doc.xpath(@xpath_selector).first.to_s

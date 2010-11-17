@@ -447,6 +447,7 @@ class ClientTest < UnitTestCase
           end
 
           should "skip shortening URLs if required libraries are not found" do
+            Tweetwine::CLI.stubs(:url_shortener).raises(LoadError, 'gem not found')
             @oauth.expects(:request_signer)
             http_subresource = mock
             http_subresource.expects(:post).
@@ -455,7 +456,6 @@ class ClientTest < UnitTestCase
             @rest_api.expects(:[]).
                 with("statuses/update.json").
                 returns(http_subresource)
-            @url_shortener.expects(:shorten).with(@url).raises(LoadError, "gem not found")
             @ui.expects(:warn)
             @ui.expects(:show_status_preview).with(@status)
             @ui.expects(:confirm).with("Really send?").returns(true)
