@@ -1,7 +1,7 @@
 source :rubygems
 
 gem 'json',     '>= 1.0.0', :platforms => [:ruby_18, :jruby]
-gem 'nokogiri', '~> 1.4.3'
+gem 'nokogiri', '~> 1.4.4'
 gem 'oauth',    '~> 0.4.4'
 
 group :test do
