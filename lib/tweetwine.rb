@@ -11,6 +11,16 @@ gem 'oauth', '~> 0.4.4'
 module Tweetwine
   VERSION = '0.3.1'.freeze
 
+  class << self
+    def version
+      VERSION
+    end
+
+    def summary
+      'Tweetwine shows the latest tweets from the command line quickly.'
+    end
+  end
+
   class Error < StandardError
     @status_code = 42
 

@@ -5,7 +5,7 @@ require 'rake/clean'
 $LOAD_PATH.unshift(File.expand_path('lib', File.dirname(__FILE__)))
 name = 'tweetwine'
 require name
-version = Tweetwine::VERSION.dup
+version = Tweetwine.version.dup
 
 namespace :gem do
   CLOBBER.include "#{name}-*.gem"

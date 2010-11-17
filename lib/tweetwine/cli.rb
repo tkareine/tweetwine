@@ -238,7 +238,7 @@ Usage: #{CLI::EXEC_NAME} #{name} #{usage}
         sort     { |a, b| a.first.to_s <=> b.first.to_s }.
         map      { |cmd, klass| [cmd, klass.about] }
       CLI.ui.info <<-END
-Tweetwine shows the latest tweets from the command line quickly.
+#{Tweetwine.summary}
 
 Usage: #{CLI::EXEC_NAME} [global_options...] [<command>] [command_options...]
 
@@ -372,7 +372,7 @@ Usage: #{CLI::EXEC_NAME} [global_options...] [<command>] [command_options...]
     about "Show program version and exit."
 
     def run
-      CLI.ui.info "tweetwine #{Tweetwine::VERSION}"
+      CLI.ui.info "tweetwine #{Tweetwine.version}"
     end
   end
 end
