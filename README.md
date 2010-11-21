@@ -128,4 +128,4 @@ Tweetwine is copyright &copy; 2009-2010 Tuomas Kareinen. See `LICENSE.txt`.
 
 ## SEE ALSO
 
-<https://github.com/tuomas/tweetwine>
+<https://github.com/tkareine/tweetwine>

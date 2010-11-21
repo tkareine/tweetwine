@@ -17,7 +17,7 @@ showing the latest tweets.
   END
 
   s.email = 'tkareine@gmail.com'
-  s.homepage = 'https://github.com/tuomas/tweetwine'
+  s.homepage = 'https://github.com/tkareine/tweetwine'
 
   s.authors = ['Tuomas Kareinen']
 
