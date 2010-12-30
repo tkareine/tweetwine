@@ -1,3 +1,5 @@
+# coding: utf-8
+
 module Tweetwine
   VERSION = '0.3.2'.freeze
 
