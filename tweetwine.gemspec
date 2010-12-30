@@ -20,19 +20,9 @@ showing the latest tweets.
 
   s.authors = ['Tuomas Kareinen']
 
-  s.executables = %w{tweetwine}
-  s.files = Dir[
-    '*.md',
-    '*.rdoc',
-    'LICENSE.txt',
-    'Gemfile',
-    'Rakefile',
-    'tweetwine.gemspec',
-    '{bin,contrib,lib}/**/*',
-    'man/**/*.[1-9]',
-    'man/**/*.ronn'
-  ]
-  s.test_files = Dir['test/**/*']
+  s.files = `git ls-files`.split("\n") + Dir['man/**/*.[1-9]']
+  s.test_files = `git ls-files -- {test,spec,features}/*`.split("\n")
+  s.executables = `git ls-files -- bin/*`.split("\n").map { |f| File.basename(f) }
 
   s.add_dependency 'oauth', '~> 0.4.4'
   s.add_development_dependency 'contest',       '~> 0.1.2'
