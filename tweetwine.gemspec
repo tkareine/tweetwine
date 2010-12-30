@@ -2,15 +2,14 @@
 
 $LOAD_PATH.unshift(File.expand_path('lib', File.dirname(__FILE__)))
 name = 'tweetwine'
-require name
-summary = Tweetwine.summary
-version = Tweetwine.version.dup
+require "#{name}/version"
+version = Tweetwine.version
 
 Gem::Specification.new do |s|
   s.name = name
-  s.version = version
+  s.version = version.dup
 
-  s.summary = summary
+  s.summary = Tweetwine.summary
   s.description = <<-END
 A simple but tasty Twitter agent for command line use, designed for quickly
 showing the latest tweets.

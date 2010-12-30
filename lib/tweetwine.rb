@@ -8,19 +8,9 @@ end unless defined? JSON
 
 gem 'oauth', '~> 0.4.4'
 
+require 'tweetwine/version'
+
 module Tweetwine
-  VERSION = '0.3.2'.freeze
-
-  class << self
-    def version
-      VERSION
-    end
-
-    def summary
-      'Tweetwine shows the latest tweets from the command line quickly.'
-    end
-  end
-
   class Error < StandardError
     @status_code = 42
 
