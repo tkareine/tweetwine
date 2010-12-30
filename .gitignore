@@ -1,5 +1,6 @@
 /*.gem
 /.bundle/
+/Gemfile.lock
 /coverage/
 /man/
 !/man/*.ronn
