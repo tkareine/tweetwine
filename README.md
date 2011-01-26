@@ -124,7 +124,7 @@ snippet to your Bash initialization script (such as `~/.bashrc`):
 
 ## COPYRIGHT
 
-Tweetwine is copyright &copy; 2009-2010 Tuomas Kareinen. See `LICENSE.txt`.
+Tweetwine is copyright &copy; 2009-2011 Tuomas Kareinen. See `LICENSE.txt`.
 
 ## SEE ALSO
 
