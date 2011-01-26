@@ -14,13 +14,9 @@ class HttpTest < UnitTestCase
   PAYLOAD = {:msg => 'gloomy night'}
 
   setup do
-    stub_sleep
     mock_ui
     @client = Http::Client.new
-  end
-
-  teardown do
-    restore_sleep
+    def @client.sleep(*args); end   # speed up tests
   end
 
   %w{http https}.each do |scheme|
@@ -176,22 +172,6 @@ class HttpTest < UnitTestCase
         news_resource.get(CUSTOM_HEADERS)
         assert_requested(:get, expected_url, :headers => CUSTOM_HEADERS)
       end
-    end
-  end
-
-  private
-
-  def stub_sleep
-    Kernel.class_eval do
-      alias_method :__original_sleep, :sleep
-      define_method(:sleep) { |*args| }
-    end
-  end
-
-  def restore_sleep
-    Kernel.class_eval do
-      remove_method :sleep
-      alias_method :sleep, :__original_sleep
     end
   end
 end
