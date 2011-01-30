@@ -186,7 +186,7 @@ class ConfigTest < UnitTestCase
       end
 
       teardown do
-        FileUtils.remove_entry_secure @tmp_dir
+        FileUtils.rm_rf @tmp_dir
       end
 
       should "ignore nonexisting config file for initial read" do
