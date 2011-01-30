@@ -137,10 +137,10 @@ module Tweetwine
       show_records(
         responses,
         {
-          :from_user  => ["user", "screen_name"],
-          :to_user    => "in_reply_to_screen_name",
-          :created_at => "created_at",
-          :status     => "text"
+          :from_user  => %w{user screen_name},
+          :to_user    => 'in_reply_to_screen_name',
+          :created_at => 'created_at',
+          :status     => 'text'
         }
       )
     end
@@ -149,10 +149,10 @@ module Tweetwine
       show_records(
         responses,
         {
-          :from_user  => "screen_name",
-          :to_user    => ["status", "in_reply_to_screen_name"],
-          :created_at => ["status", "created_at"],
-          :status     => ["status", "text"]
+          :from_user  => 'screen_name',
+          :to_user    => %w{status in_reply_to_screen_name},
+          :created_at => %w{status created_at},
+          :status     => %w{status text}
         }
       )
     end
@@ -161,10 +161,10 @@ module Tweetwine
       show_records(
         responses,
         {
-          :from_user  => "from_user",
-          :to_user    => "to_user",
-          :created_at => "created_at",
-          :status     => "text"
+          :from_user  => 'from_user',
+          :to_user    => 'to_user',
+          :created_at => 'created_at',
+          :status     => 'text'
         }
       )
     end

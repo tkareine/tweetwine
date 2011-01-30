@@ -99,8 +99,8 @@ module Tweetwine
     end
 
     def pluralize_unit(value, unit)
-      if ["hour", "day"].include?(unit) && value > 1
-        unit = unit + "s"
+      if %w{hour day}.include?(unit) && value > 1
+        unit = unit + 's'
       end
       unit
     end
