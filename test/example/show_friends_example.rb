@@ -3,9 +3,9 @@
 require "example_helper"
 
 Feature "show friends" do
-  in_order_to "to see who I follow"
   as_a "authenticated user"
   i_want_to "see my friends"
+  in_order_to "to see who I follow"
 
   Scenario "show friends" do
     When "I start the application with 'followers' command" do

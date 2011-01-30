@@ -3,9 +3,9 @@
 require "example_helper"
 
 Feature "using HTTP proxy" do
-  in_order_to "tweet behind an HTTP proxy"
   as_a "authenticated user"
-  i_want_to "tweet as before"
+  i_want_to "use HTTP proxy"
+  in_order_to "tweet behind a firewall"
 
   def setup
     super

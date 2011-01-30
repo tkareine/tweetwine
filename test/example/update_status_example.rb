@@ -4,9 +4,9 @@ require "example_helper"
 require "yaml"
 
 Feature "update my status (send new tweet)" do
-  in_order_to "tell something about me to the world"
   as_a "authenticated user"
   i_want_to "update my status"
+  in_order_to "tell something about me to the world"
 
   RUBYGEMS_FIXTURE = fixture_file('shorten_rubygems.html')
   RUBYGEMS_FULL_URL = 'http://rubygems.org/'

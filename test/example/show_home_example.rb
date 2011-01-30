@@ -3,9 +3,9 @@
 require "example_helper"
 
 Feature "show tweets from home timeline" do
-  in_order_to "stay up-to-date of other people's doings"
   as_a "authenticated user"
   i_want_to "see my home timeline"
+  in_order_to "stay up-to-date of other people's doings"
 
   def setup
     super

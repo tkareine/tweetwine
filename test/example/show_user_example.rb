@@ -3,9 +3,9 @@
 require "example_helper"
 
 Feature "show user's tweets" do
-  in_order_to "to see what's going on with a specific user"
   as_a "authenticated user"
-  i_want_to "see that user's tweets"
+  i_want_to "see a specific user's tweets"
+  in_order_to "to know what the user has been doing"
 
   USER_URL = "https://api.twitter.com/1/statuses/user_timeline.json?count=20&page=1&screen_name=%s"
   USER_FIXTURE = fixture_file('user.json')

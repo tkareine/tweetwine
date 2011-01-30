@@ -3,9 +3,9 @@
 require "example_helper"
 
 Feature "show tweets mentioning the user" do
-  in_order_to "know if someone has mentioned me"
   as_a "authenticated user"
-  i_want_to "see the tweets mentioning me"
+  i_want_to "see tweets mentioning me"
+  in_order_to "know if someone has replied or otherwise mentioned me"
 
   Scenario "show tweets mentioning me" do
     When "I start the application with 'mentions' command" do

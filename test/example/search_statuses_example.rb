@@ -3,9 +3,9 @@
 require "example_helper"
 
 Feature "search tweets" do
-  in_order_to "search statuses"
   as_a "authenticated user"
-  i_want_to "see tweets matching the search"
+  i_want_to "search tweets"
+  in_order_to "see discussion about a specific topic"
 
   SEARCH_OR_URL = "http://search.twitter.com/search.json?q=braid%20game&rpp=2&page=1"
   SEARCH_AND_URL = "http://search.twitter.com/search.json?q=braid%20OR%20game&rpp=2&page=1"

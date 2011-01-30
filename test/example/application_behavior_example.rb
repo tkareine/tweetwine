@@ -6,9 +6,9 @@ require "fixture/oauth"
 include Tweetwine::Test::Fixture::OAuth
 
 Feature "application behavior" do
-  in_order_to "know about the application"
   as_a "user"
-  i_want_to "see helpful messages"
+  i_want_to "see usage help"
+  in_order_to "know how to use the application"
 
   %w{-v version ver v}.each do |arg|
     Scenario "show version with '#{arg}'" do
