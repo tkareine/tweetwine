@@ -16,22 +16,34 @@ module Tweetwine::Test
     # The method sorts +expected+ and +actual+ in order to compare them. By
     # default, this sorting is done by calling #sort for each of them. If the
     # method is called with a block, it is passed to the #sort calls.
-    def assert_contains_exactly(expected, actual, msg = '', &sorter)
+    def assert_contains_exactly(expected, actual, msg = nil, &sorter)
       expected = block_given? ? expected.sort(&sorter) : expected.sort
       actual   = block_given? ? actual.sort(&sorter)   : actual.sort
-      assert_equal(expected, actual, msg)
+      assert_equal(expected, actual, get_message(msg) {
+        'after sorting, collection %s is not equal to %s' % [expected.inspect, actual.inspect]
+      })
     end
 
     # Fails unless +str+ is a full match to +regex+.
-    def assert_full_match(regex, str, msg = '')
+    def assert_full_match(regex, str, msg = nil)
       match_data = regex.match(str)
-      assert(str == match_data.to_s, msg)
+      assert(str == match_data.to_s, get_message(msg) {
+        '%s is not a full match to %s' % [str, regex.inspect]
+      })
     end
 
     # Fails if +str+ is a full match to +regex+.
-    def assert_no_full_match(regex, str, msg = '')
+    def assert_no_full_match(regex, str, msg = nil)
       match_data = regex.match(str)
-      assert(str != match_data.to_s, msg)
+      assert(str != match_data.to_s, get_message(msg) {
+        '%s is a full match to %s' % [str, regex.inspect]
+      })
+    end
+
+    private
+
+    def get_message(given, &default)
+      given.nil? ? default.call : given
     end
   end
 
