@@ -11,8 +11,8 @@ module Tweetwine
     attr_reader :num_statuses, :page, :username
 
     def initialize(options = {})
-      @num_statuses = Util.parse_int_gt(options[:num_statuses], DEFAULT_NUM_STATUSES, 1, "number of statuses to show")
-      @page         = Util.parse_int_gt(options[:page], DEFAULT_PAGE_NUM, 1, "page number")
+      @num_statuses = Support.parse_int_gt(options[:num_statuses], DEFAULT_NUM_STATUSES, 1, "number of statuses to show")
+      @page         = Support.parse_int_gt(options[:page], DEFAULT_PAGE_NUM, 1, "page number")
       @username     = options[:username].to_s
     end
 
@@ -113,7 +113,7 @@ module Tweetwine
     end
 
     def get_from_search_api(query, params = common_search_api_query_params)
-      query = "q=#{Util.percent_encode(query)}&" << format_query_params(params)
+      query = "q=#{Support.percent_encode(query)}&" << format_query_params(params)
       JSON.parse search_api["search.json?#{query}"].get
     end
 
@@ -172,7 +172,7 @@ module Tweetwine
     def show_records(twitter_records, paths)
       twitter_records.each do |twitter_record|
         internal_record = [ :from_user, :to_user, :created_at, :status ].inject({}) do |result, key|
-          result[key] = Util.find_hash_path(twitter_record, paths[key])
+          result[key] = Support.find_hash_path(twitter_record, paths[key])
           result
         end
         CLI.ui.show_record(internal_record)
@@ -180,7 +180,7 @@ module Tweetwine
     end
 
     def create_status_update(status)
-      status = if Util.blank? status
+      status = if Support.blank? status
         CLI.ui.prompt("Status update")
       else
         status.dup
@@ -196,7 +196,7 @@ module Tweetwine
           extract(status, %w{http https}).
           uniq.
           map { |full_url| [full_url, CLI.url_shortener.shorten(full_url)] }.
-          reject { |(full_url, short_url)| Util.blank? short_url }
+          reject { |(full_url, short_url)| Support.blank? short_url }
       url_pairs.each { |(full_url, short_url)| status.gsub!(full_url, short_url) }
     rescue HttpError, LoadError => e
       CLI.ui.warn "#{e}\nSkipping URL shortening..."

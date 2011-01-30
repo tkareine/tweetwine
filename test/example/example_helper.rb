@@ -48,7 +48,7 @@ module Tweetwine::Test
     end
 
     def read_shorten_config
-      Util.symbolize_hash_keys(YAML.load_file(CONFIG_FILE))[:shorten_urls]
+      Support.symbolize_hash_keys(YAML.load_file(CONFIG_FILE))[:shorten_urls]
     end
   end
 end

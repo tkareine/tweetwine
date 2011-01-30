@@ -5,7 +5,7 @@ require "time"
 require "uri"
 
 module Tweetwine
-  module Util
+  module Support
     extend self
 
     def blank?(str)

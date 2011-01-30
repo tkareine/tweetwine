@@ -6,8 +6,8 @@ require "time"
 
 module Tweetwine::Test
 
-class UtilTest < UnitTestCase
-  include Util
+class SupportTest < UnitTestCase
+  include Support
 
   context "for checking whether a string is blank" do
     should("return true for nil")               { assert blank?(nil)  }

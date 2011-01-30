@@ -102,7 +102,7 @@ module Tweetwine
     end
 
     def format_status(status)
-      status = Util.unescape_html(status)
+      status = Support.unescape_html(status)
       if @colors
         status = colorize_matching(:yellow, status, USERNAME_REGEX)
         status = colorize_matching(:magenta, status, HASHTAG_REGEX)
@@ -112,7 +112,7 @@ module Tweetwine
     end
 
     def format_record_header(from_user, to_user, created_at)
-      time_diff_value, time_diff_unit = Util.humanize_time_diff(created_at, Time.now)
+      time_diff_value, time_diff_unit = Support.humanize_time_diff(created_at, Time.now)
       if @colors
         from_user = colorize(:green, from_user)
         to_user = colorize(:green, to_user) if to_user
@@ -133,7 +133,7 @@ module Tweetwine
       else
         raise "unknown kind of pattern"
       end
-      Util.str_gsub_by_group(str, regexp) { |s| colorize(color, s) }
+      Support.str_gsub_by_group(str, regexp) { |s| colorize(color, s) }
     end
 
     def colorize(color, str)

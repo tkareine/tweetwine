@@ -74,8 +74,8 @@ module Tweetwine
   autoload :Obfuscate,          "#{lib_path}/tweetwine/obfuscate"
   autoload :OptionParser,       "#{lib_path}/tweetwine/option_parser"
   autoload :Promise,            "#{lib_path}/tweetwine/promise"
+  autoload :Support,            "#{lib_path}/tweetwine/support"
   autoload :Twitter,            "#{lib_path}/tweetwine/twitter"
   autoload :UI,                 "#{lib_path}/tweetwine/ui"
   autoload :UrlShortener,       "#{lib_path}/tweetwine/url_shortener"
-  autoload :Util,               "#{lib_path}/tweetwine/util"
 end

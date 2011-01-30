@@ -89,7 +89,7 @@ class UITest < UnitTestCase
           :created_at => Time.at(1),
           :to_user    => nil
         }
-        Util.expects(:humanize_time_diff).returns([2, "secs"])
+        Support.expects(:humanize_time_diff).returns([2, "secs"])
         @out.expects(:puts).with(<<-END
 #{from_user}, 2 secs ago:
 #{status}
@@ -109,7 +109,7 @@ class UITest < UnitTestCase
           :created_at => Time.at(1),
           :to_user    => to_user
         }
-        Util.expects(:humanize_time_diff).returns([2, "secs"])
+        Support.expects(:humanize_time_diff).returns([2, "secs"])
         @out.expects(:puts).with(<<-END
 #{from_user}, in reply to #{to_user}, 2 secs ago:
 #{status}
@@ -130,7 +130,7 @@ class UITest < UnitTestCase
           :created_at => Time.at(1),
           :to_user    => nil
         }
-        Util.expects(:humanize_time_diff).returns([2, "secs"])
+        Support.expects(:humanize_time_diff).returns([2, "secs"])
         @out.expects(:puts).with(<<-END
 #{from_user}, 2 secs ago:
 #{unescaped_status}
@@ -177,7 +177,7 @@ class UITest < UnitTestCase
           :created_at => Time.at(1),
           :to_user    => nil
         }
-        Util.expects(:humanize_time_diff).returns([2, "secs"])
+        Support.expects(:humanize_time_diff).returns([2, "secs"])
         @out.expects(:puts).with(<<-END
 \e[32m#{from_user}\e[0m, 2 secs ago:
 #{status}
@@ -196,7 +196,7 @@ class UITest < UnitTestCase
           :created_at => Time.at(1),
           :to_user    => to_user
         }
-        Util.expects(:humanize_time_diff).returns([2, "secs"])
+        Support.expects(:humanize_time_diff).returns([2, "secs"])
         @out.expects(:puts).with(<<-END
 \e[32m#{from_user}\e[0m, in reply to \e[32m#{to_user}\e[0m, 2 secs ago:
 \e[33m@#{to_user}\e[0m! How are you doing?
@@ -226,7 +226,7 @@ class UITest < UnitTestCase
           :created_at => Time.at(1),
           :to_user    => nil
         }
-        Util.expects(:humanize_time_diff).returns([2, "secs"])
+        Support.expects(:humanize_time_diff).returns([2, "secs"])
         @out.expects(:puts).with(<<-END
 \e[32m#{from_user}\e[0m, 2 secs ago:
 Lulz, so happy! \e[35m#{hashtags[0]}\e[0m \e[35m#{hashtags[1]}\e[0m
@@ -245,7 +245,7 @@ Lulz, so happy! \e[35m#{hashtags[0]}\e[0m \e[35m#{hashtags[1]}\e[0m
             :created_at => Time.at(1),
             :to_user    => nil
           }
-          Util.expects(:humanize_time_diff).returns([2, "secs"])
+          Support.expects(:humanize_time_diff).returns([2, "secs"])
           @out.expects(:puts).with(<<-END
 \e[32m#{from_user}\e[0m, 2 secs ago:
 New Rails³ - \e[36m#{url}\e[0m
@@ -268,7 +268,7 @@ New Rails³ - \e[36m#{url}\e[0m
             :created_at => Time.at(1),
             :to_user    => nil
           }
-          Util.expects(:humanize_time_diff).returns([2, "secs"])
+          Support.expects(:humanize_time_diff).returns([2, "secs"])
           @out.expects(:puts).with(<<-END
 \e[32m#{from_user}\e[0m, 2 secs ago:
 Links: \e[36m#{first_url}\e[0m and \e[36m#{second_url}\e[0m np
@@ -288,7 +288,7 @@ Links: \e[36m#{first_url}\e[0m and \e[36m#{second_url}\e[0m np
           :created_at => Time.at(1),
           :to_user    => nil
         }
-        Util.expects(:humanize_time_diff).returns([2, "secs"])
+        Support.expects(:humanize_time_diff).returns([2, "secs"])
         @out.expects(:puts).with(<<-END
 \e[32m#{from_user}\e[0m, 2 secs ago:
 I salute you \e[33m#{users[0]}\e[0m, \e[33m#{users[1]}\e[0m, and \e[33m#{users[2]}\e[0m!
@@ -308,7 +308,7 @@ I salute you \e[33m#{users[0]}\e[0m, \e[33m#{users[1]}\e[0m, and \e[33m#{users[2
           :created_at => Time.at(1),
           :to_user    => nil
         }
-        Util.expects(:humanize_time_diff).returns([2, "secs"])
+        Support.expects(:humanize_time_diff).returns([2, "secs"])
         @out.expects(:puts).with(<<-END
 \e[32m#{from_user}\e[0m, 2 secs ago:
 Hi, \e[33m#{users[0]}\e[0m! You should notify \e[33m#{users[1]}\e[0m, #{email}
