@@ -74,7 +74,7 @@ module Tweetwine
       end
 
       def requesting(url)
-        uri = URI.parse(url)
+        uri = Uri.parse(url)
         connection = @http.new(uri.host, uri.port)
         configure_for_ssl(connection) if https_scheme?(uri)
         response = yield connection, uri

@@ -78,5 +78,6 @@ module Tweetwine
   autoload :Tweet,              "#{lib_path}/tweetwine/tweet"
   autoload :Twitter,            "#{lib_path}/tweetwine/twitter"
   autoload :UI,                 "#{lib_path}/tweetwine/ui"
+  autoload :Uri,                "#{lib_path}/tweetwine/uri"
   autoload :UrlShortener,       "#{lib_path}/tweetwine/url_shortener"
 end

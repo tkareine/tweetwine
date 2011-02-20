@@ -132,7 +132,7 @@ module Tweetwine
     end
 
     def get_from_search_api(query, params = common_search_api_query_params)
-      query = "q=#{Support.percent_encode(query)}&" << format_query_params(params)
+      query = "q=#{Uri.percent_encode(query)}&" << format_query_params(params)
       JSON.parse search_api["search.json?#{query}"].get
     end
 
@@ -183,7 +183,7 @@ module Tweetwine
     end
 
     def shorten_urls_in(status)
-      url_pairs = URI.
+      url_pairs = Uri.
           extract(status, %w{http https}).
           uniq.
           map { |full_url| [full_url, CLI.url_shortener.shorten(full_url)] }.

@@ -1,7 +1,5 @@
 # coding: utf-8
 
-require "uri"
-
 module Tweetwine
   class UI
     COLOR_CODES = {
@@ -92,7 +90,7 @@ module Tweetwine
       if @colors
         status = colorize_matching(:yellow,   status, USERNAME_REGEX)
         status = colorize_matching(:magenta,  status, HASHTAG_REGEX)
-        status = colorize_matching(:cyan,     status, URI.extract(status, %w{http https}).uniq)
+        status = colorize_matching(:cyan,     status, Uri.extract(status, %w{http https}).uniq)
       end
       status
     end

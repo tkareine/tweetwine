@@ -1,8 +1,7 @@
 # coding: utf-8
 
-require "cgi"
-require "time"
-require "uri"
+require 'cgi'
+require 'time'
 
 module Tweetwine
   module Support
@@ -79,10 +78,6 @@ module Tweetwine
         dup_pos += skip_delta
       end
       dup_str
-    end
-
-    def percent_encode(str)
-      URI.escape(str.to_s, /[^#{URI::PATTERN::UNRESERVED}]/)
     end
 
     def unescape_html(str)
