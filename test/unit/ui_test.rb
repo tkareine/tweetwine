@@ -1,10 +1,13 @@
 # coding: utf-8
 
-require "unit_helper"
+require 'unit_helper'
+require 'tweet_helper'
 
 module Tweetwine::Test
 
 class UITest < UnitTestCase
+  include TweetHelper
+
   context "a UI instance" do
     setup do
       @in  = mock
@@ -69,26 +72,24 @@ class UITest < UnitTestCase
         @ui = UI.new({:in => @in, :out => @out, :colors => false })
       end
 
-      should "output a record as user info when no status is given" do
+      should "output tweet with just user info" do
         from_user = "fooman"
-        record = { :from_user => from_user }
+        tweet = create_tweet(:from_user => from_user)
         @out.expects(:puts).with(<<-END
 #{from_user}
 
         END
         )
-        @ui.show_record(record)
+        @ui.show_tweet(tweet)
       end
 
-      should "output a record as status info when status is given, without in-reply info" do
+      should "output regular tweet" do
         from_user = "fooman"
         status = "Hi, @barman! Lulz woo! #hellos"
-        record = {
+        tweet = create_tweet(
           :from_user  => from_user,
-          :status     => status,
-          :created_at => Time.at(1),
-          :to_user    => nil
-        }
+          :status     => status
+        )
         Support.expects(:humanize_time_diff).returns([2, "secs"])
         @out.expects(:puts).with(<<-END
 #{from_user}, 2 secs ago:
@@ -96,19 +97,18 @@ class UITest < UnitTestCase
 
         END
         )
-        @ui.show_record(record)
+        @ui.show_tweet(tweet)
       end
 
-      should "output a record as status info when status is given, with in-reply info" do
+      should "output replying tweet" do
         from_user = "barman"
         to_user = "fooman"
-        status = "Hi, @fooman! How are you doing?"
-        record = {
+        status = "Hi, @#{to_user}! How are you doing?"
+        tweet = create_tweet(
           :from_user  => from_user,
           :status     => status,
-          :created_at => Time.at(1),
           :to_user    => to_user
-        }
+        )
         Support.expects(:humanize_time_diff).returns([2, "secs"])
         @out.expects(:puts).with(<<-END
 #{from_user}, in reply to #{to_user}, 2 secs ago:
@@ -116,20 +116,17 @@ class UITest < UnitTestCase
 
         END
         )
-        @ui.show_record(record)
+        @ui.show_tweet(tweet)
       end
-
 
       should "unescape HTML in a status" do
         from_user = "fooman"
         escaped_status = "apple &gt; orange &amp; grapefruit &lt; banana"
         unescaped_status = "apple > orange & grapefruit < banana"
-        record = {
+        tweet = create_tweet(
           :from_user  => from_user,
-          :status     => escaped_status,
-          :created_at => Time.at(1),
-          :to_user    => nil
-        }
+          :status     => escaped_status
+        )
         Support.expects(:humanize_time_diff).returns([2, "secs"])
         @out.expects(:puts).with(<<-END
 #{from_user}, 2 secs ago:
@@ -137,7 +134,7 @@ class UITest < UnitTestCase
 
         END
         )
-        @ui.show_record(record)
+        @ui.show_tweet(tweet)
       end
 
       should "output a preview of a status" do
@@ -157,26 +154,24 @@ class UITest < UnitTestCase
         @ui = UI.new({:in => @in, :out => @out, :colors => true})
       end
 
-      should "output a record as user info when no status is given" do
+      should "output tweet with just user info" do
         from_user = "fooman"
-        record = { :from_user => from_user }
+        tweet = create_tweet(:from_user => from_user)
         @out.expects(:puts).with(<<-END
 \e[32m#{from_user}\e[0m
 
         END
         )
-        @ui.show_record(record)
+        @ui.show_tweet(tweet)
       end
 
-      should "output a record as status info when status is given, without in-reply info" do
+      should "output regular tweet" do
         from_user = "fooman"
         status = "Wondering about the meaning of life."
-        record = {
+        tweet = create_tweet(
           :from_user  => from_user,
-          :status     => status,
-          :created_at => Time.at(1),
-          :to_user    => nil
-        }
+          :status     => status
+        )
         Support.expects(:humanize_time_diff).returns([2, "secs"])
         @out.expects(:puts).with(<<-END
 \e[32m#{from_user}\e[0m, 2 secs ago:
@@ -184,18 +179,17 @@ class UITest < UnitTestCase
 
         END
         )
-        @ui.show_record(record)
+        @ui.show_tweet(tweet)
       end
 
-      should "output a record as status info when status is given, with in-reply info" do
+      should "output replying tweet" do
         from_user = "barman"
         to_user = "fooman"
-        record = {
+        tweet = create_tweet(
           :from_user  => from_user,
           :status     => "@#{to_user}! How are you doing?",
-          :created_at => Time.at(1),
           :to_user    => to_user
-        }
+        )
         Support.expects(:humanize_time_diff).returns([2, "secs"])
         @out.expects(:puts).with(<<-END
 \e[32m#{from_user}\e[0m, in reply to \e[32m#{to_user}\e[0m, 2 secs ago:
@@ -203,7 +197,7 @@ class UITest < UnitTestCase
 
         END
         )
-        @ui.show_record(record)
+        @ui.show_tweet(tweet)
       end
 
       should "output a preview of a status" do
@@ -220,12 +214,10 @@ class UITest < UnitTestCase
       should "highlight hashtags in a status" do
         from_user = "barman"
         hashtags = %w{#slang #beignHappy}
-        record = {
+        tweet = create_tweet(
           :from_user  => from_user,
-          :status     => "Lulz, so happy! #{hashtags[0]} #{hashtags[1]}",
-          :created_at => Time.at(1),
-          :to_user    => nil
-        }
+          :status     => "Lulz, so happy! #{hashtags[0]} #{hashtags[1]}"
+        )
         Support.expects(:humanize_time_diff).returns([2, "secs"])
         @out.expects(:puts).with(<<-END
 \e[32m#{from_user}\e[0m, 2 secs ago:
@@ -233,18 +225,16 @@ Lulz, so happy! \e[35m#{hashtags[0]}\e[0m \e[35m#{hashtags[1]}\e[0m
 
         END
         )
-        @ui.show_record(record)
+        @ui.show_tweet(tweet)
       end
 
       %w{http://is.gd/1qLk3 http://is.gd/1qLk3?id=foo}.each do |url|
         should "highlight HTTP and HTTPS URLs in a status, given #{url}" do
           from_user = "barman"
-          record = {
+          tweet = create_tweet(
             :from_user  => from_user,
-            :status     => "New Rails³ - #{url}",
-            :created_at => Time.at(1),
-            :to_user    => nil
-          }
+            :status     => "New Rails³ - #{url}"
+          )
           Support.expects(:humanize_time_diff).returns([2, "secs"])
           @out.expects(:puts).with(<<-END
 \e[32m#{from_user}\e[0m, 2 secs ago:
@@ -252,7 +242,7 @@ New Rails³ - \e[36m#{url}\e[0m
 
           END
           )
-          @ui.show_record(record)
+          @ui.show_tweet(tweet)
         end
       end
 
@@ -262,12 +252,10 @@ New Rails³ - \e[36m#{url}\e[0m
       ].each do |(first_url, second_url)|
         should "highlight HTTP and HTTPS URLs in a status, given #{first_url} and #{second_url}" do
           from_user = "barman"
-          record = {
+          tweet = create_tweet(
             :from_user  => from_user,
-            :status     => "Links: #{first_url} and #{second_url} np",
-            :created_at => Time.at(1),
-            :to_user    => nil
-          }
+            :status     => "Links: #{first_url} and #{second_url} np"
+          )
           Support.expects(:humanize_time_diff).returns([2, "secs"])
           @out.expects(:puts).with(<<-END
 \e[32m#{from_user}\e[0m, 2 secs ago:
@@ -275,19 +263,17 @@ Links: \e[36m#{first_url}\e[0m and \e[36m#{second_url}\e[0m np
 
           END
           )
-          @ui.show_record(record)
+          @ui.show_tweet(tweet)
         end
       end
 
       should "highlight usernames in a status" do
         from_user = "barman"
         users = %w{@fooman @barbaz @spoonman}
-        record = {
+        tweet = create_tweet(
           :from_user  => from_user,
-          :status     => "I salute you #{users[0]}, #{users[1]}, and #{users[2]}!",
-          :created_at => Time.at(1),
-          :to_user    => nil
-        }
+          :status     => "I salute you #{users[0]}, #{users[1]}, and #{users[2]}!"
+        )
         Support.expects(:humanize_time_diff).returns([2, "secs"])
         @out.expects(:puts).with(<<-END
 \e[32m#{from_user}\e[0m, 2 secs ago:
@@ -295,19 +281,17 @@ I salute you \e[33m#{users[0]}\e[0m, \e[33m#{users[1]}\e[0m, and \e[33m#{users[2
 
         END
         )
-        @ui.show_record(record)
+        @ui.show_tweet(tweet)
       end
 
       should "not highlight email addresses as usernames in a status" do
         from_user = "barman"
         users = %w{@fooman @barbaz}
         email = "barbaz@foo.net"
-        record = {
+        tweet = create_tweet(
           :from_user  => from_user,
-          :status     => "Hi, #{users[0]}! You should notify #{users[1]}, #{email}",
-          :created_at => Time.at(1),
-          :to_user    => nil
-        }
+          :status     => "Hi, #{users[0]}! You should notify #{users[1]}, #{email}"
+        )
         Support.expects(:humanize_time_diff).returns([2, "secs"])
         @out.expects(:puts).with(<<-END
 \e[32m#{from_user}\e[0m, 2 secs ago:
@@ -315,7 +299,7 @@ Hi, \e[33m#{users[0]}\e[0m! You should notify \e[33m#{users[1]}\e[0m, #{email}
 
         END
         )
-        @ui.show_record(record)
+        @ui.show_tweet(tweet)
       end
     end
   end

@@ -51,91 +51,93 @@ class ClientTest < UnitTestCase
     end
 
     should "fetch friends' statuses (home view)" do
-      twitter_records, internal_records = create_test_twitter_status_records_from_rest_api(
+      twitter_records, internal_records = create_rest_api_status_records(
         {
           :from_user  => "zanzibar",
           :status     => "wassup?",
-          :created_at => Time.at(1).to_s,
+          :created_at => Time.at(1),
           :to_user    => nil
         },
         {
           :from_user  => "lulzwoo",
           :status     => "nuttin'",
-          :created_at => Time.at(1).to_s,
+          :created_at => Time.at(1),
           :to_user    => nil
-        })
+        }
+      )
       @oauth.expects(:request_signer)
       @rest_api.expects(:[]).
           with("statuses/home_timeline.json?#{@rest_api_status_query_str}").
           returns(stub(:get => twitter_records.to_json))
-      @ui.expects(:show_record).with(internal_records[0])
-      @ui.expects(:show_record).with(internal_records[1])
+      @ui.expects(:show_tweet).with(internal_records[0])
+      @ui.expects(:show_tweet).with(internal_records[1])
       @twitter.home
     end
 
     should "fetch mentions" do
-      twitter_records, internal_records = create_test_twitter_status_records_from_rest_api(
+      twitter_records, internal_records = create_rest_api_status_records(
         {
           :from_user  => "zanzibar",
           :status     => "wassup, @#{@username}?",
-          :created_at => Time.at(1).to_s,
+          :created_at => Time.at(1),
           :to_user    => @username
         },
         {
           :from_user  => "lulzwoo",
           :status     => "@#{@username}, doing nuttin'",
-          :created_at => Time.at(1).to_s,
+          :created_at => Time.at(1),
           :to_user    => @username
-        })
+        }
+      )
       @oauth.expects(:request_signer)
       @rest_api.expects(:[]).
           with("statuses/mentions.json?#{@rest_api_status_query_str}").
           returns(stub(:get => twitter_records.to_json))
-      @ui.expects(:show_record).with(internal_records[0])
-      @ui.expects(:show_record).with(internal_records[1])
+      @ui.expects(:show_tweet).with(internal_records[0])
+      @ui.expects(:show_tweet).with(internal_records[1])
       @twitter.mentions
     end
 
     should "fetch a specific user's statuses, when user is given as argument" do
       username = "spoonman"
-      twitter_records, internal_records = create_test_twitter_status_records_from_rest_api({
-          :from_user  => username,
-          :status     => "wassup?",
-          :created_at => Time.at(1).to_s,
-          :to_user    => nil
-        })
+      twitter_records, internal_records = create_rest_api_status_records({
+        :from_user  => username,
+        :status     => "wassup?",
+        :created_at => Time.at(1),
+        :to_user    => nil
+      })
       @oauth.expects(:request_signer)
       @rest_api.expects(:[]).
           with("statuses/user_timeline.json?#{@rest_api_status_query_str}&screen_name=#{username}").
           returns(stub(:get => twitter_records.to_json))
-      @ui.expects(:show_record).with(internal_records[0])
+      @ui.expects(:show_tweet).with(internal_records[0])
       @twitter.user(username)
     end
 
     should "fetch a specific user's statuses, with user being the authenticated user itself when given no argument" do
-      twitter_records, internal_records = create_test_twitter_status_records_from_rest_api({
-          :from_user  => @username,
-          :status     => "wassup?",
-          :created_at => Time.at(1).to_s,
-          :to_user    => nil
-        })
+      twitter_records, internal_records = create_rest_api_status_records({
+        :from_user  => @username,
+        :status     => "wassup?",
+        :created_at => Time.at(1),
+        :to_user    => nil
+      })
       @oauth.expects(:request_signer)
       @rest_api.expects(:[]).
           with("statuses/user_timeline.json?#{@rest_api_status_query_str}&screen_name=#{@username}").
           returns(stub(:get => twitter_records.to_json))
-      @ui.expects(:show_record).with(internal_records[0])
+      @ui.expects(:show_tweet).with(internal_records[0])
       @twitter.user
     end
 
     context "when posting status updates" do
       should "post a status update via argument, when positive confirmation" do
         status = "wondering around"
-        twitter_records, internal_records = create_test_twitter_status_records_from_rest_api({
-            :from_user  => @username,
-            :status     => status,
-            :created_at => Time.at(1).to_s,
-            :to_user    => nil
-          })
+        twitter_records, internal_records = create_rest_api_status_records({
+          :from_user  => @username,
+          :status     => status,
+          :created_at => Time.at(1),
+          :to_user    => nil
+        })
         @oauth.expects(:request_signer)
         http_subresource = mock
         http_subresource.expects(:post).
@@ -147,18 +149,18 @@ class ClientTest < UnitTestCase
         @ui.expects(:confirm).with("Really send?").returns(true)
         @ui.expects(:show_status_preview).with(status)
         @ui.expects(:info).with("Sent status update.\n\n")
-        @ui.expects(:show_record).with(internal_records[0])
+        @ui.expects(:show_tweet).with(internal_records[0])
         @twitter.update(status)
       end
 
       should "post a status update via prompt, when positive confirmation" do
         status = "wondering around"
-        twitter_records, internal_records = create_test_twitter_status_records_from_rest_api({
-            :from_user  => @username,
-            :status     => status,
-            :created_at => Time.at(1).to_s,
-            :to_user    => nil
-          })
+        twitter_records, internal_records = create_rest_api_status_records({
+          :from_user  => @username,
+          :status     => status,
+          :created_at => Time.at(1),
+          :to_user    => nil
+        })
         @oauth.expects(:request_signer)
         http_subresource = mock
         http_subresource.expects(:post).
@@ -171,7 +173,7 @@ class ClientTest < UnitTestCase
         @ui.expects(:show_status_preview).with(status)
         @ui.expects(:confirm).with("Really send?").returns(true)
         @ui.expects(:info).with("Sent status update.\n\n")
-        @ui.expects(:show_record).with(internal_records[0])
+        @ui.expects(:show_tweet).with(internal_records[0])
         @twitter.update
       end
 
@@ -181,7 +183,7 @@ class ClientTest < UnitTestCase
         @ui.expects(:show_status_preview).with(status)
         @ui.expects(:confirm).with("Really send?").returns(false)
         @ui.expects(:info).with("Cancelled.")
-        @ui.expects(:show_record).never
+        @ui.expects(:show_tweet).never
         @twitter.update(status)
       end
 
@@ -192,7 +194,7 @@ class ClientTest < UnitTestCase
         @ui.expects(:show_status_preview).with(status)
         @ui.expects(:confirm).with("Really send?").returns(false)
         @ui.expects(:info).with("Cancelled.")
-        @ui.expects(:show_record).never
+        @ui.expects(:show_tweet).never
         @twitter.update
       end
 
@@ -201,7 +203,7 @@ class ClientTest < UnitTestCase
         @ui.expects(:prompt).with("Status update").returns("")
         @ui.expects(:confirm).never
         @ui.expects(:info).with("Cancelled.")
-        @ui.expects(:show_record).never
+        @ui.expects(:show_tweet).never
         @twitter.update("")
       end
 
@@ -210,19 +212,19 @@ class ClientTest < UnitTestCase
         @ui.expects(:prompt).with("Status update").returns("")
         @ui.expects(:confirm).never
         @ui.expects(:info).with("Cancelled.")
-        @ui.expects(:show_record).never
+        @ui.expects(:show_tweet).never
         @twitter.update
       end
 
       should "remove excess whitespace around a status update" do
         whitespaced_status = "  oh, i was sloppy \t   "
         stripped_status = "oh, i was sloppy"
-        twitter_records, internal_records = create_test_twitter_status_records_from_rest_api({
-            :from_user  => @username,
-            :status     => stripped_status,
-            :created_at => Time.at(1).to_s,
-            :to_user    => nil
-          })
+        twitter_records, internal_records = create_rest_api_status_records({
+          :from_user  => @username,
+          :status     => stripped_status,
+          :created_at => Time.at(1),
+          :to_user    => nil
+        })
         @oauth.expects(:request_signer)
         http_subresource = mock
         http_subresource.expects(:post).
@@ -234,19 +236,19 @@ class ClientTest < UnitTestCase
         @ui.expects(:show_status_preview).with(stripped_status)
         @ui.expects(:confirm).with("Really send?").returns(true)
         @ui.expects(:info).with("Sent status update.\n\n")
-        @ui.expects(:show_record).with(internal_records[0])
+        @ui.expects(:show_tweet).with(internal_records[0])
         @twitter.update(whitespaced_status)
       end
 
       should "truncate a status update with too long argument and warn the user" do
         truncated_status = "ab c" * 35  #  4 * 35 = 140
         long_status = "#{truncated_status} dd"
-        twitter_records, internal_records = create_test_twitter_status_records_from_rest_api({
-            :from_user  => @username,
-            :status     => truncated_status,
-            :created_at => Time.at(1).to_s,
-            :to_user    => nil
-          })
+        twitter_records, internal_records = create_rest_api_status_records({
+          :from_user  => @username,
+          :status     => truncated_status,
+          :created_at => Time.at(1),
+          :to_user    => nil
+        })
         @oauth.expects(:request_signer)
         http_subresource = mock
         http_subresource.expects(:post).
@@ -259,19 +261,19 @@ class ClientTest < UnitTestCase
         @ui.expects(:show_status_preview).with(truncated_status)
         @ui.expects(:confirm).with("Really send?").returns(true)
         @ui.expects(:info).with("Sent status update.\n\n")
-        @ui.expects(:show_record).with(internal_records[0])
+        @ui.expects(:show_tweet).with(internal_records[0])
         @twitter.update(long_status)
       end
 
       if defined? Encoding
         should "encode status in UTF-8 (String supports encoding)" do
           status_utf8, status_latin1 = "résumé", "résumé".encode('ISO-8859-1')
-          twitter_records, internal_records = create_test_twitter_status_records_from_rest_api({
-              :from_user  => @username,
-              :status     => status_utf8,
-              :created_at => Time.at(1).to_s,
-              :to_user    => nil
-            })
+          twitter_records, internal_records = create_rest_api_status_records({
+            :from_user  => @username,
+            :status     => status_utf8,
+            :created_at => Time.at(1),
+            :to_user    => nil
+          })
           @oauth.expects(:request_signer)
           http_subresource = mock
           http_subresource.expects(:post).
@@ -283,7 +285,7 @@ class ClientTest < UnitTestCase
           @ui.expects(:confirm).with("Really send?").returns(true)
           @ui.expects(:show_status_preview).with(status_latin1)
           @ui.expects(:info).with("Sent status update.\n\n")
-          @ui.expects(:show_record).with(internal_records[0])
+          @ui.expects(:show_tweet).with(internal_records[0])
           @twitter.update(status_latin1)
         end
       else
@@ -291,12 +293,12 @@ class ClientTest < UnitTestCase
           tmp_kcode('NONE') do
             tmp_env(:LANG => 'ISO-8859-1') do
               status_utf8, status_latin1 = "r\xc3\xa9sum\xc3\xa9", "r\xe9sum\xe9"
-              twitter_records, internal_records = create_test_twitter_status_records_from_rest_api({
-                  :from_user  => @username,
-                  :status     => status_utf8,
-                  :created_at => Time.at(1).to_s,
-                  :to_user    => nil
-                })
+              twitter_records, internal_records = create_rest_api_status_records({
+                :from_user  => @username,
+                :status     => status_utf8,
+                :created_at => Time.at(1),
+                :to_user    => nil
+              })
               @oauth.expects(:request_signer)
               http_subresource = mock
               http_subresource.expects(:post).
@@ -308,7 +310,7 @@ class ClientTest < UnitTestCase
               @ui.expects(:confirm).with("Really send?").returns(true)
               @ui.expects(:show_status_preview).with(status_latin1)
               @ui.expects(:info).with("Sent status update.\n\n")
-              @ui.expects(:show_record).with(internal_records[0])
+              @ui.expects(:show_tweet).with(internal_records[0])
               @twitter.update(status_latin1)
             end
           end
@@ -330,12 +332,12 @@ class ClientTest < UnitTestCase
         should "not shorten URLs if not configured" do
           stub_config
           status = "reading http://www.w3.org/TR/1999/REC-xpath-19991116"
-          twitter_records, internal_records = create_test_twitter_status_records_from_rest_api({
-              :from_user  => @username,
-              :status     => status,
-              :created_at => Time.at(1).to_s,
-              :to_user    => nil
-            })
+          twitter_records, internal_records = create_rest_api_status_records({
+            :from_user  => @username,
+            :status     => status,
+            :created_at => Time.at(1),
+            :to_user    => nil
+          })
           @oauth.expects(:request_signer)
           http_subresource = mock
           http_subresource.expects(:post).
@@ -348,7 +350,7 @@ class ClientTest < UnitTestCase
           @ui.expects(:confirm).with("Really send?").returns(true)
           @ui.expects(:show_status_preview).with(status)
           @ui.expects(:info).with("Sent status update.\n\n")
-          @ui.expects(:show_record).with(internal_records[0])
+          @ui.expects(:show_tweet).with(internal_records[0])
           @twitter.update(status)
         end
 
@@ -357,12 +359,12 @@ class ClientTest < UnitTestCase
           long_status = long_urls.join(" and ")
           short_urls = ["http://shorten.it/2k7i8", "http://shorten.it/2k7mk"]
           shortened_status = short_urls.join(" and ")
-          twitter_records, internal_records = create_test_twitter_status_records_from_rest_api({
-              :from_user  => @username,
-              :status     => shortened_status,
-              :created_at => Time.at(1).to_s,
-              :to_user    => nil
-            })
+          twitter_records, internal_records = create_rest_api_status_records({
+            :from_user  => @username,
+            :status     => shortened_status,
+            :created_at => Time.at(1),
+            :to_user    => nil
+          })
           @oauth.expects(:request_signer)
           http_subresource = mock
           http_subresource.expects(:post).
@@ -376,7 +378,7 @@ class ClientTest < UnitTestCase
           @ui.expects(:show_status_preview).with(shortened_status)
           @ui.expects(:confirm).with("Really send?").returns(true)
           @ui.expects(:info).with("Sent status update.\n\n")
-          @ui.expects(:show_record).with(internal_records[0])
+          @ui.expects(:show_tweet).with(internal_records[0])
           @twitter.update(long_status)
         end
 
@@ -384,12 +386,12 @@ class ClientTest < UnitTestCase
           long_urls = ["http://www.google.fi/", "http://www.w3.org/TR/1999/REC-xpath-19991116"]
           status = long_urls.join(" and ")
           short_urls = [nil, ""]
-          twitter_records, internal_records = create_test_twitter_status_records_from_rest_api({
-              :from_user  => @username,
-              :status     => status,
-              :created_at => Time.at(1).to_s,
-              :to_user    => nil
-            })
+          twitter_records, internal_records = create_rest_api_status_records({
+            :from_user  => @username,
+            :status     => status,
+            :created_at => Time.at(1),
+            :to_user    => nil
+          })
           @oauth.expects(:request_signer)
           http_subresource = mock
           http_subresource.expects(:post).
@@ -403,7 +405,7 @@ class ClientTest < UnitTestCase
           @ui.expects(:show_status_preview).with(status)
           @ui.expects(:confirm).with("Really send?").returns(true)
           @ui.expects(:info).with("Sent status update.\n\n")
-          @ui.expects(:show_record).with(internal_records[0])
+          @ui.expects(:show_tweet).with(internal_records[0])
           @twitter.update(status)
         end
 
@@ -412,12 +414,12 @@ class ClientTest < UnitTestCase
           long_status = long_urls.join(" and ")
           short_url = "http://shorten.it/2k7mk"
           short_status = ([short_url] * 2).join(" and ")
-          twitter_records, internal_records = create_test_twitter_status_records_from_rest_api({
-              :from_user  => @username,
-              :status     => short_status,
-              :created_at => Time.at(1).to_s,
-              :to_user    => nil
-            })
+          twitter_records, internal_records = create_rest_api_status_records({
+            :from_user  => @username,
+            :status     => short_status,
+            :created_at => Time.at(1),
+            :to_user    => nil
+          })
           @oauth.expects(:request_signer)
           http_subresource = mock
           http_subresource.expects(:post).
@@ -430,7 +432,7 @@ class ClientTest < UnitTestCase
           @ui.expects(:show_status_preview).with(short_status)
           @ui.expects(:confirm).with("Really send?").returns(true)
           @ui.expects(:info).with("Sent status update.\n\n")
-          @ui.expects(:show_record).with(internal_records[0])
+          @ui.expects(:show_tweet).with(internal_records[0])
           @twitter.update(long_status)
         end
 
@@ -438,12 +440,12 @@ class ClientTest < UnitTestCase
           setup do
             @url = "http://www.w3.org/TR/1999/REC-xpath-19991116"
             @status = "skimming through #{@url}"
-            @twitter_records, @internal_records = create_test_twitter_status_records_from_rest_api({
-                :from_user  => @username,
-                :status     => @status,
-                :created_at => Time.at(1).to_s,
-                :to_user    => nil
-              })
+            @twitter_records, @internal_records = create_rest_api_status_records({
+              :from_user  => @username,
+              :status     => @status,
+              :created_at => Time.at(1),
+              :to_user    => nil
+            })
           end
 
           should "skip shortening URLs if required libraries are not found" do
@@ -460,7 +462,7 @@ class ClientTest < UnitTestCase
             @ui.expects(:show_status_preview).with(@status)
             @ui.expects(:confirm).with("Really send?").returns(true)
             @ui.expects(:info).with("Sent status update.\n\n")
-            @ui.expects(:show_record).with(@internal_records[0])
+            @ui.expects(:show_tweet).with(@internal_records[0])
             @twitter.update(@status)
           end
 
@@ -478,7 +480,7 @@ class ClientTest < UnitTestCase
             @ui.expects(:show_status_preview).with(@status)
             @ui.expects(:confirm).with("Really send?").returns(true)
             @ui.expects(:info).with("Sent status update.\n\n")
-            @ui.expects(:show_record).with(@internal_records[0])
+            @ui.expects(:show_tweet).with(@internal_records[0])
             @twitter.update(@status)
           end
         end
@@ -486,34 +488,35 @@ class ClientTest < UnitTestCase
     end
 
     should "fetch friends" do
-      twitter_records, internal_records = create_test_twitter_user_records_from_rest_api(
+      twitter_records, internal_records = create_rest_api_user_records(
         {
           :from_user  => "zanzibar",
           :status     => "wassup, @foo?",
-          :created_at => Time.at(1).to_s,
+          :created_at => Time.at(1),
           :to_user    => "foo"
         },
         {
           :from_user  => "lulzwoo",
           :status     => "@foo, doing nuttin'",
-          :created_at => Time.at(1).to_s,
+          :created_at => Time.at(1),
           :to_user    => "foo"
-        })
+        }
+      )
       @oauth.expects(:request_signer)
       @rest_api.expects(:[]).
           with("statuses/friends.json?#{@rest_api_status_query_str}").
           returns(stub(:get => twitter_records.to_json))
-      @ui.expects(:show_record).with(internal_records[0])
-      @ui.expects(:show_record).with(internal_records[1])
+      @ui.expects(:show_tweet).with(internal_records[0])
+      @ui.expects(:show_tweet).with(internal_records[1])
       @twitter.friends
     end
 
     should "fetch followers" do
-      twitter_records, internal_records = create_test_twitter_user_records_from_rest_api(
+      twitter_records, internal_records = create_rest_api_user_records(
         {
           :from_user  => "zanzibar",
           :status     => "wassup, @foo?",
-          :created_at => Time.at(1).to_s,
+          :created_at => Time.at(1),
           :to_user    => "foo"
         },
         {
@@ -521,13 +524,14 @@ class ClientTest < UnitTestCase
           :status     => nil,
           :created_at => nil,
           :to_user    => nil
-        })
+        }
+      )
       @oauth.expects(:request_signer)
       @rest_api.expects(:[]).
           with("statuses/followers.json?#{@rest_api_status_query_str}").
           returns(stub(:get => twitter_records.to_json))
-      @ui.expects(:show_record).with(internal_records[0])
-      @ui.expects(:show_record).with(internal_records[1])
+      @ui.expects(:show_tweet).with(internal_records[0])
+      @ui.expects(:show_tweet).with(internal_records[1])
       @twitter.followers
     end
 
@@ -541,47 +545,49 @@ class ClientTest < UnitTestCase
         [:and,  "and operator"]
       ].each do |op, desc|
         should "search tweets matching all the given words with #{desc}" do
-          twitter_response, internal_records = create_test_twitter_records_from_search_api(
+          twitter_response, internal_records = create_search_api_status_records(
             {
               :from_user  => "zanzibar",
               :status     => "@foo, wassup? #greets",
-              :created_at => Time.at(1).to_s,
+              :created_at => Time.at(1),
               :to_user    => "foo"
             },
             {
               :from_user  => "spoonman",
               :status     => "@foo long time no see #greets",
-              :created_at => Time.at(1).to_s,
+              :created_at => Time.at(1),
               :to_user    => "foo"
-            })
+            }
+          )
           @search_api.expects(:[]).
               with("search.json?q=%23greets%20%40foo&#{@search_api_query_str}").
               returns(stub(:get => twitter_response.to_json))
-          @ui.expects(:show_record).with(internal_records[0])
-          @ui.expects(:show_record).with(internal_records[1])
+          @ui.expects(:show_tweet).with(internal_records[0])
+          @ui.expects(:show_tweet).with(internal_records[1])
           @twitter.search(["#greets", "@foo"], op)
         end
       end
 
       should "search tweets matching any of the given words with or operator" do
-        twitter_response, internal_records = create_test_twitter_records_from_search_api(
+        twitter_response, internal_records = create_search_api_status_records(
           {
             :from_user  => "zanzibar",
             :status     => "spinning around the floor #habits",
-            :created_at => Time.at(1).to_s,
+            :created_at => Time.at(1),
             :to_user    => "foo"
           },
           {
             :from_user  => "spoonman",
             :status     => "drinking coffee, again #neurotic",
-            :created_at => Time.at(1).to_s,
+            :created_at => Time.at(1),
             :to_user    => "foo"
-          })
+          }
+        )
         @search_api.expects(:[]).
             with("search.json?q=%23habits%20OR%20%23neurotic&#{@search_api_query_str}").
             returns(stub(:get => twitter_response.to_json))
-        @ui.expects(:show_record).with(internal_records[0])
-        @ui.expects(:show_record).with(internal_records[1])
+        @ui.expects(:show_tweet).with(internal_records[0])
+        @ui.expects(:show_tweet).with(internal_records[1])
         @twitter.search(["#habits", "#neurotic"], :or)
       end
     end
@@ -592,12 +598,12 @@ class ClientTest < UnitTestCase
       end
 
       should "authorize with OAuth and save config" do
-        twitter_records, internal_records = create_test_twitter_status_records_from_rest_api({
-            :from_user  => @username,
-            :status     => "wassup?",
-            :created_at => Time.at(1).to_s,
-            :to_user    => nil
-          })
+        twitter_records, internal_records = create_rest_api_status_records({
+          :from_user  => @username,
+          :status     => "wassup?",
+          :created_at => Time.at(1),
+          :to_user    => nil
+        })
         access_token = 'access token'
         user_has_authorized = states('User has authorized?').starts_as(false)
         @oauth.expects(:request_signer).twice
@@ -614,7 +620,7 @@ class ClientTest < UnitTestCase
         @rest_api.expects(:[]).returns(http_subresource)
         @config.expects(:[]=).with(:oauth_access, access_token)
         @config.expects(:save)
-        @ui.expects(:show_record).with(internal_records[0])
+        @ui.expects(:show_tweet).with(internal_records[0])
         @twitter.home
       end
     end
@@ -622,47 +628,50 @@ class ClientTest < UnitTestCase
 
   private
 
-  def create_test_twitter_status_records_from_rest_api(*internal_records)
-    twitter_records = internal_records.map do |internal_record|
+  def create_rest_api_status_records(*records)
+    create_twitter_and_internal_records(records, Twitter::REST_API_STATUS_PATHS) do |record|
       {
-        "user"                    => { "screen_name" => internal_record[:from_user] },
-        "created_at"              => internal_record[:created_at],
-        "text"                    => internal_record[:status],
-        "in_reply_to_screen_name" => internal_record[:to_user]
+        "user"                    => { "screen_name" => record[:from_user] },
+        "created_at"              => record[:created_at].to_s,
+        "text"                    => record[:status],
+        "in_reply_to_screen_name" => record[:to_user]
       }
     end
-    [twitter_records, internal_records]
   end
 
-  def create_test_twitter_user_records_from_rest_api(*internal_records)
-    twitter_records = internal_records.map do |internal_record|
-      twitter_record = { "screen_name" => internal_record[:from_user] }
-      if internal_record[:status]
+  def create_rest_api_user_records(*records)
+    create_twitter_and_internal_records(records, Twitter::REST_API_USER_PATHS) do |record|
+      twitter_record = { "screen_name" => record[:from_user] }
+      if record[:status]
         twitter_record.merge!({
           "status" => {
-            "created_at"              => internal_record[:created_at],
-            "text"                    => internal_record[:status],
-            "in_reply_to_screen_name" => internal_record[:to_user],
+            "created_at"              => record[:created_at].to_s,
+            "text"                    => record[:status],
+            "in_reply_to_screen_name" => record[:to_user],
           }
         })
       end
       twitter_record
     end
+  end
+
+  def create_search_api_status_records(*records)
+    twitter_records, internal_records = create_twitter_and_internal_records(
+      records, Twitter::SEARCH_API_STATUS_PATHS) do |record|
+      {
+        "from_user"   => record[:from_user],
+        "created_at"  => record[:created_at].to_s,
+        "text"        => record[:status],
+        "to_user"     => record[:to_user]
+      }
+    end
+    twitter_records = { 'results' => twitter_records }
     [twitter_records, internal_records]
   end
 
-  def create_test_twitter_records_from_search_api(*internal_records)
-    twitter_search_records = internal_records.map do |internal_record|
-      {
-        "from_user"   => internal_record[:from_user],
-        "created_at"  => internal_record[:created_at],
-        "text"        => internal_record[:status],
-        "to_user"     => internal_record[:to_user]
-      }
-    end
-    twitter_records = {
-      "results" => twitter_search_records
-    }
+  def create_twitter_and_internal_records(records, paths, &twitter_record_maker)
+    twitter_records   = records.map(&twitter_record_maker)
+    internal_records  = twitter_records.map { |r| Tweet.new(r, paths) }
     [twitter_records, internal_records]
   end
 end
