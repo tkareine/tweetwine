@@ -26,14 +26,14 @@ showing the latest tweets.
 
   s.add_dependency 'oauth', '~> 0.4.4'
   s.add_development_dependency 'contest',       '~> 0.1.2'
-  s.add_development_dependency 'coulda',        '~> 0.6.0'
+  s.add_development_dependency 'coulda',        '~> 0.6.3'
   s.add_development_dependency 'gem-man',       '~> 0.2.0'
   s.add_development_dependency 'mcmire-matchy', '~> 0.5.2'
-  s.add_development_dependency 'mocha',         '~> 0.9.10'
+  s.add_development_dependency 'mocha',         '~> 0.9.12'
   s.add_development_dependency 'open4',         '~> 1.0.1'
   s.add_development_dependency 'ronn',          '~> 0.7.3'
   s.add_development_dependency 'timecop',       '~> 0.3.5'
-  s.add_development_dependency 'webmock',       '~> 1.6.1'
+  s.add_development_dependency 'webmock',       '~> 1.6.2'
 
   s.post_install_message = <<-END
 
