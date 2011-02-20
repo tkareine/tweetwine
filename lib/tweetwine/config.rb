@@ -52,7 +52,7 @@ module Tweetwine
     def self.parse_env_vars(env_lookouts)
       env_lookouts.inject({}) do |result, env_var_name|
         env_option = ENV[env_var_name.to_s]
-        result[env_var_name.to_sym] = env_option unless Support.blank?(env_option)
+        result[env_var_name.to_sym] = env_option if Support.present?(env_option)
         result
       end
     end
