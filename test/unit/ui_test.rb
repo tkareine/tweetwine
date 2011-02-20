@@ -119,6 +119,46 @@ class UITest < UnitTestCase
         @ui.show_tweet(tweet)
       end
 
+      should "output regular retweet" do
+        from_user = "barman"
+        rt_user = "fooman"
+        status = "status worth retweeting"
+        tweet = create_tweet(
+          :from_user  => from_user,
+          :status     => status,
+          :rt_user    => rt_user
+        )
+        Support.expects(:humanize_time_diff).returns([2, "secs"])
+        @out.expects(:puts).with(<<-END
+#{rt_user} RT #{from_user}, 2 secs ago:
+#{status}
+
+        END
+        )
+        @ui.show_tweet(tweet)
+      end
+
+      should "output replying retweet" do
+        from_user = "barman"
+        to_user = "jackman"
+        rt_user = "fooman"
+        status = "@#{to_user}, reply worth retweeting"
+        tweet = create_tweet(
+          :from_user  => from_user,
+          :to_user    => to_user,
+          :status     => status,
+          :rt_user    => rt_user
+        )
+        Support.expects(:humanize_time_diff).returns([2, "secs"])
+        @out.expects(:puts).with(<<-END
+#{rt_user} RT #{from_user}, in reply to #{to_user}, 2 secs ago:
+#{status}
+
+        END
+        )
+        @ui.show_tweet(tweet)
+      end
+
       should "unescape HTML in a status" do
         from_user = "fooman"
         escaped_status = "apple &gt; orange &amp; grapefruit &lt; banana"
@@ -194,6 +234,45 @@ class UITest < UnitTestCase
         @out.expects(:puts).with(<<-END
 \e[32m#{from_user}\e[0m, in reply to \e[32m#{to_user}\e[0m, 2 secs ago:
 \e[33m@#{to_user}\e[0m! How are you doing?
+
+        END
+        )
+        @ui.show_tweet(tweet)
+      end
+
+      should "output regular retweet" do
+        from_user = "barman"
+        rt_user = "fooman"
+        status = "status worth retweeting"
+        tweet = create_tweet(
+          :from_user  => from_user,
+          :status     => status,
+          :rt_user    => rt_user
+        )
+        Support.expects(:humanize_time_diff).returns([2, "secs"])
+        @out.expects(:puts).with(<<-END
+\e[32m#{rt_user}\e[0m RT \e[32m#{from_user}\e[0m, 2 secs ago:
+#{status}
+
+        END
+        )
+        @ui.show_tweet(tweet)
+      end
+
+      should "output replying retweet" do
+        from_user = "barman"
+        to_user = "jackman"
+        rt_user = "fooman"
+        tweet = create_tweet(
+          :from_user  => from_user,
+          :to_user    => to_user,
+          :status     => "@#{to_user}, reply worth retweeting",
+          :rt_user    => rt_user
+        )
+        Support.expects(:humanize_time_diff).returns([2, "secs"])
+        @out.expects(:puts).with(<<-END
+\e[32m#{rt_user}\e[0m RT \e[32m#{from_user}\e[0m, in reply to \e[32m#{to_user}\e[0m, 2 secs ago:
+\e[33m@#{to_user}\e[0m, reply worth retweeting
 
         END
         )
