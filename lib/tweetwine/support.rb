@@ -8,8 +8,20 @@ module Tweetwine
   module Support
     extend self
 
-    def blank?(str)
-      str.nil? || str.empty?
+    def blank?(var)
+      var.nil? || var.empty?
+    end
+
+    def present?(var)
+      !blank?(var)
+    end
+
+    def presence(var)
+      if present? var
+        block_given? ? yield(var) : var
+      else
+        nil
+      end
     end
 
     def humanize_time_diff(from, to)

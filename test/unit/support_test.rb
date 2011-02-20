@@ -9,10 +9,41 @@ module Tweetwine::Test
 class SupportTest < UnitTestCase
   include Support
 
-  context "for checking whether a string is blank" do
-    should("return true for nil")               { assert blank?(nil)  }
-    should("return true for empty string")      { assert blank?('')   }
-    should("return false for nonempty string")  { assert !blank?('a') }
+  context "for determining emptiness" do
+    [
+      [nil,     true,   "nil"],
+      ["",      true,   "empty string"],
+      ["foo",   false,  "nonempty string"],
+      [[],      true,   "empty array"],
+      [%w{a b}, false,  "nonempty array"]
+    ].each do |(subject, emptiness, description)|
+      should "return #{emptiness} for blank? with #{description}" do
+        assert_equal emptiness, blank?(subject)
+      end
+
+      should "return #{!emptiness} for present? with #{description}" do
+        assert_equal !emptiness, present?(subject)
+      end
+
+      should "return non-empty subject for presence, when subject is #{description}" do
+        actual = presence(subject)
+        expected = present?(subject) ? subject : nil
+        assert_same expected, actual
+      end
+
+      should "return value of block for presence, when subject is #{description}" do
+        actual = presence(subject) { |s| s.size }
+        expected = present?(subject) ? subject.size : nil
+        assert_same expected, actual
+      end
+
+      should "allow presence to be used with || operator, when subject is #{description}" do
+        alternative = "hey"
+        actual = presence(subject) || alternative
+        expected = present?(subject) ? subject : alternative
+        assert_same expected, actual
+      end
+    end
   end
 
   context "for humanizing time differences" do
