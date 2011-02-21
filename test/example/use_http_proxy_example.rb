@@ -7,9 +7,11 @@ Feature "using HTTP proxy" do
   i_want_to "use HTTP proxy"
   in_order_to "tweet behind a firewall"
 
+  HOME_URL = "https://api.twitter.com/1/statuses/home_timeline.json?count=20&page=1"
+
   def setup
     super
-    stub_http_request(:get, "https://api.twitter.com/1/statuses/home_timeline.json?count=20&page=1").to_return(:body => fixture_file('home.json'))
+    stub_http_request(:get, HOME_URL).to_return(:body => fixture_file('home.json'))
   end
 
   Scenario "enable proxy via environment variable" do
@@ -20,7 +22,6 @@ Feature "using HTTP proxy" do
 
     Then "the application uses the proxy to fetch my home timeline" do
       should_use_proxy
-      @output[0].should == "pelit, 11 days ago:"
     end
   end
 
@@ -32,7 +33,6 @@ Feature "using HTTP proxy" do
 
     Then "the application uses the proxy to fetch my home timeline" do
       should_use_proxy
-      @output[0].should == "pelit, 11 days ago:"
     end
   end
 
@@ -44,7 +44,6 @@ Feature "using HTTP proxy" do
 
     Then "the application does not use the proxy to fetch my home timeline" do
       should_not_use_proxy
-      @output[0].should == "pelit, 11 days ago:"
     end
   end
 
@@ -55,10 +54,12 @@ Feature "using HTTP proxy" do
     nh.proxy_class?.should == true
     nh.instance_variable_get(:@proxy_address).should == PROXY_HOST
     nh.instance_variable_get(:@proxy_port).should == PROXY_PORT
+    assert_requested(:get, HOME_URL)
   end
 
   def should_not_use_proxy
     net_http.proxy_class?.should == false
+    assert_requested(:get, HOME_URL)
   end
 
   def net_http

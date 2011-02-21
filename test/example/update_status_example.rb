@@ -146,14 +146,14 @@ Feature "update my status (send new tweet)" do
       @shorten_rubygems_body = "#{SHORTEN_CONFIG[:url_param_name]}=#{RUBYGEMS_FULL_URL_ENC}"
       @shorten_rubylang_body = "#{SHORTEN_CONFIG[:url_param_name]}=#{RUBYLANG_FULL_URL_ENC}"
       stub_http_request(SHORTEN_METHOD, SHORTEN_CONFIG[:service_url]).
-          with(:body => @shorten_rubygems_body).
-          to_return(:body => RUBYGEMS_FIXTURE)
+        with(:body => @shorten_rubygems_body).
+        to_return(:body => RUBYGEMS_FIXTURE)
       stub_http_request(SHORTEN_METHOD, SHORTEN_CONFIG[:service_url]).
-          with(:body => @shorten_rubylang_body).
-          to_return(:body => RUBYLANG_FIXTURE)
+        with(:body => @shorten_rubylang_body).
+        to_return(:body => RUBYLANG_FIXTURE)
       stub_http_request(:post, UPDATE_URL).
-          with(:body => BODY_WITH_SHORT_URLS).
-          to_return(:body => UPDATE_FIXTURE_WITH_URLS)
+        with(:body => BODY_WITH_SHORT_URLS).
+        to_return(:body => UPDATE_FIXTURE_WITH_URLS)
       @output = start_cli %W{--no-colors update #{STATUS_WITH_FULL_URLS}}, %w{y}
     end
 
@@ -169,8 +169,8 @@ Feature "update my status (send new tweet)" do
   Scenario "disable URL shortening for status updates" do
     When "I have configured URL shortening, start the application with 'update' command with --no-url-shorten option, input status containing URLs, and confirm" do
       stub_http_request(:post, UPDATE_URL).
-          with(:body => BODY_WITH_SHORT_URLS).
-          to_return(:body => UPDATE_FIXTURE_WITH_URLS)
+        with(:body => BODY_WITH_SHORT_URLS).
+        to_return(:body => UPDATE_FIXTURE_WITH_URLS)
       @output = start_cli %W{--no-colors --no-url-shorten update #{STATUS_WITH_SHORT_URLS}}, %w{y}
     end
 

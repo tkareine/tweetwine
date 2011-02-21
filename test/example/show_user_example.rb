@@ -17,11 +17,7 @@ Feature "show user's tweets" do
     end
 
     Then "the application shows my tweets" do
-      @output[0].should == "jillv, in reply to chris, 9 hours ago:"
-      @output[1].should == "@chris wait me until the garden"
-      @output[2].should == ""
-      @output[3].should == "jillv, 3 days ago:"
-      @output[4].should == "so boring to wait"
+      should_output_tweets
     end
   end
 
@@ -32,11 +28,17 @@ Feature "show user's tweets" do
     end
 
     Then "the application shows the user's tweets" do
-      @output[0].should == "jillv, in reply to chris, 9 hours ago:"
-      @output[1].should == "@chris wait me until the garden"
-      @output[2].should == ""
-      @output[3].should == "jillv, 3 days ago:"
-      @output[4].should == "so boring to wait"
+      should_output_tweets
     end
+  end
+
+  private
+
+  def should_output_tweets
+    @output[0].should == "jillv, in reply to chris, 9 hours ago:"
+    @output[1].should == "@chris wait me until the garden"
+    @output[2].should == ""
+    @output[3].should == "jillv, 3 days ago:"
+    @output[4].should == "so boring to wait"
   end
 end
