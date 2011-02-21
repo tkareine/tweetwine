@@ -8,6 +8,8 @@ module Tweetwine
       :config_file  => "#{(ENV['HOME'] || ENV['USERPROFILE'])}/.tweetwine",
       :env_lookouts => [:http_proxy],
       :excludes     => [:command],
+      :num_tweets   => 20,
+      :page         => 1,
       :shorten_urls => {:disable => true},
       :username     => ENV['USER']
     }.freeze
@@ -84,10 +86,10 @@ module Tweetwine
             options[:shorten_urls] ||= {}
             options[:shorten_urls][:disable] = true
           end
-          parser.on '-n', '--num <n>',          Integer,  "Number of statuses per page (default #{Twitter::DEFAULT_NUM_STATUSES})." do |arg|
-            options[:num_statuses] = arg
+          parser.on '-n', '--num <n>',          Integer,  "Number of tweets per page (default #{DEFAULT_CONFIG[:num_tweets]})." do |arg|
+            options[:num_tweets] = arg
           end
-          parser.on '-p', '--page <p>',         Integer,  "Page number for statuses (default #{Twitter::DEFAULT_PAGE_NUM})." do |arg|
+          parser.on '-p', '--page <p>',         Integer,  "Page number for tweets (default #{DEFAULT_CONFIG[:page]})." do |arg|
             options[:page] = arg
           end
           parser.on '-u', '--username <user>',  String,   "User to authenticate (default '#{DEFAULT_CONFIG[:username]}')." do |arg|

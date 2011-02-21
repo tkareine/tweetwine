@@ -5,24 +5,32 @@ require "unit_helper"
 module Tweetwine::Test
 
 class ClientTest < UnitTestCase
+  setup do
+    @config = {
+      :num_tweets => 20,
+      :page       => 1
+    }
+    stub_config @config
+  end
+
   context "for initialization" do
     should "use default number of statuses if not configured" do
       @twitter = Twitter.new
-      assert_equal Twitter::DEFAULT_NUM_STATUSES, @twitter.num_statuses
+      assert_equal @config[:num_tweets], @twitter.num_tweets
     end
 
     should "use configured number of statuses if in allowed range" do
-      @twitter = Twitter.new(:num_statuses => 12)
-      assert_equal 12, @twitter.num_statuses
+      @twitter = Twitter.new(:num_tweets => 12)
+      assert_equal 12, @twitter.num_tweets
     end
 
     should "raise exception if configured number of status not in allowed range" do
-      assert_raise(ArgumentError) { Twitter.new(:num_statuses => 0) }
+      assert_raise(ArgumentError) { Twitter.new(:num_tweets => 0) }
     end
 
     should "use default page number if not configured otherwise" do
       @twitter = Twitter.new
-      assert_equal Twitter::DEFAULT_PAGE_NUM, @twitter.page
+      assert_equal @config[:page], @twitter.page
     end
 
     should "use configured page number if in allowed range" do
@@ -46,8 +54,8 @@ class ClientTest < UnitTestCase
       @http.stubs(:as_resource).with("https://api.twitter.com/1").returns(@rest_api)
       @http.stubs(:as_resource).with("http://search.twitter.com").returns(@search_api)
       @twitter = Twitter.new(:username => @username)
-      @rest_api_status_query_str = "count=#{Twitter::DEFAULT_NUM_STATUSES}&page=#{Twitter::DEFAULT_PAGE_NUM}"
-      @search_api_query_str = "page=#{Twitter::DEFAULT_PAGE_NUM}&rpp=#{Twitter::DEFAULT_NUM_STATUSES}"
+      @rest_api_status_query_str = "count=#{@config[:num_tweets]}&page=#{@config[:page]}"
+      @search_api_query_str = "page=#{@config[:page]}&rpp=#{@config[:num_tweets]}"
     end
 
     should "fetch friends' statuses (home view)" do

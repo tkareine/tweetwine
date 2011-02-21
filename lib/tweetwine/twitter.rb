@@ -4,8 +4,6 @@ require "uri"
 
 module Tweetwine
   class Twitter
-    DEFAULT_NUM_STATUSES = 20
-    DEFAULT_PAGE_NUM = 1
     MAX_STATUS_LENGTH = 140
 
     REST_API_STATUS_PATHS = {
@@ -32,12 +30,12 @@ module Tweetwine
       :status     => %w{text}
     }
 
-    attr_reader :num_statuses, :page, :username
+    attr_reader :num_tweets, :page, :username
 
     def initialize(options = {})
-      @num_statuses = Support.parse_int_gt(options[:num_statuses], DEFAULT_NUM_STATUSES, 1, "number of statuses to show")
-      @page         = Support.parse_int_gt(options[:page], DEFAULT_PAGE_NUM, 1, "page number")
-      @username     = options[:username].to_s
+      @num_tweets = Support.parse_int_gt(options[:num_tweets], CLI::DEFAULT_CONFIG[:num_tweets], 1, "number of tweets to show")
+      @page       = Support.parse_int_gt(options[:page], CLI::DEFAULT_CONFIG[:page], 1, "page number")
+      @username   = options[:username].to_s
     end
 
     def followers
@@ -91,14 +89,14 @@ module Tweetwine
 
     def common_rest_api_query_params
       {
-        :count => @num_statuses,
+        :count => @num_tweets,
         :page  => @page
       }
     end
 
     def common_search_api_query_params
       {
-        :rpp  => @num_statuses,
+        :rpp  => @num_tweets,
         :page => @page
       }
     end
