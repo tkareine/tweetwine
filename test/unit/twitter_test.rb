@@ -54,15 +54,11 @@ class ClientTest < UnitTestCase
       twitter_records, internal_records = create_rest_api_status_records(
         {
           :from_user  => "zanzibar",
-          :status     => "wassup?",
-          :created_at => Time.at(1),
-          :to_user    => nil
+          :status     => "wassup?"
         },
         {
           :from_user  => "lulzwoo",
-          :status     => "nuttin'",
-          :created_at => Time.at(1),
-          :to_user    => nil
+          :status     => "nuttin'"
         }
       )
       @oauth.expects(:request_signer)
@@ -79,13 +75,11 @@ class ClientTest < UnitTestCase
         {
           :from_user  => "zanzibar",
           :status     => "wassup, @#{@username}?",
-          :created_at => Time.at(1),
           :to_user    => @username
         },
         {
           :from_user  => "lulzwoo",
           :status     => "@#{@username}, doing nuttin'",
-          :created_at => Time.at(1),
           :to_user    => @username
         }
       )
@@ -102,9 +96,7 @@ class ClientTest < UnitTestCase
       username = "spoonman"
       twitter_records, internal_records = create_rest_api_status_records({
         :from_user  => username,
-        :status     => "wassup?",
-        :created_at => Time.at(1),
-        :to_user    => nil
+        :status     => "wassup?"
       })
       @oauth.expects(:request_signer)
       @rest_api.expects(:[]).
@@ -117,9 +109,7 @@ class ClientTest < UnitTestCase
     should "fetch a specific user's statuses, with user being the authenticated user itself when given no argument" do
       twitter_records, internal_records = create_rest_api_status_records({
         :from_user  => @username,
-        :status     => "wassup?",
-        :created_at => Time.at(1),
-        :to_user    => nil
+        :status     => "wassup?"
       })
       @oauth.expects(:request_signer)
       @rest_api.expects(:[]).
@@ -134,9 +124,7 @@ class ClientTest < UnitTestCase
         status = "wondering around"
         twitter_records, internal_records = create_rest_api_status_records({
           :from_user  => @username,
-          :status     => status,
-          :created_at => Time.at(1),
-          :to_user    => nil
+          :status     => status
         })
         @oauth.expects(:request_signer)
         http_subresource = mock
@@ -157,9 +145,7 @@ class ClientTest < UnitTestCase
         status = "wondering around"
         twitter_records, internal_records = create_rest_api_status_records({
           :from_user  => @username,
-          :status     => status,
-          :created_at => Time.at(1),
-          :to_user    => nil
+          :status     => status
         })
         @oauth.expects(:request_signer)
         http_subresource = mock
@@ -221,9 +207,7 @@ class ClientTest < UnitTestCase
         stripped_status = "oh, i was sloppy"
         twitter_records, internal_records = create_rest_api_status_records({
           :from_user  => @username,
-          :status     => stripped_status,
-          :created_at => Time.at(1),
-          :to_user    => nil
+          :status     => stripped_status
         })
         @oauth.expects(:request_signer)
         http_subresource = mock
@@ -245,9 +229,7 @@ class ClientTest < UnitTestCase
         long_status = "#{truncated_status} dd"
         twitter_records, internal_records = create_rest_api_status_records({
           :from_user  => @username,
-          :status     => truncated_status,
-          :created_at => Time.at(1),
-          :to_user    => nil
+          :status     => truncated_status
         })
         @oauth.expects(:request_signer)
         http_subresource = mock
@@ -270,9 +252,7 @@ class ClientTest < UnitTestCase
           status_utf8, status_latin1 = "résumé", "résumé".encode('ISO-8859-1')
           twitter_records, internal_records = create_rest_api_status_records({
             :from_user  => @username,
-            :status     => status_utf8,
-            :created_at => Time.at(1),
-            :to_user    => nil
+            :status     => status_utf8
           })
           @oauth.expects(:request_signer)
           http_subresource = mock
@@ -295,9 +275,7 @@ class ClientTest < UnitTestCase
               status_utf8, status_latin1 = "r\xc3\xa9sum\xc3\xa9", "r\xe9sum\xe9"
               twitter_records, internal_records = create_rest_api_status_records({
                 :from_user  => @username,
-                :status     => status_utf8,
-                :created_at => Time.at(1),
-                :to_user    => nil
+                :status     => status_utf8
               })
               @oauth.expects(:request_signer)
               http_subresource = mock
@@ -334,9 +312,7 @@ class ClientTest < UnitTestCase
           status = "reading http://www.w3.org/TR/1999/REC-xpath-19991116"
           twitter_records, internal_records = create_rest_api_status_records({
             :from_user  => @username,
-            :status     => status,
-            :created_at => Time.at(1),
-            :to_user    => nil
+            :status     => status
           })
           @oauth.expects(:request_signer)
           http_subresource = mock
@@ -361,9 +337,7 @@ class ClientTest < UnitTestCase
           shortened_status = short_urls.join(" and ")
           twitter_records, internal_records = create_rest_api_status_records({
             :from_user  => @username,
-            :status     => shortened_status,
-            :created_at => Time.at(1),
-            :to_user    => nil
+            :status     => shortened_status
           })
           @oauth.expects(:request_signer)
           http_subresource = mock
@@ -388,9 +362,7 @@ class ClientTest < UnitTestCase
           short_urls = [nil, ""]
           twitter_records, internal_records = create_rest_api_status_records({
             :from_user  => @username,
-            :status     => status,
-            :created_at => Time.at(1),
-            :to_user    => nil
+            :status     => status
           })
           @oauth.expects(:request_signer)
           http_subresource = mock
@@ -416,9 +388,7 @@ class ClientTest < UnitTestCase
           short_status = ([short_url] * 2).join(" and ")
           twitter_records, internal_records = create_rest_api_status_records({
             :from_user  => @username,
-            :status     => short_status,
-            :created_at => Time.at(1),
-            :to_user    => nil
+            :status     => short_status
           })
           @oauth.expects(:request_signer)
           http_subresource = mock
@@ -442,9 +412,7 @@ class ClientTest < UnitTestCase
             @status = "skimming through #{@url}"
             @twitter_records, @internal_records = create_rest_api_status_records({
               :from_user  => @username,
-              :status     => @status,
-              :created_at => Time.at(1),
-              :to_user    => nil
+              :status     => @status
             })
           end
 
@@ -492,13 +460,11 @@ class ClientTest < UnitTestCase
         {
           :from_user  => "zanzibar",
           :status     => "wassup, @foo?",
-          :created_at => Time.at(1),
           :to_user    => "foo"
         },
         {
           :from_user  => "lulzwoo",
           :status     => "@foo, doing nuttin'",
-          :created_at => Time.at(1),
           :to_user    => "foo"
         }
       )
@@ -516,14 +482,10 @@ class ClientTest < UnitTestCase
         {
           :from_user  => "zanzibar",
           :status     => "wassup, @foo?",
-          :created_at => Time.at(1),
           :to_user    => "foo"
         },
         {
-          :from_user  => "lulzwoo",
-          :status     => nil,
-          :created_at => nil,
-          :to_user    => nil
+          :from_user  => "lulzwoo"
         }
       )
       @oauth.expects(:request_signer)
@@ -549,13 +511,11 @@ class ClientTest < UnitTestCase
             {
               :from_user  => "zanzibar",
               :status     => "@foo, wassup? #greets",
-              :created_at => Time.at(1),
               :to_user    => "foo"
             },
             {
               :from_user  => "spoonman",
               :status     => "@foo long time no see #greets",
-              :created_at => Time.at(1),
               :to_user    => "foo"
             }
           )
@@ -573,13 +533,11 @@ class ClientTest < UnitTestCase
           {
             :from_user  => "zanzibar",
             :status     => "spinning around the floor #habits",
-            :created_at => Time.at(1),
             :to_user    => "foo"
           },
           {
             :from_user  => "spoonman",
             :status     => "drinking coffee, again #neurotic",
-            :created_at => Time.at(1),
             :to_user    => "foo"
           }
         )
@@ -600,9 +558,7 @@ class ClientTest < UnitTestCase
       should "authorize with OAuth and save config" do
         twitter_records, internal_records = create_rest_api_status_records({
           :from_user  => @username,
-          :status     => "wassup?",
-          :created_at => Time.at(1),
-          :to_user    => nil
+          :status     => "wassup?"
         })
         access_token = 'access token'
         user_has_authorized = states('User has authorized?').starts_as(false)
@@ -632,7 +588,7 @@ class ClientTest < UnitTestCase
     create_twitter_and_internal_records(records, Twitter::REST_API_STATUS_PATHS) do |record|
       {
         "user"                    => { "screen_name" => record[:from_user] },
-        "created_at"              => record[:created_at].to_s,
+        "created_at"              => create_timestamp,
         "text"                    => record[:status],
         "in_reply_to_screen_name" => record[:to_user]
       }
@@ -645,7 +601,7 @@ class ClientTest < UnitTestCase
       if record[:status]
         twitter_record.merge!({
           "status" => {
-            "created_at"              => record[:created_at].to_s,
+            "created_at"              => create_timestamp,
             "text"                    => record[:status],
             "in_reply_to_screen_name" => record[:to_user],
           }
@@ -660,7 +616,7 @@ class ClientTest < UnitTestCase
       records, Twitter::SEARCH_API_STATUS_PATHS) do |record|
       {
         "from_user"   => record[:from_user],
-        "created_at"  => record[:created_at].to_s,
+        "created_at"  => create_timestamp,
         "text"        => record[:status],
         "to_user"     => record[:to_user]
       }
@@ -673,6 +629,10 @@ class ClientTest < UnitTestCase
     twitter_records   = records.map(&twitter_record_maker)
     internal_records  = twitter_records.map { |r| Tweet.new(r, paths) }
     [twitter_records, internal_records]
+  end
+
+  def create_timestamp
+    Time.at(1).to_s
   end
 end
 
