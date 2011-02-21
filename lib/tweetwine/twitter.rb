@@ -36,6 +36,8 @@ module Tweetwine
       @num_tweets = Support.parse_int_gt(options[:num_tweets], CLI::DEFAULT_CONFIG[:num_tweets], 1, "number of tweets to show")
       @page       = Support.parse_int_gt(options[:page], CLI::DEFAULT_CONFIG[:page], 1, "page number")
       @username   = options[:username].to_s
+    rescue ArgumentError => e
+      raise CommandLineError, e
     end
 
     def followers

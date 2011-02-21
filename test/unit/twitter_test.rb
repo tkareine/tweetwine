@@ -25,7 +25,7 @@ class ClientTest < UnitTestCase
     end
 
     should "raise exception if configured number of status not in allowed range" do
-      assert_raise(ArgumentError) { Twitter.new(:num_tweets => 0) }
+      assert_raise(CommandLineError) { Twitter.new(:num_tweets => 0) }
     end
 
     should "use default page number if not configured otherwise" do
@@ -39,7 +39,7 @@ class ClientTest < UnitTestCase
     end
 
     should "raise exception if configured page number not in allowed range" do
-      assert_raise(ArgumentError) { Twitter.new(:page => 0) }
+      assert_raise(CommandLineError) { Twitter.new(:page => 0) }
     end
   end
 
