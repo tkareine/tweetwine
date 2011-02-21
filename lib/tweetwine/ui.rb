@@ -12,10 +12,11 @@ module Tweetwine
     USERNAME_REGEX = /^(@\w+)|\s+(@\w+)/
 
     def initialize(options = {})
-      @in     = options[:in]      || $stdin
-      @out    = options[:out]     || $stdout
-      @err    = options[:err]     || $stderr
-      @colors = options[:colors]  || false
+      @in       = options[:in]            || $stdin
+      @out      = options[:out]           || $stdout
+      @err      = options[:err]           || $stderr
+      @colors   = options[:colors]        || false
+      @reverse  = options[:show_reverse]  || false
     end
 
     def info(start_msg = "\n", end_msg = " done.")
@@ -53,6 +54,11 @@ module Tweetwine
 #{format_status(status)}
 
       END
+    end
+
+    def show_tweets(tweets)
+      tweets = tweets.reverse if @reverse
+      tweets.each { |t| show_tweet(t) }
     end
 
     def show_tweet(tweet)

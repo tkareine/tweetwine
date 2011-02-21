@@ -381,6 +381,39 @@ Hi, \e[33m#{users[0]}\e[0m! You should notify \e[33m#{users[1]}\e[0m, #{email}
         @ui.show_tweet(tweet)
       end
     end
+
+    context "for outputting a collection of tweets" do
+      setup do
+        @users = %w{first_user second_user}
+        statuses = @users.map { |from| "Hi, I'm #{from}." }
+        @users_and_statuses = @users.zip statuses
+        @outputs = @users_and_statuses.map { |(user, status)| <<-END
+#{user}, 2 secs ago:
+#{status}
+
+        END
+        }
+        @tweets = @users_and_statuses.map { |(user, status)| create_tweet(
+          :from_user => user,
+          :status    => status
+        )}
+        Support.expects(:humanize_time_diff).twice.returns([2, "secs"])
+      end
+
+      should "output tweets in descending order" do
+        ui = UI.new({ :out => @out, :show_reverse => false })
+        @out.expects(:puts).with(@outputs[0])
+        @out.expects(:puts).with(@outputs[1])
+        ui.show_tweets(@tweets)
+      end
+
+      should "output tweets in ascending order" do
+        ui = UI.new({ :out => @out, :show_reverse => true })
+        @out.expects(:puts).with(@outputs[1])
+        @out.expects(:puts).with(@outputs[0])
+        ui.show_tweets(@tweets)
+      end
+    end
   end
 
   context "username regex" do

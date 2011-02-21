@@ -10,6 +10,7 @@ module Tweetwine
       :excludes     => [:command],
       :num_tweets   => 20,
       :page         => 1,
+      :show_reverse => false,
       :shorten_urls => {:disable => true},
       :username     => ENV['USER']
     }.freeze
@@ -91,6 +92,9 @@ module Tweetwine
           end
           parser.on '-p', '--page <p>',         Integer,  "Page number for tweets (default #{DEFAULT_CONFIG[:page]})." do |arg|
             options[:page] = arg
+          end
+          parser.on '-r', '--reverse',                    "Show tweets in reverse order (default #{DEFAULT_CONFIG[:show_reverse]})." do
+            options[:show_reverse] = true
           end
           parser.on '-u', '--username <user>',  String,   "User to authenticate (default '#{DEFAULT_CONFIG[:username]}')." do |arg|
             options[:username] = arg

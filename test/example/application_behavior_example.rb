@@ -50,6 +50,7 @@ Usage: #{CLI::EXEC_NAME} [global_options...] [<command>] [command_options...]
         --no-url-shorten             Disable URL shortening.
     -n, --num <n>                    Number of tweets per page (default 20).
     -p, --page <p>                   Page number for tweets (default 1).
+    -r, --reverse                    Show tweets in reverse order (default false).
     -u, --username <user>            User to authenticate (default '#{USER}').
     -v, --version                    Show version and exit.
 

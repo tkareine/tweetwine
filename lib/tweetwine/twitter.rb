@@ -47,11 +47,11 @@ module Tweetwine
     end
 
     def home
-      show_statuses_from_rest_api(get_from_rest_api("statuses/home_timeline"))
+      show_tweets_from_rest_api(get_from_rest_api("statuses/home_timeline"))
     end
 
     def mentions
-      show_statuses_from_rest_api(get_from_rest_api("statuses/mentions"))
+      show_tweets_from_rest_api(get_from_rest_api("statuses/mentions"))
     end
 
     def search(words = [], operator = nil)
@@ -59,7 +59,7 @@ module Tweetwine
       operator = :and unless operator
       query = operator == :and ? words.join(' ') : words.join(' OR ')
       response = get_from_search_api query
-      show_statuses_from_search_api(response["results"])
+      show_tweets_from_search_api(response["results"])
     end
 
     def update(msg = nil)
@@ -71,7 +71,7 @@ module Tweetwine
         if CLI.ui.confirm("Really send?")
           response = post_to_rest_api("statuses/update", :status => status_in_utf8)
           CLI.ui.info "Sent status update.\n\n"
-          show_statuses_from_rest_api([response])
+          show_tweets_from_rest_api([response])
           completed = true
         end
       end
@@ -79,7 +79,7 @@ module Tweetwine
     end
 
     def user(who = username)
-      show_statuses_from_rest_api(get_from_rest_api(
+      show_tweets_from_rest_api(get_from_rest_api(
         "statuses/user_timeline",
         common_rest_api_query_params.merge!({ :screen_name => who })
       ))
@@ -150,22 +150,20 @@ module Tweetwine
       CLI.config.save
     end
 
-    def show_statuses_from_rest_api(records)
-      show_records(records, REST_API_STATUS_PATHS)
+    def show_tweets_from_rest_api(records)
+      show_tweets(records, REST_API_STATUS_PATHS)
     end
 
     def show_users_from_rest_api(records)
-      show_records(records, REST_API_USER_PATHS)
+      show_tweets(records, REST_API_USER_PATHS)
     end
 
-    def show_statuses_from_search_api(records)
-      show_records(records, SEARCH_API_STATUS_PATHS)
+    def show_tweets_from_search_api(records)
+      show_tweets(records, SEARCH_API_STATUS_PATHS)
     end
 
-    def show_records(records, paths)
-      records.
-        map   { |record| Tweet.new(record, paths) }.
-        each  { |tweet|  CLI.ui.show_tweet(tweet) }
+    def show_tweets(records, paths)
+      CLI.ui.show_tweets(records.map { |record| Tweet.new(record, paths) })
     end
 
     def create_status_update(status)

@@ -71,10 +71,9 @@ class ClientTest < UnitTestCase
       )
       @oauth.expects(:request_signer)
       @rest_api.expects(:[]).
-          with("statuses/home_timeline.json?#{@rest_api_status_query_str}").
-          returns(stub(:get => twitter_records.to_json))
-      @ui.expects(:show_tweet).with(internal_records[0])
-      @ui.expects(:show_tweet).with(internal_records[1])
+        with("statuses/home_timeline.json?#{@rest_api_status_query_str}").
+        returns(stub(:get => twitter_records.to_json))
+      @ui.expects(:show_tweets).with(internal_records)
       @twitter.home
     end
 
@@ -93,10 +92,9 @@ class ClientTest < UnitTestCase
       )
       @oauth.expects(:request_signer)
       @rest_api.expects(:[]).
-          with("statuses/mentions.json?#{@rest_api_status_query_str}").
-          returns(stub(:get => twitter_records.to_json))
-      @ui.expects(:show_tweet).with(internal_records[0])
-      @ui.expects(:show_tweet).with(internal_records[1])
+        with("statuses/mentions.json?#{@rest_api_status_query_str}").
+        returns(stub(:get => twitter_records.to_json))
+      @ui.expects(:show_tweets).with(internal_records)
       @twitter.mentions
     end
 
@@ -108,9 +106,9 @@ class ClientTest < UnitTestCase
       })
       @oauth.expects(:request_signer)
       @rest_api.expects(:[]).
-          with("statuses/user_timeline.json?#{@rest_api_status_query_str}&screen_name=#{username}").
-          returns(stub(:get => twitter_records.to_json))
-      @ui.expects(:show_tweet).with(internal_records[0])
+        with("statuses/user_timeline.json?#{@rest_api_status_query_str}&screen_name=#{username}").
+        returns(stub(:get => twitter_records.to_json))
+      @ui.expects(:show_tweets).with(internal_records)
       @twitter.user(username)
     end
 
@@ -121,9 +119,9 @@ class ClientTest < UnitTestCase
       })
       @oauth.expects(:request_signer)
       @rest_api.expects(:[]).
-          with("statuses/user_timeline.json?#{@rest_api_status_query_str}&screen_name=#{@username}").
-          returns(stub(:get => twitter_records.to_json))
-      @ui.expects(:show_tweet).with(internal_records[0])
+        with("statuses/user_timeline.json?#{@rest_api_status_query_str}&screen_name=#{@username}").
+        returns(stub(:get => twitter_records.to_json))
+      @ui.expects(:show_tweets).with(internal_records)
       @twitter.user
     end
 
@@ -137,15 +135,15 @@ class ClientTest < UnitTestCase
         @oauth.expects(:request_signer)
         http_subresource = mock
         http_subresource.expects(:post).
-            with({ :status => status }).
-            returns(twitter_records[0].to_json)
+          with({ :status => status }).
+          returns(twitter_records[0].to_json)
         @rest_api.expects(:[]).
-            with("statuses/update.json").
-            returns(http_subresource)
+          with("statuses/update.json").
+          returns(http_subresource)
         @ui.expects(:confirm).with("Really send?").returns(true)
         @ui.expects(:show_status_preview).with(status)
         @ui.expects(:info).with("Sent status update.\n\n")
-        @ui.expects(:show_tweet).with(internal_records[0])
+        @ui.expects(:show_tweets).with(internal_records)
         @twitter.update(status)
       end
 
@@ -158,16 +156,16 @@ class ClientTest < UnitTestCase
         @oauth.expects(:request_signer)
         http_subresource = mock
         http_subresource.expects(:post).
-            with({ :status => status }).
-            returns(twitter_records[0].to_json)
+          with({ :status => status }).
+          returns(twitter_records[0].to_json)
         @rest_api.expects(:[]).
-            with("statuses/update.json").
-            returns(http_subresource)
+          with("statuses/update.json").
+          returns(http_subresource)
         @ui.expects(:prompt).with("Status update").returns(status)
         @ui.expects(:show_status_preview).with(status)
         @ui.expects(:confirm).with("Really send?").returns(true)
         @ui.expects(:info).with("Sent status update.\n\n")
-        @ui.expects(:show_tweet).with(internal_records[0])
+        @ui.expects(:show_tweets).with(internal_records)
         @twitter.update
       end
 
@@ -177,7 +175,7 @@ class ClientTest < UnitTestCase
         @ui.expects(:show_status_preview).with(status)
         @ui.expects(:confirm).with("Really send?").returns(false)
         @ui.expects(:info).with("Cancelled.")
-        @ui.expects(:show_tweet).never
+        @ui.expects(:show_tweets).never
         @twitter.update(status)
       end
 
@@ -188,7 +186,7 @@ class ClientTest < UnitTestCase
         @ui.expects(:show_status_preview).with(status)
         @ui.expects(:confirm).with("Really send?").returns(false)
         @ui.expects(:info).with("Cancelled.")
-        @ui.expects(:show_tweet).never
+        @ui.expects(:show_tweets).never
         @twitter.update
       end
 
@@ -197,7 +195,7 @@ class ClientTest < UnitTestCase
         @ui.expects(:prompt).with("Status update").returns("")
         @ui.expects(:confirm).never
         @ui.expects(:info).with("Cancelled.")
-        @ui.expects(:show_tweet).never
+        @ui.expects(:show_tweets).never
         @twitter.update("")
       end
 
@@ -206,7 +204,7 @@ class ClientTest < UnitTestCase
         @ui.expects(:prompt).with("Status update").returns("")
         @ui.expects(:confirm).never
         @ui.expects(:info).with("Cancelled.")
-        @ui.expects(:show_tweet).never
+        @ui.expects(:show_tweets).never
         @twitter.update
       end
 
@@ -220,15 +218,15 @@ class ClientTest < UnitTestCase
         @oauth.expects(:request_signer)
         http_subresource = mock
         http_subresource.expects(:post).
-            with({ :status => stripped_status }).
-            returns(twitter_records[0].to_json)
+          with({ :status => stripped_status }).
+          returns(twitter_records[0].to_json)
         @rest_api.expects(:[]).
-            with("statuses/update.json").
-            returns(http_subresource)
+          with("statuses/update.json").
+          returns(http_subresource)
         @ui.expects(:show_status_preview).with(stripped_status)
         @ui.expects(:confirm).with("Really send?").returns(true)
         @ui.expects(:info).with("Sent status update.\n\n")
-        @ui.expects(:show_tweet).with(internal_records[0])
+        @ui.expects(:show_tweets).with(internal_records)
         @twitter.update(whitespaced_status)
       end
 
@@ -242,16 +240,16 @@ class ClientTest < UnitTestCase
         @oauth.expects(:request_signer)
         http_subresource = mock
         http_subresource.expects(:post).
-            with({ :status => truncated_status }).
-            returns(twitter_records[0].to_json)
+          with({ :status => truncated_status }).
+          returns(twitter_records[0].to_json)
         @rest_api.expects(:[]).
-            with("statuses/update.json").
-            returns(http_subresource)
+          with("statuses/update.json").
+          returns(http_subresource)
         @ui.expects(:warn).with("Status will be truncated.")
         @ui.expects(:show_status_preview).with(truncated_status)
         @ui.expects(:confirm).with("Really send?").returns(true)
         @ui.expects(:info).with("Sent status update.\n\n")
-        @ui.expects(:show_tweet).with(internal_records[0])
+        @ui.expects(:show_tweets).with(internal_records)
         @twitter.update(long_status)
       end
 
@@ -265,15 +263,15 @@ class ClientTest < UnitTestCase
           @oauth.expects(:request_signer)
           http_subresource = mock
           http_subresource.expects(:post).
-              with({ :status => status_utf8 }).
-              returns(twitter_records[0].to_json)
+            with({ :status => status_utf8 }).
+            returns(twitter_records[0].to_json)
           @rest_api.expects(:[]).
-              with("statuses/update.json").
-              returns(http_subresource)
+            with("statuses/update.json").
+            returns(http_subresource)
           @ui.expects(:confirm).with("Really send?").returns(true)
           @ui.expects(:show_status_preview).with(status_latin1)
           @ui.expects(:info).with("Sent status update.\n\n")
-          @ui.expects(:show_tweet).with(internal_records[0])
+          @ui.expects(:show_tweets).with(internal_records)
           @twitter.update(status_latin1)
         end
       else
@@ -288,15 +286,15 @@ class ClientTest < UnitTestCase
               @oauth.expects(:request_signer)
               http_subresource = mock
               http_subresource.expects(:post).
-                  with({ :status => status_utf8 }).
-                  returns(twitter_records[0].to_json)
+                with({ :status => status_utf8 }).
+                returns(twitter_records[0].to_json)
               @rest_api.expects(:[]).
-                  with("statuses/update.json").
-                  returns(http_subresource)
+                with("statuses/update.json").
+                returns(http_subresource)
               @ui.expects(:confirm).with("Really send?").returns(true)
               @ui.expects(:show_status_preview).with(status_latin1)
               @ui.expects(:info).with("Sent status update.\n\n")
-              @ui.expects(:show_tweet).with(internal_records[0])
+              @ui.expects(:show_tweets).with(internal_records)
               @twitter.update(status_latin1)
             end
           end
@@ -325,16 +323,16 @@ class ClientTest < UnitTestCase
           @oauth.expects(:request_signer)
           http_subresource = mock
           http_subresource.expects(:post).
-              with({ :status => status }).
-              returns(twitter_records[0].to_json)
+            with({ :status => status }).
+            returns(twitter_records[0].to_json)
           @url_shortener.expects(:shorten).never
           @rest_api.expects(:[]).
-              with("statuses/update.json").
-              returns(http_subresource)
+            with("statuses/update.json").
+            returns(http_subresource)
           @ui.expects(:confirm).with("Really send?").returns(true)
           @ui.expects(:show_status_preview).with(status)
           @ui.expects(:info).with("Sent status update.\n\n")
-          @ui.expects(:show_tweet).with(internal_records[0])
+          @ui.expects(:show_tweets).with(internal_records)
           @twitter.update(status)
         end
 
@@ -350,17 +348,17 @@ class ClientTest < UnitTestCase
           @oauth.expects(:request_signer)
           http_subresource = mock
           http_subresource.expects(:post).
-              with({ :status => shortened_status }).
-              returns(twitter_records[0].to_json)
+            with({ :status => shortened_status }).
+            returns(twitter_records[0].to_json)
           @rest_api.expects(:[]).
-              with("statuses/update.json").
-              returns(http_subresource)
+            with("statuses/update.json").
+            returns(http_subresource)
           @url_shortener.expects(:shorten).with(long_urls.first).returns(short_urls.first)
           @url_shortener.expects(:shorten).with(long_urls.last).returns(short_urls.last)
           @ui.expects(:show_status_preview).with(shortened_status)
           @ui.expects(:confirm).with("Really send?").returns(true)
           @ui.expects(:info).with("Sent status update.\n\n")
-          @ui.expects(:show_tweet).with(internal_records[0])
+          @ui.expects(:show_tweets).with(internal_records)
           @twitter.update(long_status)
         end
 
@@ -375,17 +373,17 @@ class ClientTest < UnitTestCase
           @oauth.expects(:request_signer)
           http_subresource = mock
           http_subresource.expects(:post).
-              with({ :status => status }).
-              returns(twitter_records[0].to_json)
+            with({ :status => status }).
+            returns(twitter_records[0].to_json)
           @rest_api.expects(:[]).
-              with("statuses/update.json").
-              returns(http_subresource)
+            with("statuses/update.json").
+            returns(http_subresource)
           @url_shortener.expects(:shorten).with(long_urls.first).returns(short_urls.first)
           @url_shortener.expects(:shorten).with(long_urls.last).returns(short_urls.last)
           @ui.expects(:show_status_preview).with(status)
           @ui.expects(:confirm).with("Really send?").returns(true)
           @ui.expects(:info).with("Sent status update.\n\n")
-          @ui.expects(:show_tweet).with(internal_records[0])
+          @ui.expects(:show_tweets).with(internal_records)
           @twitter.update(status)
         end
 
@@ -401,16 +399,16 @@ class ClientTest < UnitTestCase
           @oauth.expects(:request_signer)
           http_subresource = mock
           http_subresource.expects(:post).
-              with({ :status => short_status }).
-              returns(twitter_records[0].to_json)
+            with({ :status => short_status }).
+            returns(twitter_records[0].to_json)
           @rest_api.expects(:[]).
-              with("statuses/update.json").
-              returns(http_subresource)
+            with("statuses/update.json").
+            returns(http_subresource)
           @url_shortener.expects(:shorten).with(long_urls.first).returns(short_url)
           @ui.expects(:show_status_preview).with(short_status)
           @ui.expects(:confirm).with("Really send?").returns(true)
           @ui.expects(:info).with("Sent status update.\n\n")
-          @ui.expects(:show_tweet).with(internal_records[0])
+          @ui.expects(:show_tweets).with(internal_records)
           @twitter.update(long_status)
         end
 
@@ -429,16 +427,16 @@ class ClientTest < UnitTestCase
             @oauth.expects(:request_signer)
             http_subresource = mock
             http_subresource.expects(:post).
-                with({ :status => @status }).
-                returns(@twitter_records[0].to_json)
+              with({ :status => @status }).
+              returns(@twitter_records[0].to_json)
             @rest_api.expects(:[]).
-                with("statuses/update.json").
-                returns(http_subresource)
+              with("statuses/update.json").
+              returns(http_subresource)
             @ui.expects(:warn)
             @ui.expects(:show_status_preview).with(@status)
             @ui.expects(:confirm).with("Really send?").returns(true)
             @ui.expects(:info).with("Sent status update.\n\n")
-            @ui.expects(:show_tweet).with(@internal_records[0])
+            @ui.expects(:show_tweets).with(@internal_records)
             @twitter.update(@status)
           end
 
@@ -446,17 +444,17 @@ class ClientTest < UnitTestCase
             @oauth.expects(:request_signer)
             http_subresource = mock
             http_subresource.expects(:post).
-                with({ :status => @status }).
-                returns(@twitter_records[0].to_json)
+              with({ :status => @status }).
+              returns(@twitter_records[0].to_json)
             @rest_api.expects(:[]).
-                with("statuses/update.json").
-                returns(http_subresource)
+              with("statuses/update.json").
+              returns(http_subresource)
             @url_shortener.expects(:shorten).with(@url).raises(HttpError.new(404, "Not Found"))
             @ui.expects(:warn)
             @ui.expects(:show_status_preview).with(@status)
             @ui.expects(:confirm).with("Really send?").returns(true)
             @ui.expects(:info).with("Sent status update.\n\n")
-            @ui.expects(:show_tweet).with(@internal_records[0])
+            @ui.expects(:show_tweets).with(@internal_records)
             @twitter.update(@status)
           end
         end
@@ -478,10 +476,9 @@ class ClientTest < UnitTestCase
       )
       @oauth.expects(:request_signer)
       @rest_api.expects(:[]).
-          with("statuses/friends.json?#{@rest_api_status_query_str}").
-          returns(stub(:get => twitter_records.to_json))
-      @ui.expects(:show_tweet).with(internal_records[0])
-      @ui.expects(:show_tweet).with(internal_records[1])
+        with("statuses/friends.json?#{@rest_api_status_query_str}").
+        returns(stub(:get => twitter_records.to_json))
+      @ui.expects(:show_tweets).with(internal_records)
       @twitter.friends
     end
 
@@ -498,10 +495,9 @@ class ClientTest < UnitTestCase
       )
       @oauth.expects(:request_signer)
       @rest_api.expects(:[]).
-          with("statuses/followers.json?#{@rest_api_status_query_str}").
-          returns(stub(:get => twitter_records.to_json))
-      @ui.expects(:show_tweet).with(internal_records[0])
-      @ui.expects(:show_tweet).with(internal_records[1])
+        with("statuses/followers.json?#{@rest_api_status_query_str}").
+        returns(stub(:get => twitter_records.to_json))
+      @ui.expects(:show_tweets).with(internal_records)
       @twitter.followers
     end
 
@@ -528,10 +524,9 @@ class ClientTest < UnitTestCase
             }
           )
           @search_api.expects(:[]).
-              with("search.json?q=%23greets%20%40foo&#{@search_api_query_str}").
-              returns(stub(:get => twitter_response.to_json))
-          @ui.expects(:show_tweet).with(internal_records[0])
-          @ui.expects(:show_tweet).with(internal_records[1])
+            with("search.json?q=%23greets%20%40foo&#{@search_api_query_str}").
+            returns(stub(:get => twitter_response.to_json))
+          @ui.expects(:show_tweets).with(internal_records)
           @twitter.search(["#greets", "@foo"], op)
         end
       end
@@ -550,10 +545,9 @@ class ClientTest < UnitTestCase
           }
         )
         @search_api.expects(:[]).
-            with("search.json?q=%23habits%20OR%20%23neurotic&#{@search_api_query_str}").
-            returns(stub(:get => twitter_response.to_json))
-        @ui.expects(:show_tweet).with(internal_records[0])
-        @ui.expects(:show_tweet).with(internal_records[1])
+          with("search.json?q=%23habits%20OR%20%23neurotic&#{@search_api_query_str}").
+          returns(stub(:get => twitter_response.to_json))
+        @ui.expects(:show_tweets).with(internal_records)
         @twitter.search(["#habits", "#neurotic"], :or)
       end
     end
@@ -572,19 +566,19 @@ class ClientTest < UnitTestCase
         user_has_authorized = states('User has authorized?').starts_as(false)
         @oauth.expects(:request_signer).twice
         @oauth.expects(:authorize).
-            yields(access_token).
-            then(user_has_authorized.is(true))
+          yields(access_token).
+          then(user_has_authorized.is(true))
         http_subresource = mock
         http_subresource.expects(:get).
-            raises(HttpError.new(401, 'Unauthorized')).
-            when(user_has_authorized.is(false))
+          raises(HttpError.new(401, 'Unauthorized')).
+          when(user_has_authorized.is(false))
         http_subresource.expects(:get).
-            returns(twitter_records.to_json).
-            when(user_has_authorized.is(true))
+          returns(twitter_records.to_json).
+          when(user_has_authorized.is(true))
         @rest_api.expects(:[]).returns(http_subresource)
         @config.expects(:[]=).with(:oauth_access, access_token)
         @config.expects(:save)
-        @ui.expects(:show_tweet).with(internal_records[0])
+        @ui.expects(:show_tweets).with(internal_records)
         @twitter.home
       end
     end
