@@ -27,15 +27,15 @@ class OAuthTest < UnitTestCase
 
   should "raise AuthorizationError if OAuth dance fails due to HTTP 4xx response" do
     @http.expects(:post).
-        with(REQUEST_TOKEN_URL).
-        raises(HttpError.new(401, 'Unauthorized'))
+      with(REQUEST_TOKEN_URL).
+      raises(HttpError.new(401, 'Unauthorized'))
     assert_raise(AuthorizationError) { @oauth.authorize }
   end
 
   should "pass other exceptions than due to HTTP 4xx responses through" do
     @http.expects(:post).
-        with(REQUEST_TOKEN_URL).
-        raises(HttpError.new(503, 'Service Unavailable'))
+      with(REQUEST_TOKEN_URL).
+      raises(HttpError.new(503, 'Service Unavailable'))
     assert_raise(HttpError) { @oauth.authorize }
   end
 
@@ -56,16 +56,16 @@ class OAuthTest < UnitTestCase
 
   def expect_complete_oauth_dance
     @http.expects(:post).
-        with(REQUEST_TOKEN_URL).
-        returns(REQUEST_TOKEN_RESPONSE)
+      with(REQUEST_TOKEN_URL).
+      returns(REQUEST_TOKEN_RESPONSE)
     @ui.expects(:info).
-        with("Please authorize: #{AUTHORIZE_URL}")
+      with("Please authorize: #{AUTHORIZE_URL}")
     @ui.expects(:prompt).
-        with('Enter PIN').
-        returns(PIN)
+      with('Enter PIN').
+      returns(PIN)
     @http.expects(:post).
-        with(ACCESS_TOKEN_URL).
-        returns(ACCESS_TOKEN_RESPONSE)
+      with(ACCESS_TOKEN_URL).
+      returns(ACCESS_TOKEN_RESPONSE)
   end
 
   def fake_http_connection_and_request

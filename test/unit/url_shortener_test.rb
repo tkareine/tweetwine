@@ -90,7 +90,7 @@ class UrlShortenerTest < UnitTestCase
           },
           :xpath_selector   => "//input[@id='short_url']/@value")
         @http.expects(:get).
-            with("http://shorten.it/create?token=xyz&url=http://www.ruby-doc.org/core/")
+          with("http://shorten.it/create?token=xyz&url=http://www.ruby-doc.org/core/")
         url_shortener.shorten("http://www.ruby-doc.org/core/")
       end
     end
@@ -103,7 +103,7 @@ class UrlShortenerTest < UnitTestCase
           :url_param_name   => "url",
           :xpath_selector   => "//input[@id='short_url']/@value")
         @http.expects(:post).
-            with("http://shorten.it/create", {:url => "http://www.ruby-doc.org/core/"})
+          with("http://shorten.it/create", {:url => "http://www.ruby-doc.org/core/"})
         url_shortener.shorten("http://www.ruby-doc.org/core/")
       end
 
@@ -117,9 +117,9 @@ class UrlShortenerTest < UnitTestCase
           },
           :xpath_selector   => "//input[@id='short_url']/@value")
         @http.expects(:post).
-            with("http://shorten.it/create",
-              :token => "xyz",
-              :url   => "http://www.ruby-doc.org/core/")
+          with("http://shorten.it/create",
+            :token => "xyz",
+            :url   => "http://www.ruby-doc.org/core/")
         url_shortener.shorten("http://www.ruby-doc.org/core/")
       end
     end
@@ -132,8 +132,8 @@ class UrlShortenerTest < UnitTestCase
           :url_param_name   => "url",
           :xpath_selector   => "//input[@id='short_url']/@value")
         @http.expects(:post).
-            with("http://shorten.it/create", :url => "http://www.ruby-doc.org/core/").
-            raises(HttpError.new(404, "Not Found"))
+          with("http://shorten.it/create", :url => "http://www.ruby-doc.org/core/").
+          raises(HttpError.new(404, "Not Found"))
         assert_raise(HttpError) { url_shortener.shorten("http://www.ruby-doc.org/core/") }
       end
     end
