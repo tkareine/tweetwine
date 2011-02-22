@@ -42,6 +42,12 @@ namespace :man do
   end
 end
 
+CLOBBER.include 'rdoc'
+desc "Generate RDoc"
+task :rdoc do
+  sh %{rdoc --encoding=UTF-8 --line-numbers --title='#{name} #{version}' --output=rdoc *.rdoc LICENSE.txt lib}
+end
+
 namespace :test do
   def create_test_task(type, options = {})
     base_dir  = options[:base_dir]
