@@ -86,18 +86,19 @@ class UITest < UnitTestCase
       should "output regular tweet" do
         from_user = "fooman"
         status = "Hi, @barman! Lulz woo! #hellos"
+        time = 2
         tweet = create_tweet(
           :from_user  => from_user,
-          :status     => status
+          :status     => status,
+          :created_at => create_timestamp(time)
         )
-        Support.expects(:humanize_time_diff).returns([2, "secs"])
         @out.expects(:puts).with(<<-END
-#{from_user}, 2 secs ago:
+#{from_user}, #{time} sec ago:
 #{status}
 
         END
         )
-        @ui.show_tweet(tweet)
+        show_tweet_at_default_time(tweet)
       end
 
       should "output replying tweet" do
@@ -109,14 +110,13 @@ class UITest < UnitTestCase
           :status     => status,
           :to_user    => to_user
         )
-        Support.expects(:humanize_time_diff).returns([2, "secs"])
         @out.expects(:puts).with(<<-END
-#{from_user}, in reply to #{to_user}, 2 secs ago:
+#{from_user}, in reply to #{to_user}, 0 sec ago:
 #{status}
 
         END
         )
-        @ui.show_tweet(tweet)
+        show_tweet_at_default_time(tweet)
       end
 
       should "output regular retweet" do
@@ -128,14 +128,13 @@ class UITest < UnitTestCase
           :status     => status,
           :rt_user    => rt_user
         )
-        Support.expects(:humanize_time_diff).returns([2, "secs"])
         @out.expects(:puts).with(<<-END
-#{rt_user} RT #{from_user}, 2 secs ago:
+#{rt_user} RT #{from_user}, 0 sec ago:
 #{status}
 
         END
         )
-        @ui.show_tweet(tweet)
+        show_tweet_at_default_time(tweet)
       end
 
       should "output replying retweet" do
@@ -149,14 +148,13 @@ class UITest < UnitTestCase
           :status     => status,
           :rt_user    => rt_user
         )
-        Support.expects(:humanize_time_diff).returns([2, "secs"])
         @out.expects(:puts).with(<<-END
-#{rt_user} RT #{from_user}, in reply to #{to_user}, 2 secs ago:
+#{rt_user} RT #{from_user}, in reply to #{to_user}, 0 sec ago:
 #{status}
 
         END
         )
-        @ui.show_tweet(tweet)
+        show_tweet_at_default_time(tweet)
       end
 
       should "unescape HTML in a status" do
@@ -167,14 +165,13 @@ class UITest < UnitTestCase
           :from_user  => from_user,
           :status     => escaped_status
         )
-        Support.expects(:humanize_time_diff).returns([2, "secs"])
         @out.expects(:puts).with(<<-END
-#{from_user}, 2 secs ago:
+#{from_user}, 0 sec ago:
 #{unescaped_status}
 
         END
         )
-        @ui.show_tweet(tweet)
+        show_tweet_at_default_time(tweet)
       end
 
       should "output a preview of a status" do
@@ -212,14 +209,13 @@ class UITest < UnitTestCase
           :from_user  => from_user,
           :status     => status
         )
-        Support.expects(:humanize_time_diff).returns([2, "secs"])
         @out.expects(:puts).with(<<-END
-\e[32m#{from_user}\e[0m, 2 secs ago:
+\e[32m#{from_user}\e[0m, 0 sec ago:
 #{status}
 
         END
         )
-        @ui.show_tweet(tweet)
+        show_tweet_at_default_time(tweet)
       end
 
       should "output replying tweet" do
@@ -230,14 +226,13 @@ class UITest < UnitTestCase
           :status     => "@#{to_user}! How are you doing?",
           :to_user    => to_user
         )
-        Support.expects(:humanize_time_diff).returns([2, "secs"])
         @out.expects(:puts).with(<<-END
-\e[32m#{from_user}\e[0m, in reply to \e[32m#{to_user}\e[0m, 2 secs ago:
+\e[32m#{from_user}\e[0m, in reply to \e[32m#{to_user}\e[0m, 0 sec ago:
 \e[33m@#{to_user}\e[0m! How are you doing?
 
         END
         )
-        @ui.show_tweet(tweet)
+        show_tweet_at_default_time(tweet)
       end
 
       should "output regular retweet" do
@@ -249,14 +244,13 @@ class UITest < UnitTestCase
           :status     => status,
           :rt_user    => rt_user
         )
-        Support.expects(:humanize_time_diff).returns([2, "secs"])
         @out.expects(:puts).with(<<-END
-\e[32m#{rt_user}\e[0m RT \e[32m#{from_user}\e[0m, 2 secs ago:
+\e[32m#{rt_user}\e[0m RT \e[32m#{from_user}\e[0m, 0 sec ago:
 #{status}
 
         END
         )
-        @ui.show_tweet(tweet)
+        show_tweet_at_default_time(tweet)
       end
 
       should "output replying retweet" do
@@ -269,14 +263,13 @@ class UITest < UnitTestCase
           :status     => "@#{to_user}, reply worth retweeting",
           :rt_user    => rt_user
         )
-        Support.expects(:humanize_time_diff).returns([2, "secs"])
         @out.expects(:puts).with(<<-END
-\e[32m#{rt_user}\e[0m RT \e[32m#{from_user}\e[0m, in reply to \e[32m#{to_user}\e[0m, 2 secs ago:
+\e[32m#{rt_user}\e[0m RT \e[32m#{from_user}\e[0m, in reply to \e[32m#{to_user}\e[0m, 0 sec ago:
 \e[33m@#{to_user}\e[0m, reply worth retweeting
 
         END
         )
-        @ui.show_tweet(tweet)
+        show_tweet_at_default_time(tweet)
       end
 
       should "output a preview of a status" do
@@ -297,14 +290,13 @@ class UITest < UnitTestCase
           :from_user  => from_user,
           :status     => "Lulz, so happy! #{hashtags[0]} #{hashtags[1]}"
         )
-        Support.expects(:humanize_time_diff).returns([2, "secs"])
         @out.expects(:puts).with(<<-END
-\e[32m#{from_user}\e[0m, 2 secs ago:
+\e[32m#{from_user}\e[0m, 0 sec ago:
 Lulz, so happy! \e[35m#{hashtags[0]}\e[0m \e[35m#{hashtags[1]}\e[0m
 
         END
         )
-        @ui.show_tweet(tweet)
+        show_tweet_at_default_time(tweet)
       end
 
       %w{http://is.gd/1qLk3 http://is.gd/1qLk3?id=foo}.each do |url|
@@ -314,14 +306,13 @@ Lulz, so happy! \e[35m#{hashtags[0]}\e[0m \e[35m#{hashtags[1]}\e[0m
             :from_user  => from_user,
             :status     => "New Rails³ - #{url}"
           )
-          Support.expects(:humanize_time_diff).returns([2, "secs"])
           @out.expects(:puts).with(<<-END
-\e[32m#{from_user}\e[0m, 2 secs ago:
+\e[32m#{from_user}\e[0m, 0 sec ago:
 New Rails³ - \e[36m#{url}\e[0m
 
           END
           )
-          @ui.show_tweet(tweet)
+          show_tweet_at_default_time(tweet)
         end
       end
 
@@ -335,14 +326,13 @@ New Rails³ - \e[36m#{url}\e[0m
             :from_user  => from_user,
             :status     => "Links: #{first_url} and #{second_url} np"
           )
-          Support.expects(:humanize_time_diff).returns([2, "secs"])
           @out.expects(:puts).with(<<-END
-\e[32m#{from_user}\e[0m, 2 secs ago:
+\e[32m#{from_user}\e[0m, 0 sec ago:
 Links: \e[36m#{first_url}\e[0m and \e[36m#{second_url}\e[0m np
 
           END
           )
-          @ui.show_tweet(tweet)
+          show_tweet_at_default_time(tweet)
         end
       end
 
@@ -353,14 +343,13 @@ Links: \e[36m#{first_url}\e[0m and \e[36m#{second_url}\e[0m np
           :from_user  => from_user,
           :status     => "I salute you #{users[0]}, #{users[1]}, and #{users[2]}!"
         )
-        Support.expects(:humanize_time_diff).returns([2, "secs"])
         @out.expects(:puts).with(<<-END
-\e[32m#{from_user}\e[0m, 2 secs ago:
+\e[32m#{from_user}\e[0m, 0 sec ago:
 I salute you \e[33m#{users[0]}\e[0m, \e[33m#{users[1]}\e[0m, and \e[33m#{users[2]}\e[0m!
 
         END
         )
-        @ui.show_tweet(tweet)
+        show_tweet_at_default_time(tweet)
       end
 
       should "not highlight email addresses as usernames in a status" do
@@ -371,14 +360,13 @@ I salute you \e[33m#{users[0]}\e[0m, \e[33m#{users[1]}\e[0m, and \e[33m#{users[2
           :from_user  => from_user,
           :status     => "Hi, #{users[0]}! You should notify #{users[1]}, #{email}"
         )
-        Support.expects(:humanize_time_diff).returns([2, "secs"])
         @out.expects(:puts).with(<<-END
-\e[32m#{from_user}\e[0m, 2 secs ago:
+\e[32m#{from_user}\e[0m, 0 sec ago:
 Hi, \e[33m#{users[0]}\e[0m! You should notify \e[33m#{users[1]}\e[0m, #{email}
 
         END
         )
-        @ui.show_tweet(tweet)
+        show_tweet_at_default_time(tweet)
       end
     end
 
@@ -450,6 +438,12 @@ Hi, \e[33m#{users[0]}\e[0m! You should notify \e[33m#{users[1]}\e[0m, #{email}
       assert_no_full_match UI::USERNAME_REGEX, "#mayhem "
       assert_no_full_match UI::USERNAME_REGEX, " #mayhem "
     end
+  end
+
+  private
+
+  def show_tweet_at_default_time(tweet)
+    at_default_time { @ui.show_tweet(tweet) }
   end
 end
 

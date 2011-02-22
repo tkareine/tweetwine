@@ -1,5 +1,7 @@
 # coding: utf-8
 
+require 'timecop'
+
 module Tweetwine::Test
   module TweetHelper
     FIELD_PATHS = {
@@ -10,11 +12,13 @@ module Tweetwine::Test
       :status     => %w{status text}
     }.freeze
 
+    DEFAULT_TIMESTAMP = Time.utc(2011, 'feb', 17, 22, 28, 0)
+
     DEFAULT_FIELD_VALUES = {
       :from_user  => 'fred',
       :to_user    => nil,
       :retweet    => nil,
-      :created_at => Time.utc(2011, 'feb', 17, 22, 28, 0).iso8601,
+      :created_at => DEFAULT_TIMESTAMP.iso8601,
       :status     => nil
     }.freeze
 
@@ -36,6 +40,14 @@ module Tweetwine::Test
 
     def create_tweet(fields = {})
       Tweetwine::Tweet.new(create_record(fields), FIELD_PATHS)
+    end
+
+    def at_default_time(&block)
+      Timecop.freeze(TweetHelper::DEFAULT_TIMESTAMP, &block)
+    end
+
+    def create_timestamp(minus_seconds)
+      (TweetHelper::DEFAULT_TIMESTAMP - minus_seconds).iso8601
     end
 
     private
