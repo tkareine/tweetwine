@@ -170,7 +170,7 @@ module Tweetwine
 
     def create_status_update(status)
       status = if Support.blank? status
-        CLI.ui.prompt("Status update")
+        CLI.ui.prompt "Status update"
       else
         status.dup
       end
@@ -193,7 +193,7 @@ module Tweetwine
 
     def truncate_status(status)
       status.replace status[0...MAX_STATUS_LENGTH]
-      CLI.ui.warn("Status will be truncated.")
+      CLI.ui.warn "Status will be truncated."
     end
   end
 end
