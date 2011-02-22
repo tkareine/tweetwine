@@ -14,7 +14,7 @@ class TweetTest < UnitTestCase
     end
   end
 
-  context "for equivalence" do
+  context "for equality" do
     should "equal to another tweet with same content" do
       status = 'foo'
       first  = create_tweet(:status => status)
