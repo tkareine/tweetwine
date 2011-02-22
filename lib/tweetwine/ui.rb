@@ -10,6 +10,7 @@ module Tweetwine
     }.freeze
     HASHTAG_REGEX = /#[\w-]+/
     USERNAME_REGEX = /^(@\w+)|\s+(@\w+)/
+    URI_SCHEMES_TO_COLORIZE = %w{http https}
 
     def initialize(options = {})
       @in       = options[:in]            || $stdin
@@ -96,7 +97,7 @@ module Tweetwine
       if @colors
         status = colorize_matching(:yellow,   status, USERNAME_REGEX)
         status = colorize_matching(:magenta,  status, HASHTAG_REGEX)
-        status = colorize_matching(:cyan,     status, Uri.extract(status, %w{http https}).uniq)
+        status = colorize_matching(:cyan,     status, Uri.extract(status, URI_SCHEMES_TO_COLORIZE).uniq)
       end
       status
     end
