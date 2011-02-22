@@ -413,38 +413,53 @@ Hi, \e[33m#{users[0]}\e[0m! You should notify \e[33m#{users[1]}\e[0m, #{email}
   end
 
   context "username regex" do
-    should "match a proper username reference" do
-      assert_full_match UI::USERNAME_REGEX, "@nick"
-      assert_full_match UI::USERNAME_REGEX, "@nick_man"
-      assert_full_match UI::USERNAME_REGEX, "@nick"
-      assert_full_match UI::USERNAME_REGEX, " @nick"
+    [
+      ['@nick',     'normal'],
+      ['@nick_man', 'underscore separated'],
+      [' @nick',    'beginning with space']
+    ].each do |(nick, desc)|
+      should "match proper username reference, case #{desc}" do
+        assert_full_match UI::USERNAME_REGEX, nick
+      end
     end
 
-    should "not match an inproper username reference" do
-      assert_no_full_match UI::USERNAME_REGEX, "@"
-      assert_no_full_match UI::USERNAME_REGEX, "nick"
-      assert_no_full_match UI::USERNAME_REGEX, "-@nick"
-      assert_no_full_match UI::USERNAME_REGEX, "@nick-man"
-      assert_no_full_match UI::USERNAME_REGEX, "@nick "
-      assert_no_full_match UI::USERNAME_REGEX, " @nick "
-      assert_no_full_match UI::USERNAME_REGEX, "man @nick"
-      assert_no_full_match UI::USERNAME_REGEX, "man@nick"
+    [
+      ['@',         'just prefix'],
+      ['nick',      'just body'],
+      ['-@nick',    'beginning with dash'],
+      ['@nick-man', 'dash separated'],
+      ['@nick ',    'ending with space'],
+      [' @nick ',   'surrounded with space'],
+      ['man @nick', 'space separated'],
+      ['man@nick',  'prefix in between']
+    ].each do |(no_nick, desc)|
+      should "not match an inproper username reference, case #{desc}" do
+        assert_no_full_match UI::USERNAME_REGEX, no_nick
+      end
     end
   end
 
   context "hashtag regex" do
-    should "match a proper hashtag reference" do
-      assert_full_match UI::HASHTAG_REGEX, "#mayhem"
-      assert_full_match UI::HASHTAG_REGEX, "#friday_mayhem"
-      assert_full_match UI::HASHTAG_REGEX, "#friday-mayhem"
+    [
+      ['#mayhem',         'normal'],
+      ['#friday_mayhem',  'underscore separated'],
+      ['#friday-mayhem',  'dash separated']
+    ].each do |(hashtag, desc)|
+      should "match a proper hashtag reference, case #{desc}" do
+        assert_full_match UI::HASHTAG_REGEX, hashtag
+      end
     end
 
-    should "not match an inproper hashtag reference" do
-      assert_no_full_match UI::USERNAME_REGEX, "#"
-      assert_no_full_match UI::USERNAME_REGEX, "mayhem"
-      assert_no_full_match UI::USERNAME_REGEX, " #mayhem"
-      assert_no_full_match UI::USERNAME_REGEX, "#mayhem "
-      assert_no_full_match UI::USERNAME_REGEX, " #mayhem "
+    [
+      ['#',         'just prefix'],
+      ['mayhem',    'just body'],
+      [' #mayhem',  'beginning with space'],
+      ['#mayhem ',  'ending with space'],
+      [' #mayhem ', 'surrounded with space']
+    ].each do |(no_hashtag, desc)|
+      should "not match an inproper hashtag reference, case #{desc}" do
+        assert_no_full_match UI::HASHTAG_REGEX, no_hashtag
+      end
     end
   end
 
