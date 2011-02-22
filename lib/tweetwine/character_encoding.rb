@@ -52,7 +52,7 @@ module Tweetwine
       def guess_external_encoding_from_env_lang
         lang = ENV['LANG']
         return 'UTF-8' if lang =~ /(utf-8|utf8)\z/i
-        Support.blank?(lang) ? nil : lang
+        Support.presence(lang)
       end
     end
   end
