@@ -77,6 +77,7 @@ enabled via `shorten_urls` field in the configuration file; for example:
 
     username: spoonman
     colors: true
+    show_reverse: true
     shorten_urls:
       service_url: http://is.gd/create.php
       method: post
