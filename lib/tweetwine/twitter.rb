@@ -165,7 +165,16 @@ module Tweetwine
     end
 
     def show_tweets(records, paths)
-      CLI.ui.show_tweets(records.map { |record| Tweet.new(record, paths) })
+      tweets = records.map do |record|
+        begin
+          Tweet.new(record, paths)
+        rescue ArgumentError
+          CLI.ui.warn "Invalid tweet. Skipping..."
+          nil
+        end
+      end
+      tweets.reject! { |tweet| tweet.nil? }
+      CLI.ui.show_tweets tweets
     end
 
     def create_status_update(status)

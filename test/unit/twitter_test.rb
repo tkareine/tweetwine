@@ -58,6 +58,27 @@ class ClientTest < UnitTestCase
       @search_api_query_str = "page=#{@config[:page]}&rpp=#{@config[:num_tweets]}"
     end
 
+    should "skip showing an invalid tweet" do
+      invalid_from_user = nil
+      twitter_records, internal_records = create_rest_api_status_records(
+        {
+          :from_user  => invalid_from_user,
+          :status     => "wassup?"
+        },
+        {
+          :from_user  => "lulzwoo",
+          :status     => "nuttin'"
+        }
+      )
+      @oauth.expects(:request_signer)
+      @rest_api.expects(:[]).
+        with("statuses/home_timeline.json?#{@rest_api_status_query_str}").
+        returns(stub(:get => twitter_records.to_json))
+      @ui.expects(:warn).with("Invalid tweet. Skipping...")
+      @ui.expects(:show_tweets).with(internal_records[1..-1])
+      @twitter.home
+    end
+
     should "fetch friends' statuses (home view)" do
       twitter_records, internal_records = create_rest_api_status_records(
         {
@@ -629,7 +650,7 @@ class ClientTest < UnitTestCase
 
   def create_twitter_and_internal_records(records, paths, &twitter_record_maker)
     twitter_records   = records.map(&twitter_record_maker)
-    internal_records  = twitter_records.map { |r| Tweet.new(r, paths) }
+    internal_records  = twitter_records.map { |rec| Tweet.new(rec, paths) rescue nil }
     [twitter_records, internal_records]
   end
 
