@@ -372,34 +372,42 @@ Hi, \e[33m#{users[0]}\e[0m! You should notify \e[33m#{users[1]}\e[0m, #{email}
 
     context "for outputting a collection of tweets" do
       setup do
-        @users = %w{first_user second_user}
-        statuses = @users.map { |from| "Hi, I'm #{from}." }
-        @users_and_statuses = @users.zip statuses
-        @outputs = @users_and_statuses.map { |(user, status)| <<-END
-#{user}, 2 secs ago:
+        users_and_times = [
+          ['first',  11],
+          ['second', 12],
+          ['third',  13]
+        ]
+        statuses = users_and_times.map { |(user, _)| "Hi, I'm #{user}." }
+        users_and_statuses = users_and_times.zip(statuses)
+        @outputs = Hash[users_and_statuses.map { |(user, time), status|
+          output = <<-END
+#{user}, #{time} sec ago:
 #{status}
 
-        END
-        }
-        @tweets = @users_and_statuses.map { |(user, status)| create_tweet(
-          :from_user => user,
-          :status    => status
+          END
+          [user.to_sym, output]
+        }]
+        @tweets = users_and_statuses.map { |(user, time), status| create_tweet(
+          :from_user  => user,
+          :status     => status,
+          :created_at => create_timestamp(time)
         )}
-        Support.expects(:humanize_time_diff).twice.returns([2, "secs"])
       end
 
-      should "output tweets in descending order" do
-        ui = UI.new({ :out => @out, :show_reverse => false })
-        @out.expects(:puts).with(@outputs[0])
-        @out.expects(:puts).with(@outputs[1])
-        ui.show_tweets(@tweets)
+      should "output tweets in normal order" do
+        @ui = UI.new({ :out => @out, :show_reverse => false })
+        [:first, :second, :third].each do |user|
+          @out.expects(:puts).with(@outputs[user])
+        end
+        show_tweets_at_default_time(@tweets)
       end
 
-      should "output tweets in ascending order" do
-        ui = UI.new({ :out => @out, :show_reverse => true })
-        @out.expects(:puts).with(@outputs[1])
-        @out.expects(:puts).with(@outputs[0])
-        ui.show_tweets(@tweets)
+      should "output tweets in reverse order" do
+        @ui = UI.new({ :out => @out, :show_reverse => true })
+        [:third, :second, :first].each do |user|
+          @out.expects(:puts).with(@outputs[user])
+        end
+        show_tweets_at_default_time(@tweets)
       end
     end
   end
@@ -444,6 +452,10 @@ Hi, \e[33m#{users[0]}\e[0m! You should notify \e[33m#{users[1]}\e[0m, #{email}
 
   def show_tweet_at_default_time(tweet)
     at_default_time { @ui.show_tweet(tweet) }
+  end
+
+  def show_tweets_at_default_time(tweets)
+    at_default_time { @ui.show_tweets(tweets) }
   end
 end
 
