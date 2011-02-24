@@ -13,7 +13,7 @@ class UriTest < UnitTestCase
       %w{. period},
       %w{- dash},
       %w{_ underscore},
-    ].each do |char, desc|
+    ].each do |(char, desc)|
       should "not encode safe characters, case #{desc}" do
         assert_equal char, Uri.percent_encode(char)
       end
@@ -29,7 +29,7 @@ class UriTest < UnitTestCase
       %w{/ %2F slash},
       %w{: %3A colon},
       %w{, %2C comma}
-    ].each do |char, expected, desc|
+    ].each do |(char, expected, desc)|
       should "encode unsafe characters that URI.encode leaves by default unencoded, case #{desc}" do
         assert_equal char, Uri.parser.escape(char)
         assert_equal expected, Uri.percent_encode(char)

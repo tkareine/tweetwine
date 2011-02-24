@@ -16,28 +16,28 @@ class SupportTest < UnitTestCase
       ["foo",   false,  "nonempty string"],
       [[],      true,   "empty array"],
       [%w{a b}, false,  "nonempty array"]
-    ].each do |(subject, emptiness, description)|
-      should "return #{emptiness} for blank? with #{description}" do
+    ].each do |(subject, emptiness, desc)|
+      should "return #{emptiness} for blank? with #{desc}" do
         assert_equal emptiness, blank?(subject)
       end
 
-      should "return #{!emptiness} for present? with #{description}" do
+      should "return #{!emptiness} for present? with #{desc}" do
         assert_equal !emptiness, present?(subject)
       end
 
-      should "return non-empty subject for presence, when subject is #{description}" do
+      should "return non-empty subject for presence, when subject is #{desc}" do
         actual = presence(subject)
         expected = present?(subject) ? subject : nil
         assert_same expected, actual
       end
 
-      should "return value of block for presence, when subject is #{description}" do
+      should "return value of block for presence, when subject is #{desc}" do
         actual = presence(subject) { |s| s.size }
         expected = present?(subject) ? subject.size : nil
         assert_same expected, actual
       end
 
-      should "allow presence to be used with || operator, when subject is #{description}" do
+      should "allow presence to be used with || operator, when subject is #{desc}" do
         alternative = "hey"
         actual = presence(subject) || alternative
         expected = present?(subject) ? subject : alternative
@@ -229,7 +229,7 @@ class SupportTest < UnitTestCase
       %w{- dash},
       %w{_ underscore},
       %w{+ plus}
-    ].each do |char, desc|
+    ].each do |(char, desc)|
       should "not affect already unescaped characters, case #{desc}" do
         assert_equal char, unescape_html(char)
       end
@@ -241,7 +241,7 @@ class SupportTest < UnitTestCase
       %w{&amp;  &},
       %w{&quot; "},
       %W{&nbsp; \ }
-    ].each do |input, expected|
+    ].each do |(input, expected)|
       should "unescape HTML-escaped characters, case '#{input}'" do
         assert_equal expected, unescape_html(input)
       end
