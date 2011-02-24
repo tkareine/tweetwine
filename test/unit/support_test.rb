@@ -263,12 +263,12 @@ class SupportTest < UnitTestCase
     end
 
     should "support both a non-array and a single element array path for finding the value" do
-      assert_equal "beautiful", find_hash_path(@outer_hash, :simple)
-      assert_equal "beautiful", find_hash_path(@outer_hash, [:simple])
+      assert_equal @outer_hash[:simple], find_hash_path(@outer_hash, :simple)
+      assert_equal @outer_hash[:simple], find_hash_path(@outer_hash, [:simple])
     end
 
     should "find a nested value with an array path" do
-      assert_equal "slick", find_hash_path(@outer_hash, [:inner, :salmon])
+      assert_equal @inner_hash[:salmon], find_hash_path(@outer_hash, [:inner, :salmon])
     end
 
     should "return the default value of the hash if the value cannot be found" do
@@ -278,15 +278,19 @@ class SupportTest < UnitTestCase
     end
 
     should "return the default value of the hash if invalid path value" do
-      assert_equal @outer_hash.default, find_hash_path(@outer_hash, nil)
-      assert_equal @outer_hash.default, find_hash_path(@outer_hash, [:no_such, nil])
-      assert_equal @outer_hash.default, find_hash_path(@outer_hash, [:simple, nil])
-      assert_equal @outer_hash.default, find_hash_path(@outer_hash, [:inner, nil])
-      assert_equal @outer_hash.default, find_hash_path(@outer_hash, [:inner, :salmon, nil])
+      [
+        nil,
+        [:no_such, nil],
+        [:simple, nil],
+        [:inner, nil],
+        [:inner, :salmon, nil]
+      ].each do |path|
+        assert_equal @outer_hash.default, find_hash_path(@outer_hash, path)
+      end
     end
 
     should "return nil if nil hash value" do
-      assert_equal nil, find_hash_path(nil, nil)
+      assert_equal nil, find_hash_path(nil, [:salmon])
     end
   end
 end
