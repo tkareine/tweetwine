@@ -48,6 +48,8 @@ class PromiseTest < UnitTestCase
     assert_equal(@result.to_s, @promise.to_s)
   end
 
+  private
+
   def eval_action
     @promise * 42   # just do something with it
   end
