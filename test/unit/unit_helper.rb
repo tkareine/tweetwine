@@ -40,6 +40,19 @@ module Tweetwine::Test
       })
     end
 
+    # Fails unless +fun.call(*args)+ is equal to +expected+ and
+    # +fun.call(*args)+ is equal to +fun.call(*args.reverse)+.
+    def assert_commutative(expected, args, msg_not_expected = nil, msg_not_commutative = nil, &fun)
+      actual_left = fun.call(*args)
+      assert_equal(expected, actual_left, get_message(msg_not_expected) {
+        'Expected %s, not %s' % [expected.inspect, actual_left.inspect]
+      })
+      actual_right = fun.call(*args.reverse)
+      assert_equal(actual_left, actual_right, get_message(msg_not_commutative) {
+        'Expected %s to be equal to %s (commutative)' % [actual_left.inspect, actual_right.inspect]
+      })
+    end
+
     private
 
     def get_message(given, &default)

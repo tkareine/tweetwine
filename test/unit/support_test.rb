@@ -47,31 +47,66 @@ class SupportTest < UnitTestCase
   end
 
   context "for humanizing time differences" do
+    should "accept string and time arguments" do
+      start = '2009-01-01 01:01:00'
+      stop  = Time.parse '2009-01-01 01:03:00'
+      assert_commutative([2, 'min'], [start, stop]) do |a, b|
+        humanize_time_diff(a, b)
+      end
+    end
+
     should "use second granularity for time differences smaller than a minute" do
-      assert_equal [1,  "sec"], humanize_time_diff(Time.parse("2009-01-01 00:00:59").to_s, Time.parse("2009-01-01 00:01:00"))
-      assert_equal [0,  "sec"], humanize_time_diff(Time.parse("2009-01-01 01:00:00").to_s, Time.parse("2009-01-01 01:00:00"))
-      assert_equal [1,  "sec"], humanize_time_diff(Time.parse("2009-01-01 01:00:00").to_s, Time.parse("2009-01-01 01:00:01"))
-      assert_equal [59, "sec"], humanize_time_diff(Time.parse("2009-01-01 01:00:00").to_s, Time.parse("2009-01-01 01:00:59"))
+      [
+        [0,   '2009-01-01 01:00:00', '2009-01-01 01:00:00'],
+        [1,   '2009-01-01 00:00:59', '2009-01-01 00:01:00'],
+        [1,   '2009-01-01 01:00:00', '2009-01-01 01:00:01'],
+        [59,  '2009-01-01 01:00:00', '2009-01-01 01:00:59']
+      ].each do |(diff, start, stop)|
+        assert_commutative([diff, 'sec'], [start, stop]) do |a, b|
+          humanize_time_diff(a, b)
+        end
+      end
     end
 
     should "use minute granularity for time differences greater than a minute but smaller than an hour" do
-      assert_equal [59, "min"], humanize_time_diff(Time.parse("2009-01-01 01:00").to_s, Time.parse("2009-01-01 01:59"))
-      assert_equal [59, "min"], humanize_time_diff(Time.parse("2009-01-01 01:00:30").to_s, Time.parse("2009-01-01 01:59:00"))
-      assert_equal [57, "min"], humanize_time_diff(Time.parse("2009-01-01 01:01:00").to_s, Time.parse("2009-01-01 01:58:00"))
-      assert_equal [56, "min"], humanize_time_diff(Time.parse("2009-01-01 01:01:31").to_s, Time.parse("2009-01-01 01:58:00"))
-      assert_equal [57, "min"], humanize_time_diff(Time.parse("2009-01-01 01:01:00").to_s, Time.parse("2009-01-01 01:58:29"))
-      assert_equal [58, "min"], humanize_time_diff(Time.parse("2009-01-01 01:01:00").to_s, Time.parse("2009-01-01 01:58:30"))
+      [
+        [1,   '2009-01-01 01:00:00', '2009-01-01 01:01:00'],
+        [2,   '2009-01-01 01:01:00', '2009-01-01 01:03:29'],
+        [3,   '2009-01-01 01:01:00', '2009-01-01 01:03:30'],
+        [59,  '2009-01-01 01:00:00', '2009-01-01 01:59:00'],
+        [59,  '2009-01-01 01:00:30', '2009-01-01 01:59:00'],
+        [57,  '2009-01-01 01:01:00', '2009-01-01 01:58:00']
+      ].each do |(diff, start, stop)|
+        assert_commutative([diff, 'min'], [start, stop]) do |a, b|
+          humanize_time_diff(a, b)
+        end
+      end
     end
 
     should "use hour granularity for time differences greater than an hour but smaller than a day" do
-      assert_equal [1,  "hour"],  humanize_time_diff(Time.parse("2009-01-01 01:00").to_s, Time.parse("2009-01-01 02:00"))
-      assert_equal [1,  "hour"],  humanize_time_diff(Time.parse("2009-01-01 02:00").to_s, Time.parse("2009-01-01 01:00"))
-      assert_equal [2,  "hours"], humanize_time_diff(Time.parse("2009-01-01 01:00").to_s, Time.parse("2009-01-01 03:00"))
+      [
+        [1, 'hour',   '2009-01-01 01:00', '2009-01-01 02:00'],
+        [2, 'hours',  '2009-01-01 01:00', '2009-01-01 03:00'],
+        [2, 'hours',  '2009-01-01 01:00', '2009-01-01 03:29'],
+        [3, 'hours',  '2009-01-01 01:00', '2009-01-01 03:30']
+      ].each do |(diff, unit, start, stop)|
+        assert_commutative([diff, unit], [start, stop]) do |a, b|
+          humanize_time_diff(a, b)
+        end
+      end
     end
 
     should "use day granularity for time differences greater than a day" do
-      assert_equal [1,  "day"],  humanize_time_diff(Time.parse("2009-01-01 01:00").to_s, Time.parse("2009-01-02 03:00"))
-      assert_equal [2,  "days"], humanize_time_diff(Time.parse("2009-01-01 01:00").to_s, Time.parse("2009-01-03 03:00"))
+      [
+        [1, 'day',    '2009-01-01 01:00', '2009-01-02 01:00'],
+        [2, 'days',   '2009-01-01 01:00', '2009-01-03 01:00'],
+        [2, 'days',   '2009-01-01 01:00', '2009-01-03 12:59'],
+        [3, 'days',   '2009-01-01 01:00', '2009-01-03 13:00']
+      ].each do |(diff, unit, start, stop)|
+        assert_commutative([diff, unit], [start, stop]) do |a, b|
+          humanize_time_diff(a, b)
+        end
+      end
     end
   end
 
