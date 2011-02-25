@@ -4,3 +4,4 @@
 /coverage/
 /man/
 !/man/*.ronn
+/rdoc/
