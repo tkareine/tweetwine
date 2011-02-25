@@ -1,51 +1,51 @@
 # coding: utf-8
 
+require File.expand_path('project', File.dirname(__FILE__))
+
 require 'rake/clean'
 
-$LOAD_PATH.unshift(File.expand_path('lib', File.dirname(__FILE__)))
-name = 'tweetwine'
-require "#{name}/version"
-version = Tweetwine.version
-
 namespace :gem do
-  CLOBBER.include "#{name}-*.gem"
+  CLOBBER.include "#{Project.name}-*.gem"
 
-  file "#{name}-#{version}.gem" do |f|
-    sh %{gem build #{name}.gemspec}
+  current_gem = "#{Project.name}-#{Project.version}.gem"
+
+  file current_gem do |f|
+    sh %{gem build #{Project.name}.gemspec}
   end
 
   desc "Package the software as a gem"
-  task :build => [:"man:build", :"test:all", "#{name}-#{version}.gem"]
+  task :build => [:"man:build", :"test:all", current_gem]
 
   desc "Install the software as a gem"
   task :install => :build do
-    sh %{gem install #{name}-#{version}.gem}
+    sh %{gem install #{current_gem}}
   end
 
   desc "Uninstall the gem"
   task :uninstall => :clean do
-    sh %{gem uninstall #{name}}
+    sh %{gem uninstall #{Project.name}}
   end
 end
 
 namespace :man do
-  CLOBBER.include "man/#{name}.?", "man/#{name}.?.html"
+  CLOBBER.include "#{Project.dirs.man}/#{Project.name}.?", "#{Project.dirs.man}/#{Project.name}.?.html"
 
   desc "Build the manual"
   task :build do
-    sh "ronn -br5 --manual='#{name.capitalize} Manual' --organization='Tuomas Kareinen' man/*.ronn"
+    sh %{ronn -br5 --manual='#{Project.name.capitalize} Manual' --organization='#{Project.authors.first}' #{Project.dirs.man}/*.ronn}
   end
 
   desc "Show the manual section 7"
   task :show => :build do
-    sh "man man/#{name}.7"
+    sh %{man #{Project.dirs.man}/#{Project.name}.7}
   end
 end
 
-CLOBBER.include 'rdoc'
+CLOBBER.include Project.dirs.rdoc
+
 desc "Generate RDoc"
 task :rdoc do
-  sh %{rdoc --encoding=UTF-8 --line-numbers --title='#{name} #{version}' --output=rdoc *.rdoc LICENSE.txt lib}
+  sh %{rdoc --encoding=UTF-8 --line-numbers --title='#{Project.title}' --output=#{Project.dirs.rdoc} *.rdoc LICENSE.txt lib}
 end
 
 namespace :test do
@@ -53,7 +53,7 @@ namespace :test do
     base_dir  = options[:base_dir]
     file_glob = options[:file_glob]
     test_desc = options[:desc] || "Run #{type} tests"
-    includes  = ['lib', 'test', base_dir].map { |dir| "-I #{dir}" }.join(' ')
+    includes  = ['lib', Project.dirs.test, base_dir].map { |dir| "-I #{dir}" }.join(' ')
     warn_opt  = options[:warn] ? '-w' : ''
 
     desc test_desc
@@ -68,11 +68,11 @@ namespace :test do
   end
 
   create_test_task :unit,
-      :base_dir   => 'test/unit',
+      :base_dir   => "#{Project.dirs.test}/unit",
       :file_glob  => '**/*_test.rb',
       :warn       => true
   create_test_task :example,
-      :base_dir   => 'test/example',
+      :base_dir   => "#{Project.dirs.test}/example",
       :file_glob  => '**/*_example.rb',
       :desc       => 'Run integration/example tests',
       :warn       => false
