@@ -19,7 +19,7 @@ module Tweetwine::Test
     def assert_contains_exactly(expected, actual, msg = nil, &sorter)
       expected = block_given? ? expected.sort(&sorter) : expected.sort
       actual   = block_given? ? actual.sort(&sorter)   : actual.sort
-      assert_equal(expected, actual, get_message(msg) {
+      assert_equal(expected, actual, message(msg) {
         'After sorting, expected %s, not %s' % [expected.inspect, actual.inspect]
       })
     end
@@ -27,7 +27,7 @@ module Tweetwine::Test
     # Fails unless +str+ is a full match to +regex+.
     def assert_full_match(regex, str, msg = nil)
       match_data = regex.match(str)
-      assert(str == match_data.to_s, get_message(msg) {
+      assert(str == match_data.to_s, message(msg) {
         'Expected %s to be a full match to %s' % [str, regex.inspect]
       })
     end
@@ -35,7 +35,7 @@ module Tweetwine::Test
     # Fails if +str+ is a full match to +regex+.
     def assert_no_full_match(regex, str, msg = nil)
       match_data = regex.match(str)
-      assert(str != match_data.to_s, get_message(msg) {
+      assert(str != match_data.to_s, message(msg) {
         'Expected %s not to be a full match to %s' % [str, regex.inspect]
       })
     end
@@ -45,12 +45,12 @@ module Tweetwine::Test
     def assert_commutative(expected, args, msg_not_expected = nil, msg_not_commutative = nil, &fun)
       left_args = args
       left_actual = fun.call(left_args)
-      assert_equal(expected, left_actual, get_message(msg_not_expected) {
+      assert_equal(expected, left_actual, message(msg_not_expected) {
         'Expected %s, not %s' % [expected.inspect, left_actual.inspect]
       })
       right_args = args.reverse
       right_actual = fun.call(*right_args)
-      assert_equal(left_actual, right_actual, get_message(msg_not_commutative) {
+      assert_equal(left_actual, right_actual, message(msg_not_commutative) {
         'Expected fun%s => %s to be commutative with fun%s => %s' %
           [left_args.inspect, left_actual.inspect, right_args.inspect, right_actual.inspect]
       })
@@ -58,7 +58,7 @@ module Tweetwine::Test
 
     private
 
-    def get_message(given, &default)
+    def message(given, &default)
       given.nil? ? default.call : given
     end
   end
