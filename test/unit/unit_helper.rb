@@ -9,18 +9,15 @@ Mocha::Configuration.prevent(:stubbing_non_existent_method)
 
 module Tweetwine::Test
   module Assertions
-    # Asserts whether an Enumeration like object contains all the elements.
+    # Asserts whether an Enumeration-like object contains all the elements.
     # Fails unless +actual+ contains the same elements as +expected+, ignoring
     # the order of the elements.
-    #
-    # This method sorts +expected+ and +actual+ in order to compare them. By
-    # default, sorting is done by calling #sort for each of them. If this
-    # method is called with a block, it is passed to the #sort calls.
-    def assert_contains_exactly(expected, actual, msg = nil, &sorter)
-      expected = block_given? ? expected.sort(&sorter) : expected.sort
-      actual   = block_given? ? actual.sort(&sorter)   : actual.sort
-      assert_equal(expected, actual, message(msg) {
-        'After sorting, expected %s, not %s' % [expected.inspect, actual.inspect]
+    def assert_contains_exactly(expected, actual, msg_diff_size = nil, msg_diff_elems = nil)
+      assert_equal(expected.size, actual.size, message(msg_diff_size) {
+        'Expected %s to be of same size as %s' % [actual.inspect, expected.inspect]
+      })
+      assert(enumerable_minus_each_element(actual, expected).empty?, message(msg_diff_elems) {
+        'Expected %s to contain all the elements of %s' % [actual.inspect, expected.inspect]
       })
     end
 
@@ -60,6 +57,15 @@ module Tweetwine::Test
 
     def message(given, &default)
       given.nil? ? default.call : given
+    end
+
+    def enumerable_minus_each_element(enumerable, elements)
+      remaining = enumerable.dup.to_a
+      elements.each do |e|
+        index = remaining.index(e)
+        remaining.delete_at(index) if index
+      end
+      remaining
     end
   end
 
