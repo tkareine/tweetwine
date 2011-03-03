@@ -1,6 +1,6 @@
 # coding: utf-8
 
-require "test_helper"
+require "unit_helper"
 
 require "fileutils"
 require "tempfile"
