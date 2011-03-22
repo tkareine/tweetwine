@@ -84,8 +84,6 @@ module Tweetwine
         raise ConnectionError, e
       rescue Timeout::Error => e
         raise TimeoutError, e
-      rescue Net::HTTPError => e
-        raise HttpError, e
       end
 
       def https_scheme?(uri)
