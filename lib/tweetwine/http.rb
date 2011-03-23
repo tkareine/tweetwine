@@ -80,7 +80,7 @@ module Tweetwine
         response = yield connection, uri
         raise HttpError.new(response.code, response.message) unless response.is_a? Net::HTTPSuccess
         response.body
-      rescue Errno::ECONNABORTED, Errno::ECONNRESET => e
+      rescue Errno::ECONNABORTED, Errno::ECONNRESET, SocketError => e
         raise ConnectionError, e
       rescue Timeout::Error => e
         raise TimeoutError, e

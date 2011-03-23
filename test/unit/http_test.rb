@@ -79,17 +79,18 @@ class HttpTest < UnitTestCase
     end
 
     [
-      [Errno::ECONNABORTED, 'abort'],
-      [Errno::ECONNRESET,   'reset']
-    ].each do |error, desc|
-      should "retry connection upon connection #{desc} to #{method} request" do
+      [Errno::ECONNABORTED, 'connection abort'],
+      [Errno::ECONNRESET,   'connection reset'],
+      [SocketError,         'socket error']
+    ].each do |(error, desc)|
+      should "retry connection upon #{desc} to #{method} request" do
         stub_request(method, LATEST_ARTICLES_URL).to_raise(error).then.to_return(:body => RESPONSE_BODY)
         @ui.expects(:warn).with("Could not connect -- retrying in 4 seconds")
         @client.send(method, LATEST_ARTICLES_URL)
         assert_equal(RESPONSE_BODY, @client.send(method, LATEST_ARTICLES_URL))
       end
 
-      should "retry connection a maximum of certain number of times upon connection #{desc} to #{method} request" do
+      should "retry connection a maximum of certain number of times upon #{desc} to #{method} request" do
         stub_request(method, LATEST_ARTICLES_URL).to_raise(error)
         io_calls = sequence("IO")
         Http::Client::MAX_RETRIES.times { @ui.expects(:warn).in_sequence(io_calls) }
