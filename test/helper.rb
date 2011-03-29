@@ -1,8 +1,7 @@
 # coding: utf-8
 
-require "tweetwine"
-
-require "webmock/test_unit"
+require 'tweetwine'
+require 'webmock/test_unit'
 
 WebMock.disable_net_connect!
 
@@ -16,7 +15,7 @@ module Tweetwine
       end
 
       def fixture_path(filename)
-        File.dirname(__FILE__) << "/fixture/" << filename
+        File.dirname(__FILE__) << '/fixture/' << filename
       end
 
       def fixture_file(filename)

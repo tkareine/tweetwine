@@ -1,9 +1,8 @@
 # coding: utf-8
 
-require "test_helper"
-
-require "contest"
-require "mocha"
+require 'helper'
+require 'contest'
+require 'mocha'
 
 Mocha::Configuration.prevent(:stubbing_non_existent_method)
 

@@ -12,7 +12,7 @@
 
 Timecop.freeze(Time.parse("2009-10-14 01:56:15 +0300"))
 
-require "test_helper"
+require 'helper'
 
 module Tweetwine::Test
   module Helper
@@ -20,10 +20,10 @@ module Tweetwine::Test
 
     CONFIG_FILE = fixture_path('config_example.yaml')
     PROJECT_DIR = File.expand_path('../..', File.dirname(__FILE__))
-    PROXY_HOST = "proxy.net"
-    PROXY_PORT = 8123
-    PROXY_URL = "http://#{PROXY_HOST}:#{PROXY_PORT}"
-    USER = "fooman"
+    PROXY_HOST  = "proxy.net"
+    PROXY_PORT  = 8123
+    PROXY_URL   = "http://#{PROXY_HOST}:#{PROXY_PORT}"
+    USER        = "fooman"
 
     def start_app(args, &blk)
       lib = PROJECT_DIR + '/lib'

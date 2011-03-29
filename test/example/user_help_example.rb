@@ -1,6 +1,6 @@
 # coding: utf-8
 
-require "example_helper"
+require 'example/helper'
 
 Feature "user help" do
   as_a "user"

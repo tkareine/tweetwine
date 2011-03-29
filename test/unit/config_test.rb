@@ -1,10 +1,9 @@
 # coding: utf-8
 
-require "unit_helper"
-
-require "fileutils"
-require "tempfile"
-require "yaml"
+require 'unit/helper'
+require 'fileutils'
+require 'tempfile'
+require 'yaml'
 
 module Tweetwine::Test
 

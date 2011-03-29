@@ -1,9 +1,8 @@
 # coding: utf-8
 
-require "unit_helper"
-require "fixture/oauth"
-
-require "net/http"
+require 'unit/helper'
+require 'fixture/oauth'
+require 'net/http'
 
 module Tweetwine::Test
 

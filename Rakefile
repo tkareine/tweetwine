@@ -53,12 +53,12 @@ namespace :test do
     base_dir  = options[:base_dir]
     file_glob = options[:file_glob]
     test_desc = options[:desc] || "Run #{type} tests"
-    includes  = ['lib', Project.dirs.test, base_dir].map { |dir| "-I #{dir}" }.join(' ')
+    includes  = ['lib', Project.dirs.test].map { |dir| "-I #{dir}" }.join(' ')
     warn_opt  = options[:warn] ? '-w' : ''
 
     desc test_desc
     task type do
-      file_name_offset = base_dir.size + 1
+      file_name_offset = Project.dirs.test.size + 1
       neg_dotrb_suffix = -'.rb'.size - 1
       tests = FileList["#{base_dir}/#{file_glob}"].
           map { |file| '"' << file[file_name_offset..neg_dotrb_suffix] << '"' }.

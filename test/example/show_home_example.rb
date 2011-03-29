@@ -1,6 +1,6 @@
 # coding: utf-8
 
-require "example_helper"
+require 'example/helper'
 
 Feature "show tweets from home timeline" do
   as_a "authenticated user"

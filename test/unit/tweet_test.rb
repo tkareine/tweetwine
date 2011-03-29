@@ -1,7 +1,7 @@
 # coding: utf-8
 
-require 'unit_helper'
-require 'tweet_helper'
+require 'unit/helper'
+require 'unit/tweet_helper'
 
 module Tweetwine::Test
 

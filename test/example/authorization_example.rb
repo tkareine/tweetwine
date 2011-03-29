@@ -1,7 +1,7 @@
 # coding: utf-8
 
-require "example_helper"
-require "fixture/oauth"
+require 'example/helper'
+require 'fixture/oauth'
 
 include Tweetwine::Test::Fixture::OAuth
 

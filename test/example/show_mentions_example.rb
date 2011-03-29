@@ -1,6 +1,6 @@
 # coding: utf-8
 
-require "example_helper"
+require 'example/helper'
 
 Feature "show tweets mentioning the user" do
   as_a "authenticated user"

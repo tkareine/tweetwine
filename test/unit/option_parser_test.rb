@@ -1,6 +1,6 @@
 # coding: utf-8
 
-require "unit_helper"
+require 'unit/helper'
 
 module Tweetwine::Test
 

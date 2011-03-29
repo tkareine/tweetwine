@@ -1,8 +1,7 @@
 # coding: utf-8
 
-require "unit_helper"
-
-require "stringio"
+require 'unit/helper'
+require 'stringio'
 
 module Tweetwine::Test
 

@@ -1,7 +1,7 @@
 # coding: utf-8
 
-require "example_helper"
-require "yaml"
+require 'example/helper'
+require 'yaml'
 
 Feature "update my status (send new tweet)" do
   as_a "authenticated user"
