@@ -4,6 +4,7 @@
   coulda
   matchy
   open4
+  shellwords
   stringio
   tempfile
   time
@@ -28,7 +29,10 @@ module Tweetwine::Test
     def start_app(args, &blk)
       lib = PROJECT_DIR + '/lib'
       executable = PROJECT_DIR + '/bin/tweetwine'
-      launch_cmd = "env USER='#{USER}' ruby -rubygems -I #{lib} -- #{executable} -f #{CONFIG_FILE} #{args.join(' ')}"
+      launch_cmd = [
+        'env', "USER=#{USER}", 'ruby', '-rubygems', '-I', lib, '--',
+        executable, '-f', CONFIG_FILE, args
+      ].flatten.shelljoin
       Open4::popen4(launch_cmd, &blk)
     end
 
