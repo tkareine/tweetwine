@@ -89,7 +89,7 @@ end
 
 desc "Show parts of the project tagged as incomplete"
 task :todo do
-  FileList["**/*.*"].egrep /(TODO|FIXME)/
+  FileList["**/*.*"].egrep(/(TODO|FIXME)/)
 end
 
 task :default => :"test:all"
