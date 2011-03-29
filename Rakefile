@@ -3,6 +3,7 @@
 require File.expand_path('project', File.dirname(__FILE__))
 
 require 'rake/clean'
+require 'shellwords'
 
 namespace :gem do
   CLOBBER.include "#{Project.name}-*.gem"
@@ -60,9 +61,9 @@ namespace :test do
     task type do
       file_name_offset = Project.dirs.test.size + 1
       neg_dotrb_suffix = -'.rb'.size - 1
-      tests = FileList["#{base_dir}/#{file_glob}"].
-          map { |file| '"' << file[file_name_offset..neg_dotrb_suffix] << '"' }.
-          join(' ')
+      tests = Dir["#{base_dir}/#{file_glob}"].
+          map { |file| file[file_name_offset..neg_dotrb_suffix] }.
+          shelljoin
       sh %{bundle exec ruby #{warn_opt} #{includes} -e 'ARGV.each { |f| require f }' #{tests}}
     end
   end
