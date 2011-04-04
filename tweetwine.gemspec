@@ -34,7 +34,6 @@ default. For Ruby 1.8, you can install 'json' gem, for example.
 
   END
 
-  s.has_rdoc = true
   s.extra_rdoc_files = Dir['*.rdoc', 'LICENSE.txt']
   s.rdoc_options << '--title' << Project.title << '--exclude' << Project.dirs.test
 end
