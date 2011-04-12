@@ -1,7 +1,6 @@
 # coding: utf-8
 
 require 'integration/helper'
-require 'tweetwine/cli'
 
 module Tweetwine::Test
 
@@ -75,7 +74,7 @@ Usage: #{CLI::EXEC_NAME} [global_options...] [<command>] [command_options...]
         end
 
         it "shows help about the command and exits with success status" do
-          cmd_class = Tweetwine.const_get("#{command.capitalize}Command")
+          cmd_class = Tweetwine::CLI.const_get("#{command.capitalize}Command")
           expected_about = cmd_class.about
           expected_usage = "Usage: tweetwine #{command} #{cmd_class.usage}".strip
           @output.must_equal <<-END
