@@ -4,8 +4,8 @@ require 'unit/helper'
 
 module Tweetwine::Test
 
-class ClientTest < UnitTestCase
-  setup do
+class ClientTest < UnitTest
+  before do
     @config = {
       :num_tweets => 20,
       :page       => 1
@@ -13,38 +13,38 @@ class ClientTest < UnitTestCase
     stub_config @config
   end
 
-  context "for initialization" do
-    should "use default number of statuses if not configured" do
+  describe "for initialization" do
+    it "uses default number of statuses if not configured" do
       @twitter = Twitter.new
       assert_equal @config[:num_tweets], @twitter.num_tweets
     end
 
-    should "use configured number of statuses if in allowed range" do
+    it "uses configured number of statuses if in allowed range" do
       @twitter = Twitter.new(:num_tweets => 12)
       assert_equal 12, @twitter.num_tweets
     end
 
-    should "raise exception if configured number of status not in allowed range" do
-      assert_raise(CommandLineError) { Twitter.new(:num_tweets => 0) }
+    it "raises exception if configured number of status not in allowed range" do
+      assert_raises(CommandLineError) { Twitter.new(:num_tweets => 0) }
     end
 
-    should "use default page number if not configured otherwise" do
+    it "uses default page number if not configured otherwise" do
       @twitter = Twitter.new
       assert_equal @config[:page], @twitter.page
     end
 
-    should "use configured page number if in allowed range" do
+    it "uses configured page number if in allowed range" do
       @twitter = Twitter.new(:page => 12)
       assert_equal 12, @twitter.page
     end
 
-    should "raise exception if configured page number not in allowed range" do
-      assert_raise(CommandLineError) { Twitter.new(:page => 0) }
+    it "raises exception if configured page number not in allowed range" do
+      assert_raises(CommandLineError) { Twitter.new(:page => 0) }
     end
   end
 
-  context "at runtime" do
-    setup do
+  describe "at runtime" do
+    before do
       mock_http
       mock_oauth
       mock_ui
@@ -58,7 +58,7 @@ class ClientTest < UnitTestCase
       @search_api_query_str = "page=#{@config[:page]}&rpp=#{@config[:num_tweets]}"
     end
 
-    should "skip showing an invalid tweet" do
+    it "skips showing an invalid tweet" do
       invalid_from_user = nil
       twitter_records, internal_records = create_rest_api_status_records(
         {
@@ -79,7 +79,7 @@ class ClientTest < UnitTestCase
       @twitter.home
     end
 
-    should "fetch friends' statuses (home view)" do
+    it "fetches friends' statuses (home view)" do
       twitter_records, internal_records = create_rest_api_status_records(
         {
           :from_user  => "zanzibar",
@@ -98,7 +98,7 @@ class ClientTest < UnitTestCase
       @twitter.home
     end
 
-    should "fetch mentions" do
+    it "fetches mentions" do
       twitter_records, internal_records = create_rest_api_status_records(
         {
           :from_user  => "zanzibar",
@@ -119,7 +119,7 @@ class ClientTest < UnitTestCase
       @twitter.mentions
     end
 
-    should "fetch a specific user's statuses, when user is given as argument" do
+    it "fetches a specific user's statuses, when user is given as argument" do
       username = "spoonman"
       twitter_records, internal_records = create_rest_api_status_records({
         :from_user  => username,
@@ -133,7 +133,7 @@ class ClientTest < UnitTestCase
       @twitter.user(username)
     end
 
-    should "fetch a specific user's statuses, with user being the authenticated user itself when given no argument" do
+    it "fetches a specific user's statuses, with user being the authenticated user itself when given no argument" do
       twitter_records, internal_records = create_rest_api_status_records({
         :from_user  => @username,
         :status     => "wassup?"
@@ -146,7 +146,7 @@ class ClientTest < UnitTestCase
       @twitter.user
     end
 
-    should "post a status update via argument, when positive confirmation" do
+    it "posts a status update via argument, when positive confirmation" do
       status = "wondering around"
       twitter_records, internal_records = create_rest_api_status_records({
         :from_user  => @username,
@@ -167,7 +167,7 @@ class ClientTest < UnitTestCase
       @twitter.update(status)
     end
 
-    should "post a status update via prompt, when positive confirmation" do
+    it "posts a status update via prompt, when positive confirmation" do
       status = "wondering around"
       twitter_records, internal_records = create_rest_api_status_records({
         :from_user  => @username,
@@ -189,7 +189,7 @@ class ClientTest < UnitTestCase
       @twitter.update
     end
 
-    should "cancel a status update via argument, when negative confirmation" do
+    it "cancels a status update via argument, when negative confirmation" do
       status = "wondering around"
       @rest_api.expects(:[]).never
       @ui.expects(:show_status_preview).with(status)
@@ -199,7 +199,7 @@ class ClientTest < UnitTestCase
       @twitter.update(status)
     end
 
-    should "cancel a status update via prompt, when negative confirmation" do
+    it "cancels a status update via prompt, when negative confirmation" do
       status = "wondering around"
       @rest_api.expects(:[]).never
       @ui.expects(:prompt).with("Status update").returns(status)
@@ -210,7 +210,7 @@ class ClientTest < UnitTestCase
       @twitter.update
     end
 
-    should "cancel a status update via argument, when empty status" do
+    it "cancels a status update via argument, when empty status" do
       @rest_api.expects(:[]).never
       @ui.expects(:prompt).with("Status update").returns("")
       @ui.expects(:confirm).never
@@ -219,7 +219,7 @@ class ClientTest < UnitTestCase
       @twitter.update("")
     end
 
-    should "cancel a status update via prompt, when empty status" do
+    it "cancels a status update via prompt, when empty status" do
       @rest_api.expects(:[]).never
       @ui.expects(:prompt).with("Status update").returns("")
       @ui.expects(:confirm).never
@@ -228,7 +228,7 @@ class ClientTest < UnitTestCase
       @twitter.update
     end
 
-    should "remove excess whitespace around a status update" do
+    it "removes excess whitespace around a status update" do
       whitespaced_status = "  oh, i was sloppy \t   "
       stripped_status = "oh, i was sloppy"
       twitter_records, internal_records = create_rest_api_status_records({
@@ -250,7 +250,7 @@ class ClientTest < UnitTestCase
       @twitter.update(whitespaced_status)
     end
 
-    should "truncate a status update with too long argument and warn the user" do
+    it "truncates a status update with too long argument and warn the user" do
       truncated_status = "ab c" * 35  #  4 * 35 = 140
       long_status = "#{truncated_status} dd"
       twitter_records, internal_records = create_rest_api_status_records({
@@ -274,7 +274,7 @@ class ClientTest < UnitTestCase
     end
 
     if defined? Encoding
-      should "encode status in UTF-8 (String supports encoding)" do
+      it "encodes status in UTF-8 (String supports encoding)" do
         status_utf8, status_latin1 = "résumé", "résumé".encode('ISO-8859-1')
         twitter_records, internal_records = create_rest_api_status_records({
           :from_user  => @username,
@@ -295,7 +295,7 @@ class ClientTest < UnitTestCase
         @twitter.update(status_latin1)
       end
     else
-      should "encode status in UTF-8 (String does not support encoding)" do
+      it "encodes status in UTF-8 (String does not support encoding)" do
         tmp_kcode('NONE') do
           tmp_env(:LANG => 'ISO-8859-1') do
             status_utf8, status_latin1 = "r\xc3\xa9sum\xc3\xa9", "r\xe9sum\xe9"
@@ -321,8 +321,8 @@ class ClientTest < UnitTestCase
       end
     end
 
-    context "with URL shortening" do
-      setup do
+    describe "with URL shortening" do
+      before do
         mock_url_shortener
         stub_config(
           :shorten_urls => {
@@ -333,7 +333,7 @@ class ClientTest < UnitTestCase
           })
       end
 
-      should "not shorten URLs if not configured" do
+      it "does not shorten URLs if not configured" do
         stub_config
         status = "reading http://www.w3.org/TR/1999/REC-xpath-19991116"
         twitter_records, internal_records = create_rest_api_status_records({
@@ -356,7 +356,7 @@ class ClientTest < UnitTestCase
         @twitter.update(status)
       end
 
-      should "shorten HTTP and HTTPS URLs" do
+      it "shortens HTTP and HTTPS URLs" do
         long_urls = ["http://www.google.fi/search?q=ruby+nokogiri&ie=utf-8&oe=utf-8&aq=t&rls=org.mozilla:en-US:official&client=firefox-a", "https://twitter.com/#!/messages"]
         long_status = long_urls.join(" and ")
         short_urls = ["http://shorten.it/2k7i8", "http://shorten.it/2k7mk"]
@@ -382,7 +382,7 @@ class ClientTest < UnitTestCase
         @twitter.update(long_status)
       end
 
-      should "discard obviously invalid shortened URLs, using originals instead" do
+      it "discards obviously invalid shortened URLs, using originals instead" do
         long_urls = ["http://www.google.fi/", "http://www.w3.org/TR/1999/REC-xpath-19991116"]
         status = long_urls.join(" and ")
         short_urls = [nil, ""]
@@ -407,7 +407,7 @@ class ClientTest < UnitTestCase
         @twitter.update(status)
       end
 
-      should "reuse a shortened URL for duplicate long URLs" do
+      it "reuses a shortened URL for duplicate long URLs" do
         long_urls = ["http://www.w3.org/TR/1999/REC-xpath-19991116"] * 2
         long_status = long_urls.join(" and ")
         short_url = "http://shorten.it/2k7mk"
@@ -432,8 +432,8 @@ class ClientTest < UnitTestCase
         @twitter.update(long_status)
       end
 
-      context "in erroneous situations" do
-        setup do
+      describe "in erroneous situations" do
+        before do
           @url = "http://www.w3.org/TR/1999/REC-xpath-19991116"
           @status = "skimming through #{@url}"
           @twitter_records, @internal_records = create_rest_api_status_records({
@@ -442,7 +442,7 @@ class ClientTest < UnitTestCase
           })
         end
 
-        should "skip shortening URLs if required libraries are not found" do
+        it "skips shortening URLs if required libraries are not found" do
           Tweetwine::CLI.stubs(:url_shortener).raises(LoadError, 'gem not found')
           @oauth.expects(:request_signer)
           http_subresource = mock
@@ -460,7 +460,7 @@ class ClientTest < UnitTestCase
           @twitter.update(@status)
         end
 
-        should "skip shortening URLs upon connection error to the URL shortening service" do
+        it "skips shortening URLs upon connection error to the URL shortening service" do
           @oauth.expects(:request_signer)
           http_subresource = mock
           http_subresource.expects(:post).
@@ -480,7 +480,7 @@ class ClientTest < UnitTestCase
       end
     end
 
-    should "fetch friends" do
+    it "fetches friends" do
       twitter_records, internal_records = create_rest_api_user_records(
         {
           :from_user  => "zanzibar",
@@ -501,7 +501,7 @@ class ClientTest < UnitTestCase
       @twitter.friends
     end
 
-    should "fetch followers" do
+    it "fetches followers" do
       twitter_records, internal_records = create_rest_api_user_records(
         {
           :from_user  => "zanzibar",
@@ -520,15 +520,15 @@ class ClientTest < UnitTestCase
       @twitter.followers
     end
 
-    should "raise exception if no search word is given for searching tweets" do
-      assert_raise(ArgumentError) { @twitter.search }
+    it "raises exception if no search word is given for searching tweets" do
+      assert_raises(ArgumentError) { @twitter.search }
     end
 
     [
       [nil,   "no operator"],
       [:and,  "and operator"]
     ].each do |op, desc|
-      should "search tweets matching all the given words with #{desc}" do
+      it "searches tweets matching all the given words with #{desc}" do
         twitter_response, internal_records = create_search_api_status_records(
           {
             :from_user  => "zanzibar",
@@ -549,7 +549,7 @@ class ClientTest < UnitTestCase
       end
     end
 
-    should "search tweets matching any of the given words with or operator" do
+    it "searches tweets matching any of the given words with or operator" do
       twitter_response, internal_records = create_search_api_status_records(
         {
           :from_user  => "zanzibar",
@@ -569,12 +569,12 @@ class ClientTest < UnitTestCase
       @twitter.search(["#habits", "#neurotic"], :or)
     end
 
-    context "when authorization fails with HTTP 401 response" do
-      setup do
+    describe "when authorization fails with HTTP 401 response" do
+      before do
         mock_config
       end
 
-      should "authorize with OAuth and save config" do
+      it "authorizes with OAuth and save config" do
         twitter_records, internal_records = create_rest_api_status_records({
           :from_user  => @username,
           :status     => "wassup?"

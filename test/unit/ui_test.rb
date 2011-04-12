@@ -5,73 +5,73 @@ require 'unit/tweet_helper'
 
 module Tweetwine::Test
 
-class UITest < UnitTestCase
+class UITest < UnitTest
   include TweetHelper
 
-  setup do
+  before do
     @in  = mock
     @out = mock
     @err = mock
     @ui  = UI.new({ :in => @in, :out => @out, :err => @err })
   end
 
-  should "output prompt and return input as trimmed" do
+  it "outputs prompt and return input as trimmed" do
     @out.expects(:print).with("The answer: ")
     @in.expects(:gets).returns("  42 ")
     assert_equal "42", @ui.prompt("The answer")
   end
 
-  should "output info message" do
+  it "outputs info message" do
     @out.expects(:puts).with("foo")
     @ui.info("foo")
   end
 
-  should "output info message in process style when given a block" do
+  it "outputs info message in process style when given a block" do
     inform = sequence('inform')
     @out.expects(:print).with("processing...").in_sequence(inform)
     @out.expects(:puts).with(" done.").in_sequence(inform)
     @ui.info("processing...") { true }
   end
 
-  should "output empty line as info message" do
+  it "outputs empty line as info message" do
     @out.expects(:puts).with("\n")
     @ui.info
   end
 
-  should "output warning message" do
+  it "outputs warning message" do
     @out.expects(:puts).with("Warning: monkey patching ahead")
     @ui.warn("monkey patching ahead")
   end
 
-  should "output error message" do
+  it "outputs error message" do
     @err.expects(:puts).with("ERROR: Invalid monkey patch")
     @ui.error("Invalid monkey patch")
   end
 
-  should "confirm action, with positive answer" do
+  it "confirms action, with positive answer" do
     @out.expects(:print).with("Fire nukes? [yN] ")
     @in.expects(:gets).returns("y")
     assert_equal true, @ui.confirm("Fire nukes?")
   end
 
-  should "confirm action, with negative answer" do
+  it "confirms action, with negative answer" do
     @out.expects(:print).with("Fire nukes? [yN] ")
     @in.expects(:gets).returns("n")
     assert_equal false, @ui.confirm("Fire nukes?")
   end
 
-  should "confirm action, with default answer" do
+  it "confirms action, with default answer" do
     @out.expects(:print).with("Fire nukes? [yN] ")
     @in.expects(:gets).returns("")
     assert_equal false, @ui.confirm("Fire nukes?")
   end
 
-  context "when colors are disabled" do
-    setup do
+  describe "when colors are disabled" do
+    before do
       @ui = UI.new({:in => @in, :out => @out, :colors => false })
     end
 
-    should "output tweet with just user info" do
+    it "outputs tweet with just user info" do
       from_user = "fooman"
       tweet = create_tweet(:from_user => from_user)
       @out.expects(:puts).with(<<-END
@@ -82,7 +82,7 @@ class UITest < UnitTestCase
       @ui.show_tweet(tweet)
     end
 
-    should "output regular tweet" do
+    it "outputs regular tweet" do
       from_user = "fooman"
       status = "Hi, @barman! Lulz woo! #hellos"
       time = 2
@@ -100,7 +100,7 @@ class UITest < UnitTestCase
       show_tweet_at_default_time(tweet)
     end
 
-    should "output replying tweet" do
+    it "outputs replying tweet" do
       from_user = "barman"
       to_user = "fooman"
       status = "Hi, @#{to_user}! How are you doing?"
@@ -118,7 +118,7 @@ class UITest < UnitTestCase
       show_tweet_at_default_time(tweet)
     end
 
-    should "output regular retweet" do
+    it "outputs regular retweet" do
       from_user = "barman"
       rt_user = "fooman"
       status = "status worth retweeting"
@@ -136,7 +136,7 @@ class UITest < UnitTestCase
       show_tweet_at_default_time(tweet)
     end
 
-    should "output replying retweet" do
+    it "outputs replying retweet" do
       from_user = "barman"
       to_user = "jackman"
       rt_user = "fooman"
@@ -156,7 +156,7 @@ class UITest < UnitTestCase
       show_tweet_at_default_time(tweet)
     end
 
-    should "unescape HTML in a status" do
+    it "unescapes HTML in a status" do
       from_user = "fooman"
       escaped_status = "apple &gt; orange &amp; grapefruit &lt; banana"
       unescaped_status = "apple > orange & grapefruit < banana"
@@ -173,7 +173,7 @@ class UITest < UnitTestCase
       show_tweet_at_default_time(tweet)
     end
 
-    should "output a preview of a status" do
+    it "outputs a preview of a status" do
       status = "@nick, check http://bit.ly/18rU_Vx"
       @out.expects(:puts).with(<<-END
 
@@ -185,12 +185,12 @@ class UITest < UnitTestCase
     end
   end
 
-  context "when colors are enabled" do
-    setup do
+  describe "when colors are enabled" do
+    before do
       @ui = UI.new({:in => @in, :out => @out, :colors => true})
     end
 
-    should "output tweet with just user info" do
+    it "outputs tweet with just user info" do
       from_user = "fooman"
       tweet = create_tweet(:from_user => from_user)
       @out.expects(:puts).with(<<-END
@@ -201,7 +201,7 @@ class UITest < UnitTestCase
       @ui.show_tweet(tweet)
     end
 
-    should "output regular tweet" do
+    it "outputs regular tweet" do
       from_user = "fooman"
       status = "Wondering about the meaning of life."
       tweet = create_tweet(
@@ -217,7 +217,7 @@ class UITest < UnitTestCase
       show_tweet_at_default_time(tweet)
     end
 
-    should "output replying tweet" do
+    it "outputs replying tweet" do
       from_user = "barman"
       to_user = "fooman"
       tweet = create_tweet(
@@ -234,7 +234,7 @@ class UITest < UnitTestCase
       show_tweet_at_default_time(tweet)
     end
 
-    should "output regular retweet" do
+    it "outputs regular retweet" do
       from_user = "barman"
       rt_user = "fooman"
       status = "status worth retweeting"
@@ -252,7 +252,7 @@ class UITest < UnitTestCase
       show_tweet_at_default_time(tweet)
     end
 
-    should "output replying retweet" do
+    it "outputs replying retweet" do
       from_user = "barman"
       to_user = "jackman"
       rt_user = "fooman"
@@ -271,7 +271,7 @@ class UITest < UnitTestCase
       show_tweet_at_default_time(tweet)
     end
 
-    should "output a preview of a status" do
+    it "outputs a preview of a status" do
       status = "@nick, check http://bit.ly/18rU_Vx"
       @out.expects(:puts).with(<<-END
 
@@ -282,7 +282,7 @@ class UITest < UnitTestCase
       @ui.show_status_preview(status)
     end
 
-    should "highlight hashtags in a status" do
+    it "highlights hashtags in a status" do
       from_user = "barman"
       hashtags = %w{#slang #beignHappy}
       tweet = create_tweet(
@@ -299,7 +299,7 @@ Lulz, so happy! \e[35m#{hashtags[0]}\e[0m \e[35m#{hashtags[1]}\e[0m
     end
 
     %w{http://is.gd/1qLk3 http://is.gd/1qLk3?id=foo}.each do |url|
-      should "highlight HTTP and HTTPS URLs in a status, given #{url}" do
+      it "highlights HTTP and HTTPS URLs in a status, given #{url}" do
         from_user = "barman"
         tweet = create_tweet(
           :from_user  => from_user,
@@ -319,7 +319,7 @@ New Rails³ - \e[36m#{url}\e[0m
       %w{http://is.gd/1qLk3 http://is.gd/1qLk3},
       %w{http://is.gd/1qLk3 http://is.gd/1q}
     ].each do |(first_url, second_url)|
-      should "highlight HTTP and HTTPS URLs in a status, given #{first_url} and #{second_url}" do
+      it "highlights HTTP and HTTPS URLs in a status, given #{first_url} and #{second_url}" do
         from_user = "barman"
         tweet = create_tweet(
           :from_user  => from_user,
@@ -335,7 +335,7 @@ Links: \e[36m#{first_url}\e[0m and \e[36m#{second_url}\e[0m np
       end
     end
 
-    should "highlight usernames in a status" do
+    it "highlights usernames in a status" do
       from_user = "barman"
       users = %w{@fooman @barbaz @spoonman}
       tweet = create_tweet(
@@ -351,7 +351,7 @@ I salute you \e[33m#{users[0]}\e[0m, \e[33m#{users[1]}\e[0m, and \e[33m#{users[2
       show_tweet_at_default_time(tweet)
     end
 
-    should "not highlight email addresses as usernames in a status" do
+    it "does not highlight email addresses as usernames in a status" do
       from_user = "barman"
       users = %w{@fooman @barbaz}
       email = "barbaz@foo.net"
@@ -369,8 +369,8 @@ Hi, \e[33m#{users[0]}\e[0m! You should notify \e[33m#{users[1]}\e[0m, #{email}
     end
   end
 
-  context "when outputting a collection of tweets" do
-    setup do
+  describe "when outputting a collection of tweets" do
+    before do
       users_and_times = [
         ['first',  11],
         ['second', 12],
@@ -393,7 +393,7 @@ Hi, \e[33m#{users[0]}\e[0m! You should notify \e[33m#{users[1]}\e[0m, #{email}
       )}
     end
 
-    should "output tweets in normal order" do
+    it "outputs tweets in normal order" do
       @ui = UI.new({ :out => @out, :show_reverse => false })
       [:first, :second, :third].each do |user|
         @out.expects(:puts).with(@outputs[user])
@@ -401,7 +401,7 @@ Hi, \e[33m#{users[0]}\e[0m! You should notify \e[33m#{users[1]}\e[0m, #{email}
       show_tweets_at_default_time(@tweets)
     end
 
-    should "output tweets in reverse order" do
+    it "outputs tweets in reverse order" do
       @ui = UI.new({ :out => @out, :show_reverse => true })
       [:third, :second, :first].each do |user|
         @out.expects(:puts).with(@outputs[user])
@@ -410,13 +410,13 @@ Hi, \e[33m#{users[0]}\e[0m! You should notify \e[33m#{users[1]}\e[0m, #{email}
     end
   end
 
-  context "username regex" do
+  describe "username regex" do
     [
       ['@nick',     'normal'],
       ['@nick_man', 'underscore separated'],
       [' @nick',    'beginning with space']
     ].each do |(nick, desc)|
-      should "match proper username reference, case #{desc}" do
+      it "matches proper username reference, case #{desc}" do
         assert_full_match UI::USERNAME_REGEX, nick
       end
     end
@@ -431,19 +431,19 @@ Hi, \e[33m#{users[0]}\e[0m! You should notify \e[33m#{users[1]}\e[0m, #{email}
       ['man @nick', 'space separated'],
       ['man@nick',  'prefix in between']
     ].each do |(no_nick, desc)|
-      should "not match an inproper username reference, case #{desc}" do
+      it "does not match an inproper username reference, case #{desc}" do
         assert_no_full_match UI::USERNAME_REGEX, no_nick
       end
     end
   end
 
-  context "hashtag regex" do
+  describe "hashtag regex" do
     [
       ['#mayhem',         'normal'],
       ['#friday_mayhem',  'underscore separated'],
       ['#friday-mayhem',  'dash separated']
     ].each do |(hashtag, desc)|
-      should "match a proper hashtag reference, case #{desc}" do
+      it "matches a proper hashtag reference, case #{desc}" do
         assert_full_match UI::HASHTAG_REGEX, hashtag
       end
     end
@@ -455,7 +455,7 @@ Hi, \e[33m#{users[0]}\e[0m! You should notify \e[33m#{users[1]}\e[0m, #{email}
       ['#mayhem ',  'ending with space'],
       [' #mayhem ', 'surrounded with space']
     ].each do |(no_hashtag, desc)|
-      should "not match an inproper hashtag reference, case #{desc}" do
+      it "does not match an inproper hashtag reference, case #{desc}" do
         assert_no_full_match UI::HASHTAG_REGEX, no_hashtag
       end
     end

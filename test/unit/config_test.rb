@@ -7,11 +7,11 @@ require 'yaml'
 
 module Tweetwine::Test
 
-class ConfigTest < UnitTestCase
+class ConfigTest < UnitTest
   CONFIG_FILE = Helper.fixture_path('config_unit.yaml')
 
-  context "when given command line arguments, no environment variables, no config file" do
-    setup do
+  describe "when given command line arguments, no environment variables, no config file" do
+    before do
       @args = %w{--opt cmd_opt --defopt cmd_defopt left overs}
       default_config = {:defopt => 'defopt'}
       @config = Config.read(@args, default_config) do |args|
@@ -20,21 +20,21 @@ class ConfigTest < UnitTestCase
       end
     end
 
-    should "have option defined from command line" do
+    it "has option defined from command line" do
       assert_equal 'cmd_opt', @config[:opt]
     end
 
-    should "override option default value from command line" do
+    it "overrides option default value from command line" do
       assert_equal 'cmd_defopt', @config[:defopt]
     end
 
-    should "leave remaining command line arguments unconsumed" do
+    it "leaves remaining command line arguments unconsumed" do
       assert_equal %w{left overs}, @args
     end
   end
 
-  context "when given command line arguments, environment variables, no config file" do
-    setup do
+  describe "when given command line arguments, environment variables, no config file" do
+    before do
       ENV['opt']    = 'env_opt'
       ENV['defopt'] = 'env_defopt'
       ENV['envopt'] = 'env_envopt'
@@ -46,27 +46,27 @@ class ConfigTest < UnitTestCase
       end
     end
 
-    teardown do
+    after do
       ENV['opt']    = nil
       ENV['defopt'] = nil
       ENV['envopt'] = nil
     end
 
-    should "have option defined from environment variable" do
+    it "has option defined from environment variable" do
       assert_equal 'env_envopt', @config[:envopt]
     end
 
-    should "override option value from command line over environment variable" do
+    it "overrides option value from command line over environment variable" do
       assert_equal 'cmd_opt', @config[:opt]
     end
 
-    should "override option default value from environment variable" do
+    it "overrides option default value from environment variable" do
       assert_equal 'env_defopt', @config[:defopt]
     end
   end
 
-  context "when given command line arguments, no environment variables, config file" do
-    setup do
+  describe "when given command line arguments, no environment variables, config file" do
+    before do
       @args = %w{--opt cmd_opt}
       default_config = {:config_file => CONFIG_FILE, :defopt => 'defopt'}
       @config = Config.read(@args, default_config) do |args|
@@ -75,21 +75,21 @@ class ConfigTest < UnitTestCase
       end
     end
 
-    should "have option defined from config file" do
+    it "has option defined from config file" do
       assert_equal 'file_fileopt', @config[:fileopt]
     end
 
-    should "override option value from command line over config file" do
+    it "overrides option value from command line over config file" do
       assert_equal 'cmd_opt', @config[:opt]
     end
 
-    should "override option default value from config file" do
+    it "overrides option default value from config file" do
       assert_equal 'file_defopt', @config[:defopt]
     end
   end
 
-  context "when given command line arguments, environment variables, config file" do
-    setup do
+  describe "when given command line arguments, environment variables, config file" do
+    before do
       @args = %w{--opt2 cmd_opt2}
       ENV['opt']  = 'env_opt'
       ENV['opt2'] = 'env_opt2'
@@ -99,67 +99,67 @@ class ConfigTest < UnitTestCase
       end
     end
 
-    teardown do
+    after do
       ENV['opt']  = nil
       ENV['opt2'] = nil
     end
 
-    should "override option value from environment variable over config file" do
+    it "overrides option value from environment variable over config file" do
       assert_equal 'env_opt', @config[:opt]
     end
 
-    should "override option value from command line over environment variable and config file" do
+    it "overrides option value from command line over environment variable and config file" do
       assert_equal 'cmd_opt2', @config[:opt2]
     end
   end
 
-  context "when handling command line arguments without parser" do
-    setup do
+  describe "when handling command line arguments without parser" do
+    before do
       ENV['opt'] = 'env_opt'
       @args = %w{--opt cmd_opt --defopt cmd_defopt}
       default_config = {:config_file => CONFIG_FILE, :defopt => 'defopt', :env_lookouts => [:opt]}
       @config = Config.read(@args, default_config)
     end
 
-    teardown do
+    after do
       ENV['opt'] = nil
     end
 
-    should "ignore command line arguments, using environment variables and config file for options if available" do
+    it "ignores command line arguments, using environment variables and config file for options if available" do
       assert_equal 'env_opt', @config[:opt]
       assert_equal 'file_defopt', @config[:defopt]
     end
   end
 
-  context "when handling environment variables" do
-    setup do
+  describe "when handling environment variables" do
+    before do
       ENV['visible'] = 'env_visible'
       ENV['hidden']  = 'env_hidden'
       ENV['empty']   = ''
       @config = Config.read([], :env_lookouts => [:visible, :empty])
     end
 
-    teardown do
+    after do
       ENV['visible'] = nil
       ENV['hidden'] = nil
       ENV['empty'] = nil
     end
 
-    should "consider only specified environment variables that are nonempty" do
+    it "considers only specified environment variables that are nonempty" do
       assert_equal 'env_visible', @config[:visible]
     end
 
-    should "not consider empty environment variables" do
+    it "does not consider empty environment variables" do
       assert_equal nil, @config[:empty]
     end
 
-    should "not consider unspecified environment variables" do
+    it "does not consider unspecified environment variables" do
       assert_equal nil, @config[:hidden]
     end
   end
 
-  context "when handling the config file" do
-    should "allow specifying configuration file from command line arguments" do
+  describe "when handling the config file" do
+    it "allows specifying configuration file from command line arguments" do
       @args = ['-f', CONFIG_FILE]
       @config = Config.read(@args, {}) do
         @args.slice!(0..1)
@@ -169,13 +169,13 @@ class ConfigTest < UnitTestCase
       assert_equal 'file_defopt', @config[:defopt]
     end
 
-    should "raise exception when trying to save and no config file is specified" do
+    it "raises exception when trying to save and no config file is specified" do
       @config = Config.read()
-      assert_raise(RuntimeError) { @config.save }
+      assert_raises(RuntimeError) { @config.save }
     end
 
-    context "when config file does not exist" do
-      setup do
+    describe "when config file does not exist" do
+      before do
         @tmp_dir = Dir.mktmpdir
         @file = @tmp_dir + '/.tweetwine'
         @excludes = [:secret]
@@ -184,22 +184,22 @@ class ConfigTest < UnitTestCase
         @expected_config = {'new_opt' => 'to_file'}
       end
 
-      teardown do
+      after do
         FileUtils.rm_rf @tmp_dir
       end
 
-      should "ignore nonexisting config file for initial read" do
+      it "ignores nonexisting config file for initial read" do
         assert_contains_exactly @default_config.keys, @config.keys
       end
 
-      should "save config to the file, implicitly without config file, env lookouts, and excludes set itself" do
+      it "saves config to the file, implicitly without config file, env lookouts, and excludes set itself" do
         @config[:new_opt] = 'to_file'
         @config.save
         stored = YAML.load_file @file
         assert_equal(@expected_config, stored)
       end
 
-      should "save config to the file, explicitly without excluded entries" do
+      it "saves config to the file, explicitly without excluded entries" do
         @config[@excludes.first] = 'password'
         @config[:new_opt] = 'to_file'
         @config.save
@@ -207,7 +207,7 @@ class ConfigTest < UnitTestCase
         assert_equal(@expected_config, stored)
       end
 
-      should "modifying exclusions after initial read has no effect on config file location and exclusions" do
+      it "modifying exclusions after initial read has no effect on config file location and exclusions" do
         @config[:config_file] = @tmp_dir + '/.tweetwine.another'
         @config[:excludes] << :new_opt
         @config[:new_opt] = 'to_file'
@@ -216,19 +216,19 @@ class ConfigTest < UnitTestCase
         assert_equal(@expected_config, stored)
       end
 
-      should "set config file permissions accessible only to the user when saving" do
+      it "sets config file permissions accessible only to the user when saving" do
         @config.save
         assert_equal 0600, file_mode(@file)
       end
 
-      context "when config file exists" do
-        setup do
+      describe "when config file exists" do
+        before do
           FileUtils.touch @file
           @original_mode = 0644
           File.chmod @original_mode, @file
         end
 
-        should "not set config file permissions when saving" do
+        it "does not set config file permissions when saving" do
           @config.save
           assert_equal @original_mode, file_mode(@file)
         end

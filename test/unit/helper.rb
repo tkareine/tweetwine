@@ -1,7 +1,6 @@
 # coding: utf-8
 
 require 'helper'
-require 'contest'
 require 'mocha'
 
 Mocha::Configuration.prevent(:stubbing_non_existent_method)
@@ -54,10 +53,6 @@ module Tweetwine::Test
 
     private
 
-    def message(given, &default)
-      given.nil? ? default.call : given
-    end
-
     def enumerable_minus_each_element(enumerable, elements)
       remaining = enumerable.dup.to_a
       elements.each do |e|
@@ -100,8 +95,8 @@ module Tweetwine::Test
     end
   end
 
-  class UnitTestCase < ::Test::Unit::TestCase
-    include WebMock::API
+  class UnitTest < MiniTest::Spec
+    include WebMockIntegration
     include Tweetwine
     include Helper
     include Assertions

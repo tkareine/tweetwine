@@ -1,8 +1,12 @@
 # coding: utf-8
 
-require 'tweetwine'
-require 'webmock/test_unit'
+%w{
+  minitest/spec
+  tweetwine
+  webmock
+}.each { |lib| require lib }
 
+MiniTest::Unit.autorun
 WebMock.disable_net_connect!
 
 module Tweetwine
@@ -44,6 +48,14 @@ module Tweetwine
         yield
       ensure
         $KCODE = original
+      end
+    end
+
+    module WebMockIntegration
+      include WebMock::API
+
+      def teardown
+        WebMock.reset!
       end
     end
   end

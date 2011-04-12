@@ -6,16 +6,16 @@ require 'net/http'
 
 module Tweetwine::Test
 
-class OAuthTest < UnitTestCase
+class OAuthTest < UnitTest
   include Fixture::OAuth
 
-  setup do
+  before do
     mock_http
     mock_ui
     @oauth = OAuth.new
   end
 
-  should "authorize with PIN code so that request can be signed" do
+  it "authorizes with PIN code so that request can be signed" do
     expect_complete_oauth_dance
     @oauth.authorize
     connection, request = *fake_http_connection_and_request
@@ -24,26 +24,26 @@ class OAuthTest < UnitTestCase
     assert_match(/oauth_token="#{ACCESS_TOKEN_KEY}"/, request['Authorization'])
   end
 
-  should "raise AuthorizationError if OAuth dance fails due to HTTP 4xx response" do
+  it "raises AuthorizationError if OAuth dance fails due to HTTP 4xx response" do
     @http.expects(:post).
       with(REQUEST_TOKEN_URL).
       raises(HttpError.new(401, 'Unauthorized'))
-    assert_raise(AuthorizationError) { @oauth.authorize }
+    assert_raises(AuthorizationError) { @oauth.authorize }
   end
 
-  should "pass other exceptions than due to HTTP 4xx responses through" do
+  it "passes other exceptions than due to HTTP 4xx responses through" do
     @http.expects(:post).
       with(REQUEST_TOKEN_URL).
       raises(HttpError.new(503, 'Service Unavailable'))
-    assert_raise(HttpError) { @oauth.authorize }
+    assert_raises(HttpError) { @oauth.authorize }
   end
 
-  context "when access token is known" do
-    setup do
+  describe "when access token is known" do
+    before do
       @oauth = OAuth.new(Obfuscate.write("#{ACCESS_TOKEN_KEY}:2"))
     end
 
-    should "sign request with it" do
+    it "signs request with it" do
       connection, request = *fake_http_connection_and_request
       @oauth.request_signer.call(connection, request)
       assert_match(/^OAuth /, request['Authorization'])

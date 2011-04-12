@@ -4,10 +4,10 @@ require 'unit/helper'
 
 module Tweetwine::Test
 
-class ObfuscateTest < UnitTestCase
+class ObfuscateTest < UnitTest
   include Obfuscate
 
-  should "obfuscate symmetrically" do
+  it "obfuscates symmetrically" do
     str = 'hey, jack'
     assert_equal(str, obfuscate(obfuscate(str)))
   end

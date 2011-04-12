@@ -4,8 +4,8 @@ require 'unit/helper'
 
 module Tweetwine::Test
 
-class UriTest < UnitTestCase
-  context "for percent-encoding strings" do
+class UriTest < UnitTest
+  describe "for percent-encoding strings" do
     [
       %w{a a},
       %w{B B},
@@ -14,12 +14,12 @@ class UriTest < UnitTestCase
       %w{- dash},
       %w{_ underscore},
     ].each do |(char, desc)|
-      should "not encode safe characters, case #{desc}" do
+      it "does not encode safe characters, case #{desc}" do
         assert_equal char, Uri.percent_encode(char)
       end
     end
 
-    should "encode space character with percent-encoding, not with '+' character" do
+    it "encodes space character with percent-encoding, not with '+' character" do
       assert_equal "%20", Uri.percent_encode(" ")
     end
 
@@ -30,7 +30,7 @@ class UriTest < UnitTestCase
       %w{: %3A colon},
       %w{, %2C comma}
     ].each do |(char, expected, desc)|
-      should "encode unsafe characters that URI.encode leaves by default unencoded, case #{desc}" do
+      it "encodes unsafe characters that URI.encode leaves by default unencoded, case #{desc}" do
         assert_equal char, Uri.parser.escape(char)
         assert_equal expected, Uri.percent_encode(char)
       end
