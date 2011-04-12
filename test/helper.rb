@@ -15,7 +15,7 @@ module Tweetwine
       end
 
       def fixture_path(filename)
-        File.dirname(__FILE__) << '/fixture/' << filename
+        File.join(File.dirname(__FILE__), 'fixture', filename)
       end
 
       def fixture_file(filename)
