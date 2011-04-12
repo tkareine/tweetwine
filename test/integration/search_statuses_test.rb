@@ -1,10 +1,10 @@
 # coding: utf-8
 
-require 'example/helper'
+require 'integration/helper'
 
 module Tweetwine::Test
 
-class SearchStatusesExample < ExampleSpec
+class SearchStatusesTest < IntegrationTest
   SEARCH_BASE_URL = "http://search.twitter.com/search.json"
   SEARCH_OR_URL   = "#{SEARCH_BASE_URL}?q=braid%20OR%20game&rpp=2&page=1"
   SEARCH_AND_URL  = "#{SEARCH_BASE_URL}?q=braid%20game&rpp=2&page=1"

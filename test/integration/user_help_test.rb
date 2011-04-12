@@ -1,11 +1,11 @@
 # coding: utf-8
 
-require 'example/helper'
+require 'integration/helper'
 require 'tweetwine/cli'
 
 module Tweetwine::Test
 
-class UserHelpExample < ExampleSpec
+class UserHelpTest < IntegrationTest
   %w{-v version ver v}.each do |arg|
     describe "show version with '#{arg}'" do
       before do

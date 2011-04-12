@@ -1,10 +1,10 @@
 # coding: utf-8
 
-require 'example/helper'
+require 'integration/helper'
 
 module Tweetwine::Test
 
-class GlobalOptionsExample < ExampleSpec
+class GlobalOptionsTest < IntegrationTest
   before do
     stub_http_request(:get, %r{https://api.twitter.com/1/statuses/home_timeline\.json\?count=\d+&page=\d+}).to_return(:body => fixture_file('home.json'))
   end

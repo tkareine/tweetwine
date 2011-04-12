@@ -1,10 +1,10 @@
 # coding: utf-8
 
-require 'example/helper'
+require 'integration/helper'
 
 module Tweetwine::Test
 
-class ShowFriendsExample < ExampleSpec
+class ShowFriendsTest < IntegrationTest
   before do
     stub_http_request(:get, "https://api.twitter.com/1/statuses/friends.json?count=20&page=1").to_return(:body => fixture_file('users.json'))
     @output = start_cli %w{friends}

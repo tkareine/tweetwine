@@ -15,7 +15,7 @@ require 'helper'
 
 module Tweetwine::Test
   module Helper
-    CONFIG_FILE = fixture_path 'config_example.yaml'
+    CONFIG_FILE = fixture_path 'config_integration.yaml'
     PROJECT_DIR = File.expand_path('../..', File.dirname(__FILE__))
     PROXY_HOST  = "proxy.net"
     PROXY_PORT  = 8123
@@ -52,7 +52,7 @@ module Tweetwine::Test
     end
   end
 
-  class ExampleSpec < MiniTest::Spec
+  class IntegrationTest < MiniTest::Spec
     include WebMockIntegration
     include Tweetwine
     include Helper

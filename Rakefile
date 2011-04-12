@@ -52,7 +52,7 @@ end
 namespace :test do
   def create_test_task(type, options = {})
     base_dir  = options[:base_dir]
-    file_glob = options[:file_glob]
+    file_glob = options[:file_glob] || '**/*_test.rb'
     test_desc = options[:desc] || "Run #{type} tests"
     includes  = ['lib', Project.dirs[:test]].map { |dir| "-I #{dir}" }.join(' ')
     warn_opt  = options[:warn] ? '-w' : ''
@@ -70,16 +70,14 @@ namespace :test do
 
   create_test_task :unit,
       :base_dir   => "#{Project.dirs[:test]}/unit",
-      :file_glob  => '**/*_test.rb',
       :warn       => true
-  create_test_task :example,
-      :base_dir   => "#{Project.dirs[:test]}/example",
-      :file_glob  => '**/*_example.rb',
-      :desc       => 'Run integration/example tests',
+
+  create_test_task :integration,
+      :base_dir   => "#{Project.dirs[:test]}/integration",
       :warn       => false
 
   desc "Run all tests"
-  task :all => [:unit, :example]
+  task :all => [:unit, :integration]
 end
 
 desc "Find code smells"

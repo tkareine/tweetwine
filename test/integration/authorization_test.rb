@@ -1,11 +1,11 @@
 # coding: utf-8
 
-require 'example/helper'
+require 'integration/helper'
 require 'fixture/oauth'
 
 module Tweetwine::Test
 
-class AuthorizationExample < ExampleSpec
+class AuthorizationTest < IntegrationTest
   include Fixture::OAuth
 
   describe "authorize user with OAuth and save access token" do

@@ -1,10 +1,10 @@
 # coding: utf-8
 
-require 'example/helper'
+require 'integration/helper'
 
 module Tweetwine::Test
 
-class UseHttpProxyExample < ExampleSpec
+class UseHttpProxyTest < IntegrationTest
   HOME_URL = "https://api.twitter.com/1/statuses/home_timeline.json?count=20&page=1"
 
   before do

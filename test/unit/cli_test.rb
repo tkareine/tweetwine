@@ -5,7 +5,7 @@ require 'stringio'
 
 module Tweetwine::Test
 
-# See +example+ directory for integration tests.
+# See `test/integration` directory for integration tests.
 class CLITest < UnitTest
   describe "for initialization" do
     it "disallows using #new to create a new instance" do

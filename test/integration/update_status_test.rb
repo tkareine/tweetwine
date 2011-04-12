@@ -1,11 +1,11 @@
 # coding: utf-8
 
-require 'example/helper'
+require 'integration/helper'
 require 'yaml'
 
 module Tweetwine::Test
 
-class UpdateStatusExample < ExampleSpec
+class UpdateStatusTest < IntegrationTest
   RUBYGEMS_FIXTURE            = Helper.fixture_file 'shorten_rubygems.html'
   RUBYGEMS_FULL_URL           = 'http://rubygems.org/'
   RUBYGEMS_FULL_URL_ENC       = 'http%3a%2f%2frubygems.org%2f'

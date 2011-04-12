@@ -1,10 +1,10 @@
 # coding: utf-8
 
-require 'example/helper'
+require 'integration/helper'
 
 module Tweetwine::Test
 
-class ShowUserExample < ExampleSpec
+class ShowUserTest < IntegrationTest
   USER_URL = "https://api.twitter.com/1/statuses/user_timeline.json?count=20&page=1&screen_name=%s"
   USER_FIXTURE = Helper.fixture_file 'user.json'
 
