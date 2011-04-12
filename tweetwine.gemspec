@@ -10,9 +10,7 @@ Gem::Specification.new do |s|
   s.executables = `git ls-files -- bin/*`.split("\n").map { |f| File.basename(f) }
 
   s.add_dependency 'oauth', '~> 0.4.4'
-  s.add_development_dependency 'coulda',        '~> 0.6.3'
   s.add_development_dependency 'gem-man',       '~> 0.2.0'
-  s.add_development_dependency 'mcmire-matchy', '~> 0.5.2'
   s.add_development_dependency 'minitest',      '~> 2.1.0'
   s.add_development_dependency 'mocha',         '~> 0.9.12'
   s.add_development_dependency 'open4',         '~> 1.0.1'

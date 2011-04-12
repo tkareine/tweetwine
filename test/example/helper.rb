@@ -1,8 +1,6 @@
 # coding: utf-8
 
 %w{
-  coulda
-  matchy
   open4
   shellwords
   stringio
@@ -17,9 +15,7 @@ require 'helper'
 
 module Tweetwine::Test
   module Helper
-    include WebMock::API
-
-    CONFIG_FILE = fixture_path('config_example.yaml')
+    CONFIG_FILE = fixture_path 'config_example.yaml'
     PROJECT_DIR = File.expand_path('../..', File.dirname(__FILE__))
     PROXY_HOST  = "proxy.net"
     PROXY_PORT  = 8123
@@ -39,7 +35,7 @@ module Tweetwine::Test
     def start_cli(args, input = [], options = {:config_file => CONFIG_FILE})
       input, output = StringIO.new(input.join("\n")), StringIO.new
       options.merge!({ :in => input, :out => output })
-      CLI.start(args, options)
+      Tweetwine::CLI.start(args, options)
       output.string.split("\n")
     end
 
@@ -52,11 +48,13 @@ module Tweetwine::Test
     end
 
     def read_shorten_config
-      Support.symbolize_hash_keys(YAML.load_file(CONFIG_FILE))[:shorten_urls]
+      Tweetwine::Support.symbolize_hash_keys(YAML.load_file(CONFIG_FILE))[:shorten_urls]
     end
   end
-end
 
-include Coulda
-include Tweetwine
-include Tweetwine::Test::Helper
+  class ExampleSpec < MiniTest::Spec
+    include WebMockIntegration
+    include Tweetwine
+    include Helper
+  end
+end

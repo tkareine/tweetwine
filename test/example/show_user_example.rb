@@ -2,43 +2,43 @@
 
 require 'example/helper'
 
-Feature "show user's tweets" do
-  as_a "authenticated user"
-  i_want_to "see a specific user's tweets"
-  in_order_to "to know what the user has been doing"
+module Tweetwine::Test
 
+class ShowUserExample < ExampleSpec
   USER_URL = "https://api.twitter.com/1/statuses/user_timeline.json?count=20&page=1&screen_name=%s"
-  USER_FIXTURE = fixture_file('user.json')
+  USER_FIXTURE = Helper.fixture_file 'user.json'
 
-  Scenario "show my tweets" do
-    When "I start the application with 'user' command without extra arguments" do
+  describe "show my tweets" do
+    before do
       stub_http_request(:get, USER_URL % USER).to_return(:body => USER_FIXTURE)
       @output = start_cli %w{user}
     end
 
-    Then "the application shows my tweets" do
-      should_output_tweets
+    it "shows my tweets" do
+      must_output_tweets
     end
   end
 
-  Scenario "show another user's tweets" do
-    When "I start the application with 'user' command with the user as argument" do
+  describe "show another user's tweets" do
+    before do
       stub_http_request(:get, USER_URL % 'jillv').to_return(:body => USER_FIXTURE)
       @output = start_cli %w{user jillv}
     end
 
-    Then "the application shows the user's tweets" do
-      should_output_tweets
+    it "shows the user's tweets" do
+      must_output_tweets
     end
   end
 
   private
 
-  def should_output_tweets
-    @output[0].should == "jillv, in reply to chris, 9 hours ago:"
-    @output[1].should == "@chris wait me until the garden"
-    @output[2].should == ""
-    @output[3].should == "jillv, 3 days ago:"
-    @output[4].should == "so boring to wait"
+  def must_output_tweets
+    @output[0].must_equal "jillv, in reply to chris, 9 hours ago:"
+    @output[1].must_equal "@chris wait me until the garden"
+    @output[2].must_equal ""
+    @output[3].must_equal "jillv, 3 days ago:"
+    @output[4].must_equal "so boring to wait"
   end
+end
+
 end

@@ -2,43 +2,42 @@
 
 require 'example/helper'
 
-Feature "show tweets from home timeline" do
-  as_a "authenticated user"
-  i_want_to "see my home timeline"
-  in_order_to "stay up-to-date of other people's doings"
+module Tweetwine::Test
 
-  def setup
-    super
+class ShowHomeExample < ExampleSpec
+  before do
     stub_http_request(:get, "https://api.twitter.com/1/statuses/home_timeline.json?count=20&page=1").to_return(:body => fixture_file('home.json'))
   end
 
-  Scenario "show home timeline" do
-    When "I start the application with 'home' command" do
+  describe "show home timeline" do
+    before do
       @output = start_cli %w{--no-colors home}
     end
 
-    Then "the application shows tweets from home timeline" do
-      should_output_tweets
+    it "shows tweets from home timeline" do
+      must_output_tweets
     end
   end
 
-  Scenario "show home timeline is default command" do
-    When "I start the application with no command" do
+  describe "show home timeline is default command" do
+    before do
       @output = start_cli %w{--no-colors}
     end
 
-    Then "the application shows tweets from home timeline" do
-      should_output_tweets
+    it "shows tweets from home timeline" do
+      must_output_tweets
     end
   end
 
   private
 
-  def should_output_tweets
-    @output[0].should == "pelit, 11 days ago:"
-    @output[1].should == "F1-kausi alkaa marraskuussa http://bit.ly/1qQwjQ"
-    @output[2].should == ""
-    @output[58].should == "radar, 15 days ago:"
-    @output[59].should == "Four short links: 29 September 2009 http://bit.ly/dYxay"
+  def must_output_tweets
+    @output[0].must_equal "pelit, 11 days ago:"
+    @output[1].must_equal "F1-kausi alkaa marraskuussa http://bit.ly/1qQwjQ"
+    @output[2].must_equal ""
+    @output[58].must_equal "radar, 15 days ago:"
+    @output[59].must_equal "Four short links: 29 September 2009 http://bit.ly/dYxay"
   end
+end
+
 end

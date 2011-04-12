@@ -2,23 +2,21 @@
 
 require 'example/helper'
 
-Feature "show tweets mentioning the user" do
-  as_a "authenticated user"
-  i_want_to "see tweets mentioning me"
-  in_order_to "know if someone has replied or otherwise mentioned me"
+module Tweetwine::Test
 
-  Scenario "show tweets mentioning me" do
-    When "I start the application with 'mentions' command" do
-      stub_http_request(:get, "https://api.twitter.com/1/statuses/mentions.json?count=20&page=1").to_return(:body => fixture_file('mentions.json'))
-      @output = start_cli %w{mentions}
-    end
-
-    Then "the application shows tweets mentioning me" do
-      @output[0].should == "jillv, in reply to fooman, 3 days ago:"
-      @output[1].should == "@fooman, did you see their eyes glow yellow after sunset?"
-      @output[2].should == ""
-      @output[3].should == "redfield, in reply to fooman, 5 days ago:"
-      @output[4].should == "sometimes it is just best to run, just like @fooman"
-    end
+class ShowMentionsExample < ExampleSpec
+  before do
+    stub_http_request(:get, "https://api.twitter.com/1/statuses/mentions.json?count=20&page=1").to_return(:body => fixture_file('mentions.json'))
+    @output = start_cli %w{mentions}
   end
+
+  it "shows tweets mentioning me" do
+    @output[0].must_equal "jillv, in reply to fooman, 3 days ago:"
+    @output[1].must_equal "@fooman, did you see their eyes glow yellow after sunset?"
+    @output[2].must_equal ""
+    @output[3].must_equal "redfield, in reply to fooman, 5 days ago:"
+    @output[4].must_equal "sometimes it is just best to run, just like @fooman"
+  end
+end
+
 end
