@@ -296,6 +296,7 @@ class ClientTest < UnitTest
       end
     else
       it "encodes status in UTF-8 (String does not support encoding)" do
+        CharacterEncoding.forget_guess
         tmp_kcode('NONE') do
           tmp_env(:LANG => 'ISO-8859-1') do
             status_utf8, status_latin1 = "r\xc3\xa9sum\xc3\xa9", "r\xe9sum\xe9"

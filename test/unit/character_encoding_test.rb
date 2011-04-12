@@ -32,6 +32,10 @@ class CharacterEncodingTest < UnitTest
         Tweetwine::CharacterEncoding.forget_guess
       end
 
+      after do
+        Tweetwine::CharacterEncoding.forget_guess
+      end
+
       [
         ['EUC',   RESUME_EUC, RESUME_UTF8],
         ['SJIS',  HOME_SJIS,  HOME_UTF8]
