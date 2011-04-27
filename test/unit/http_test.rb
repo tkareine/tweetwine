@@ -2,9 +2,9 @@
 
 require 'unit/helper'
 
-module Tweetwine::Test
+module Tweetwine::Test::Unit
 
-class HttpTest < UnitTest
+class HttpTest < TestCase
   RESPONSE_BODY               = "resp"
   CUSTOM_HEADERS              = {'X-Custom' => 'true'}
   SITE_URL                    = "https://a-site.org"

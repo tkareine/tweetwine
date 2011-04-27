@@ -2,9 +2,9 @@
 
 require 'unit/helper'
 
-module Tweetwine::Test
+module Tweetwine::Test::Unit
 
-class ObfuscateTest < UnitTest
+class ObfuscateTest < TestCase
   include Obfuscate
 
   it "obfuscates symmetrically" do

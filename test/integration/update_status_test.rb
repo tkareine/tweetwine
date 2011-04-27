@@ -3,27 +3,27 @@
 require 'integration/helper'
 require 'yaml'
 
-module Tweetwine::Test
+module Tweetwine::Test::Integration
 
-class UpdateStatusTest < IntegrationTest
-  RUBYGEMS_FIXTURE            = Helper.fixture_file 'shorten_rubygems.html'
+class UpdateStatusTest < TestCase
+  RUBYGEMS_FIXTURE            = fixture_file 'shorten_rubygems.html'
   RUBYGEMS_FULL_URL           = 'http://rubygems.org/'
   RUBYGEMS_FULL_URL_ENC       = 'http%3a%2f%2frubygems.org%2f'
   RUBYGEMS_SHORT_URL          = 'http://is.gd/gGazV'
   RUBYGEMS_SHORT_URL_ENC      = 'http%3a%2f%2fis.gd%2fgGazV'
-  RUBYLANG_FIXTURE            = Helper.fixture_file 'shorten_rubylang.html'
+  RUBYLANG_FIXTURE            = fixture_file 'shorten_rubylang.html'
   RUBYLANG_FULL_URL           = 'http://ruby-lang.org/'
   RUBYLANG_FULL_URL_ENC       = 'http%3a%2f%2fruby-lang.org%2f'
   RUBYLANG_SHORT_URL          = 'http://is.gd/gGaM3'
   RUBYLANG_SHORT_URL_ENC      = 'http%3a%2f%2fis.gd%2fgGaM3'
-  SHORTEN_CONFIG              = Helper.read_shorten_config
+  SHORTEN_CONFIG              = read_shorten_config
   SHORTEN_METHOD              = SHORTEN_CONFIG[:method].to_sym
   STATUS_WITH_FULL_URLS       = "ruby links: #{RUBYGEMS_FULL_URL} #{RUBYLANG_FULL_URL}"
   STATUS_WITH_SHORT_URLS      = "ruby links: #{RUBYGEMS_SHORT_URL} #{RUBYLANG_SHORT_URL}"
   STATUS_WITHOUT_URLS         = "bored. going to sleep."
-  UPDATE_FIXTURE_WITH_URLS    = Helper.fixture_file('update_with_urls.json')
-  UPDATE_FIXTURE_WITHOUT_URLS = Helper.fixture_file('update_without_urls.json')
-  UPDATE_FIXTURE_UTF8         = Helper.fixture_file('update_utf8.json')
+  UPDATE_FIXTURE_WITH_URLS    = fixture_file 'update_with_urls.json'
+  UPDATE_FIXTURE_WITHOUT_URLS = fixture_file 'update_without_urls.json'
+  UPDATE_FIXTURE_UTF8         = fixture_file 'update_utf8.json'
   UPDATE_URL                  = "https://api.twitter.com/1/statuses/update.json"
 
   BODY_WITH_SHORT_URLS  = "status=ruby%20links%3a%20#{RUBYGEMS_SHORT_URL_ENC}%20#{RUBYLANG_SHORT_URL_ENC}"

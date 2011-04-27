@@ -2,9 +2,9 @@
 
 require 'unit/helper'
 
-module Tweetwine::Test
+module Tweetwine::Test::Unit
 
-class UrlShortenerTest < UnitTest
+class UrlShortenerTest < TestCase
   before do
     mock_http
   end

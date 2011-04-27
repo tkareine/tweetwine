@@ -5,10 +5,10 @@ require 'fileutils'
 require 'tempfile'
 require 'yaml'
 
-module Tweetwine::Test
+module Tweetwine::Test::Unit
 
-class ConfigTest < UnitTest
-  CONFIG_FILE = Helper.fixture_path('config_unit.yaml')
+class ConfigTest < TestCase
+  CONFIG_FILE = fixture_path 'config_unit.yaml'
 
   describe "when given command line arguments, no environment variables, no config file" do
     before do

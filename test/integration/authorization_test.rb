@@ -3,10 +3,10 @@
 require 'integration/helper'
 require 'fixture/oauth'
 
-module Tweetwine::Test
+module Tweetwine::Test::Integration
 
-class AuthorizationTest < IntegrationTest
-  include Fixture::OAuth
+class AuthorizationTest < TestCase
+  include Test::Fixture::OAuth
 
   describe "authorize user with OAuth and save access token" do
     before do

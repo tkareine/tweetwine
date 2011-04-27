@@ -11,9 +11,7 @@ WebMock.disable_net_connect!
 
 module Tweetwine
   module Test
-    module Helper
-      extend self
-
+    module CommonHelper
       def file_mode(file)
         File.stat(file).mode & 0777
       end

@@ -2,9 +2,9 @@
 
 require 'unit/helper'
 
-module Tweetwine::Test
+module Tweetwine::Test::Unit
 
-class UriTest < UnitTest
+class UriTest < TestCase
   describe "for percent-encoding strings" do
     [
       %w{a a},

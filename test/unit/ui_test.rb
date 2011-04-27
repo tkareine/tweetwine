@@ -3,9 +3,9 @@
 require 'unit/helper'
 require 'unit/tweet_helper'
 
-module Tweetwine::Test
+module Tweetwine::Test::Unit
 
-class UITest < UnitTest
+class UITest < TestCase
   include TweetHelper
 
   before do

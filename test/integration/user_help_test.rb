@@ -2,9 +2,9 @@
 
 require 'integration/helper'
 
-module Tweetwine::Test
+module Tweetwine::Test::Integration
 
-class UserHelpTest < IntegrationTest
+class UserHelpTest < TestCase
   %w{-v version ver v}.each do |arg|
     describe "show version with '#{arg}'" do
       before do

@@ -2,9 +2,9 @@
 
 require 'integration/helper'
 
-module Tweetwine::Test
+module Tweetwine::Test::Integration
 
-class UseHttpProxyTest < IntegrationTest
+class UseHttpProxyTest < TestCase
   HOME_URL = "https://api.twitter.com/1/statuses/home_timeline.json?count=20&page=1"
 
   before do

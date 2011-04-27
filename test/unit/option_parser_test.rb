@@ -2,9 +2,9 @@
 
 require 'unit/helper'
 
-module Tweetwine::Test
+module Tweetwine::Test::Unit
 
-class OptionParserTest < UnitTest
+class OptionParserTest < TestCase
   before do
     @parser = OptionParser.new do |parser, options|
       parser.on '-c', '--colors',           'Enable colors.' do

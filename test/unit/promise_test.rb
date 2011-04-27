@@ -2,9 +2,9 @@
 
 require 'unit/helper'
 
-module Tweetwine::Test
+module Tweetwine::Test::Unit
 
-class PromiseTest < UnitTest
+class PromiseTest < TestCase
   before do
     @result = nil
     @action_called = 0

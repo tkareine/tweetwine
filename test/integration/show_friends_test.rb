@@ -2,9 +2,9 @@
 
 require 'integration/helper'
 
-module Tweetwine::Test
+module Tweetwine::Test::Integration
 
-class ShowFriendsTest < IntegrationTest
+class ShowFriendsTest < TestCase
   before do
     stub_http_request(:get, "https://api.twitter.com/1/statuses/friends.json?count=20&page=1").to_return(:body => fixture_file('users.json'))
     @output = start_cli %w{friends}

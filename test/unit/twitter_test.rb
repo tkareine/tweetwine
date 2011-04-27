@@ -2,9 +2,9 @@
 
 require 'unit/helper'
 
-module Tweetwine::Test
+module Tweetwine::Test::Unit
 
-class ClientTest < UnitTest
+class ClientTest < TestCase
   before do
     @config = {
       :num_tweets => 20,

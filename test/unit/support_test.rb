@@ -3,9 +3,9 @@
 require 'unit/helper'
 require 'time'
 
-module Tweetwine::Test
+module Tweetwine::Test::Unit
 
-class SupportTest < UnitTest
+class SupportTest < TestCase
   include Support
 
   describe "for determining emptiness" do

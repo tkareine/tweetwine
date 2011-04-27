@@ -2,9 +2,9 @@
 
 require 'integration/helper'
 
-module Tweetwine::Test
+module Tweetwine::Test::Integration
 
-class GlobalOptionsTest < IntegrationTest
+class GlobalOptionsTest < TestCase
   before do
     stub_http_request(:get, %r{https://api.twitter.com/1/statuses/home_timeline\.json\?count=\d+&page=\d+}).to_return(:body => fixture_file('home.json'))
   end

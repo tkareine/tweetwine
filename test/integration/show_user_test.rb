@@ -2,11 +2,11 @@
 
 require 'integration/helper'
 
-module Tweetwine::Test
+module Tweetwine::Test::Integration
 
-class ShowUserTest < IntegrationTest
+class ShowUserTest < TestCase
   USER_URL = "https://api.twitter.com/1/statuses/user_timeline.json?count=20&page=1&screen_name=%s"
-  USER_FIXTURE = Helper.fixture_file 'user.json'
+  USER_FIXTURE = fixture_file 'user.json'
 
   describe "show my tweets" do
     before do

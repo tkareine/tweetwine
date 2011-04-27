@@ -2,9 +2,9 @@
 
 require 'unit/helper'
 
-module Tweetwine::Test
+module Tweetwine::Test::Unit
 
-class CharacterEncodingTest < UnitTest
+class CharacterEncodingTest < TestCase
   if defined? Encoding
     describe "when transcoding to UTF-8 when String supports encoding" do
       it "transcodes string to UTF-8" do

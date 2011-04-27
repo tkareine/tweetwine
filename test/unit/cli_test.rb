@@ -3,10 +3,10 @@
 require 'unit/helper'
 require 'stringio'
 
-module Tweetwine::Test
+module Tweetwine::Test::Unit
 
 # See `test/integration` directory for integration tests.
-class CLITest < UnitTest
+class CLITest < TestCase
   describe "for initialization" do
     it "disallows using #new to create a new instance" do
       assert_raises(NoMethodError) { CLI.new }

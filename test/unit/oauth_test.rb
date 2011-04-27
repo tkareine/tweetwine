@@ -4,10 +4,10 @@ require 'unit/helper'
 require 'fixture/oauth'
 require 'net/http'
 
-module Tweetwine::Test
+module Tweetwine::Test::Unit
 
-class OAuthTest < UnitTest
-  include Fixture::OAuth
+class OAuthTest < TestCase
+  include Test::Fixture::OAuth
 
   before do
     mock_http

@@ -2,7 +2,7 @@
 
 require 'timecop'
 
-module Tweetwine::Test
+module Tweetwine::Test::Unit
   module TweetHelper
     FIELD_PATHS = {
       :from_user  => %w{screen_name},
