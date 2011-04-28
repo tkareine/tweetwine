@@ -1,7 +1,5 @@
 # coding: utf-8
 
-require 'ostruct'
-
 name = 'tweetwine'
 $LOAD_PATH.unshift File.expand_path('lib', File.dirname(__FILE__))
 require "#{name}/version"
