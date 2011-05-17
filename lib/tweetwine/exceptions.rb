@@ -15,6 +15,7 @@ module Tweetwine
     end
   end
 
+  class ConfigError         < Error; status_code(12); end
   class CommandLineError    < Error; status_code(13); end
   class UnknownCommandError < Error; status_code(14); end
 

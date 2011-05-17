@@ -58,8 +58,9 @@ module Tweetwine
     end
 
     def self.parse_config_file(config_file)
-      options = File.open(config_file, 'r') { |io| YAML.load(io) }
-      Support.symbolize_hash_keys(options)
+      config = YAML.load_file config_file
+      raise ConfigError, "invalid config file; it must be a mapping style YAML document: #{config_file}" unless config.is_a? Hash
+      Support.symbolize_hash_keys(config)
     end
   end
 end

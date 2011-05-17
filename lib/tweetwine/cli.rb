@@ -108,8 +108,10 @@ module Tweetwine
       private
 
       def init(args, overriding_default_conf = nil)
-        @config, @http, @oauth, @twitter, @ui, @url_shortener = nil   # reset
+        @config, @http, @oauth, @twitter, @url_shortener = nil  # reset
+        @ui = UI.new                                            # preload with defaults if config init fails
         @config = read_config(args, overriding_default_conf)
+        @ui = nil                                               # reset, reload lazily with real config
       end
 
       def run(args)

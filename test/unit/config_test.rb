@@ -174,6 +174,14 @@ class ConfigTest < TestCase
       assert_raises(RuntimeError) { @config.save }
     end
 
+    it "raises exception when trying to read invalid config file" do
+      Tempfile.open('.tweetwine') do |tf|
+        file = tf.path
+        FileUtils.touch file
+        assert_raises(ConfigError) { Config.read [], :config_file => file }
+      end
+    end
+
     describe "when config file does not exist" do
       before do
         @tmp_dir = Dir.mktmpdir
