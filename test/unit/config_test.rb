@@ -47,9 +47,9 @@ class ConfigTest < TestCase
     end
 
     after do
-      ENV['opt']    = nil
-      ENV['defopt'] = nil
-      ENV['envopt'] = nil
+      ENV.delete 'opt'
+      ENV.delete 'defopt'
+      ENV.delete 'envopt'
     end
 
     it "has option defined from environment variable" do
@@ -100,8 +100,8 @@ class ConfigTest < TestCase
     end
 
     after do
-      ENV['opt']  = nil
-      ENV['opt2'] = nil
+      ENV.delete 'opt'
+      ENV.delete 'opt2'
     end
 
     it "overrides option value from environment variable over config file" do
@@ -122,7 +122,7 @@ class ConfigTest < TestCase
     end
 
     after do
-      ENV['opt'] = nil
+      ENV.delete 'opt'
     end
 
     it "ignores command line arguments, using environment variables and config file for options if available" do
@@ -140,9 +140,9 @@ class ConfigTest < TestCase
     end
 
     after do
-      ENV['visible'] = nil
-      ENV['hidden'] = nil
-      ENV['empty'] = nil
+      ENV.delete 'visible'
+      ENV.delete 'hidden'
+      ENV.delete 'empty'
     end
 
     it "considers only specified environment variables that are nonempty" do

@@ -12,7 +12,7 @@ class UseHttpProxyTest < TestCase
   end
 
   after do
-    ENV['http_proxy'] = nil
+    ENV.delete 'http_proxy'
   end
 
   describe "enable proxy via environment variable" do
@@ -28,7 +28,7 @@ class UseHttpProxyTest < TestCase
 
   describe "enable proxy via command line option" do
     before do
-      ENV['http_proxy'] = nil
+      ENV.delete 'http_proxy'
       @output = start_cli %W{--http-proxy #{PROXY_URL} home}
     end
 
