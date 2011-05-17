@@ -16,7 +16,7 @@ class AuthorizationTest < TestCase
       stub_http_request(:get, @command_url).
         to_return(:status => [401, 'Unauthorized']).then.
         to_return(:body => fixture_file('home.json'))
-      in_temp_dir do
+      in_tmp_dir do
         config_file = 'tweetwine.tmp'
         @output = start_cli %W{--no-colors -f #{config_file} home}, [PIN], {}
         @config_contents = YAML.load_file(config_file)

@@ -47,7 +47,7 @@ module Tweetwine::Test
         Timecop.freeze(SNAPSHOT_CREATED_AT, &block)
       end
 
-      def in_temp_dir
+      def in_tmp_dir
         Dir.mktmpdir do |tmp_dir|
           Dir.chdir(tmp_dir) do |dir|
             yield dir

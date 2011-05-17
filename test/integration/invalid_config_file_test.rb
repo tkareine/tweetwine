@@ -7,7 +7,7 @@ module Tweetwine::Test::Integration
 
 class InvalidConfigFileTest < TestCase
   before do
-    in_temp_dir do
+    in_tmp_dir do
       config_file = 'tweetwine.tmp'
       FileUtils.touch config_file
       @status = start_app %W{--no-colors -f #{config_file}} do |_, _, _, stderr|
