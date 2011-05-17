@@ -32,7 +32,9 @@ class UpdateStatusTest < TestCase
   describe "update my status from command line with colorization disabled" do
     before do
       stub_http_request(:post, UPDATE_URL).with(:body => BODY_WITHOUT_URLS).to_return(:body => UPDATE_FIXTURE_WITHOUT_URLS)
-      @output = start_cli %W{--no-colors update #{STATUS_WITHOUT_URLS}}, %w{y}
+      at_snapshot do
+        @output = start_cli %W{--no-colors update #{STATUS_WITHOUT_URLS}}, %w{y}
+      end
     end
 
     it "sends and shows the status" do
@@ -44,7 +46,9 @@ class UpdateStatusTest < TestCase
   describe "update my status from command line with colorization enabled" do
     before do
       stub_http_request(:post, UPDATE_URL).with(:body => BODY_WITHOUT_URLS).to_return(:body => UPDATE_FIXTURE_WITHOUT_URLS)
-      @output = start_cli %W{--colors update #{STATUS_WITHOUT_URLS}}, %w{y}
+      at_snapshot do
+        @output = start_cli %W{--colors update #{STATUS_WITHOUT_URLS}}, %w{y}
+      end
     end
 
     it "sends and shows the status" do
@@ -56,7 +60,9 @@ class UpdateStatusTest < TestCase
   describe "update my status from command line when message is spread over multiple arguments" do
     before do
       stub_http_request(:post, UPDATE_URL).with(:body => BODY_WITHOUT_URLS).to_return(:body => UPDATE_FIXTURE_WITHOUT_URLS)
-      @output = start_cli(%w{--no-colors update} + STATUS_WITHOUT_URLS.split, %w{y})
+      at_snapshot do
+        @output = start_cli(%w{--no-colors update} + STATUS_WITHOUT_URLS.split, %w{y})
+      end
     end
 
     it "sends and shows the status" do
@@ -78,7 +84,9 @@ class UpdateStatusTest < TestCase
   describe "update my status from STDIN" do
     before do
       stub_http_request(:post, UPDATE_URL).with(:body => BODY_WITHOUT_URLS).to_return(:body => UPDATE_FIXTURE_WITHOUT_URLS)
-      @output = start_cli %w{update}, [STATUS_WITHOUT_URLS, 'y']
+      at_snapshot do
+        @output = start_cli %w{update}, [STATUS_WITHOUT_URLS, 'y']
+      end
     end
 
     it "sends and shows the status" do
@@ -105,7 +113,9 @@ class UpdateStatusTest < TestCase
         @status_latin1 = @status_utf8.encode('ISO-8859-1')
         url_encoded_body = "status=r%c3%a9sum%c3%a9"
         stub_http_request(:post, UPDATE_URL).with(:body => url_encoded_body).to_return(:body => UPDATE_FIXTURE_UTF8)
-        @output = start_cli %W{--no-colors update #{@status_latin1}}, %w{y}
+        at_snapshot do
+          @output = start_cli %W{--no-colors update #{@status_latin1}}, %w{y}
+        end
       end
 
       it "sends and shows the status" do
@@ -126,7 +136,9 @@ class UpdateStatusTest < TestCase
         tmp_kcode('NONE') do
           tmp_env(:LANG => 'latin1') do
             Tweetwine::CharacterEncoding.forget_guess
-            @output = start_cli %W{--no-colors update #{@status_latin1}}, %w{y}
+            at_snapshot do
+              @output = start_cli %W{--no-colors update #{@status_latin1}}, %w{y}
+            end
           end
         end
       end
@@ -152,7 +164,9 @@ class UpdateStatusTest < TestCase
       stub_http_request(:post, UPDATE_URL).
         with(:body => BODY_WITH_SHORT_URLS).
         to_return(:body => UPDATE_FIXTURE_WITH_URLS)
-      @output = start_cli %W{--no-colors update #{STATUS_WITH_FULL_URLS}}, %w{y}
+      at_snapshot do
+        @output = start_cli %W{--no-colors update #{STATUS_WITH_FULL_URLS}}, %w{y}
+      end
     end
 
     it "shortens the URLs in the status before sending it" do
@@ -169,7 +183,9 @@ class UpdateStatusTest < TestCase
       stub_http_request(:post, UPDATE_URL).
         with(:body => BODY_WITH_SHORT_URLS).
         to_return(:body => UPDATE_FIXTURE_WITH_URLS)
-      @output = start_cli %W{--no-colors --no-url-shorten update #{STATUS_WITH_SHORT_URLS}}, %w{y}
+      at_snapshot do
+        @output = start_cli %W{--no-colors --no-url-shorten update #{STATUS_WITH_SHORT_URLS}}, %w{y}
+      end
     end
 
     it "passes URLs as is in the status" do

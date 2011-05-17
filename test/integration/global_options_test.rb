@@ -11,7 +11,9 @@ class GlobalOptionsTest < TestCase
 
   describe "colors" do
     before do
-      @output = start_cli %w{--colors}
+      at_snapshot do
+        @output = start_cli %w{--colors}
+      end
     end
 
     it "shows tweets with colors" do
@@ -25,7 +27,9 @@ class GlobalOptionsTest < TestCase
 
   describe "show reverse" do
     before do
-      @output = start_cli %w{--reverse}
+      at_snapshot do
+        @output = start_cli %w{--reverse}
+      end
     end
 
     it "shows tweets in reverse order" do

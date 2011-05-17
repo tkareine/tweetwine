@@ -9,8 +9,6 @@
   timecop
 }.each { |lib| require lib }
 
-Timecop.freeze(Time.parse("2009-10-14 01:56:15 +0300"))
-
 require 'helper'
 
 module Tweetwine::Test
@@ -18,6 +16,8 @@ module Tweetwine::Test
     module Helper
       include Tweetwine::Test::CommonHelper
       extend Tweetwine::Test::CommonHelper
+
+      SNAPSHOT_CREATED_AT = Time.parse "2009-10-14 01:56:15 +0300"
 
       CONFIG_FILE = fixture_path 'config_integration.yaml'
       PROJECT_DIR = File.expand_path '../..', File.dirname(__FILE__)
@@ -41,6 +41,10 @@ module Tweetwine::Test
         options.merge!({ :in => input, :out => output })
         Tweetwine::CLI.start(args, options)
         output.string.split("\n")
+      end
+
+      def at_snapshot(&block)
+        Timecop.freeze(SNAPSHOT_CREATED_AT, &block)
       end
 
       def in_temp_dir

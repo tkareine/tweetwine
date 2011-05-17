@@ -17,7 +17,9 @@ class SearchStatusesTest < TestCase
 
   describe "search tweets matching all words" do
     before do
-      @output = start_cli %w{-n 2 search -a braid game}
+      at_snapshot do
+        @output = start_cli %w{-n 2 search -a braid game}
+      end
     end
 
     it "requests tweets matching all the words and shows them" do
@@ -28,7 +30,9 @@ class SearchStatusesTest < TestCase
 
   describe "search tweets matching any words" do
     before do
-      @output = start_cli %w{-n 2 search -o braid game}
+      at_snapshot do
+        @output = start_cli %w{-n 2 search -o braid game}
+      end
     end
 
     it "requests tweets matching any of the words and shows them" do
@@ -39,7 +43,9 @@ class SearchStatusesTest < TestCase
 
   describe "searching for all words is implied unless other is specified" do
     before do
-      @output = start_cli %w{-n 2 search braid game}
+      at_snapshot do
+        @output = start_cli %w{-n 2 search braid game}
+      end
     end
 
     it "requests tweets matching all the words and shows them" do

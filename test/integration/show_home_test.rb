@@ -11,7 +11,9 @@ class ShowHomeTest < TestCase
 
   describe "show home timeline" do
     before do
-      @output = start_cli %w{--no-colors home}
+      at_snapshot do
+        @output = start_cli %w{--no-colors home}
+      end
     end
 
     it "shows tweets from home timeline" do
@@ -21,7 +23,9 @@ class ShowHomeTest < TestCase
 
   describe "show home timeline is default command" do
     before do
-      @output = start_cli %w{--no-colors}
+      at_snapshot do
+        @output = start_cli %w{--no-colors}
+      end
     end
 
     it "shows tweets from home timeline" do

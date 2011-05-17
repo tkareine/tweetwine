@@ -11,7 +11,9 @@ class ShowUserTest < TestCase
   describe "show my tweets" do
     before do
       stub_http_request(:get, USER_URL % USER).to_return(:body => USER_FIXTURE)
-      @output = start_cli %w{user}
+      at_snapshot do
+        @output = start_cli %w{user}
+      end
     end
 
     it "shows my tweets" do
@@ -22,7 +24,9 @@ class ShowUserTest < TestCase
   describe "show another user's tweets" do
     before do
       stub_http_request(:get, USER_URL % 'jillv').to_return(:body => USER_FIXTURE)
-      @output = start_cli %w{user jillv}
+      at_snapshot do
+        @output = start_cli %w{user jillv}
+      end
     end
 
     it "shows the user's tweets" do
