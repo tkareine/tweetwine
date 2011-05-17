@@ -221,17 +221,12 @@ class ConfigTest < TestCase
         assert_equal 0600, file_mode(@file)
       end
 
-      describe "when config file exists" do
-        before do
-          FileUtils.touch @file
-          @original_mode = 0644
-          File.chmod @original_mode, @file
-        end
-
-        it "does not set config file permissions when saving" do
-          @config.save
-          assert_equal @original_mode, file_mode(@file)
-        end
+      it "does not change config file permissions when saving over existing file" do
+        FileUtils.touch @file
+        original_mode = 0644
+        File.chmod original_mode, @file
+        @config.save
+        assert_equal original_mode, file_mode(@file)
       end
     end
   end
