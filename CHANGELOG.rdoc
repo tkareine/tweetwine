@@ -1,3 +1,9 @@
+=== 0.4.2 released 2011-05-18
+
+* Fail graciously if config file is invalid
+* Removed setting deprecated gemspec attribute (has_rdoc)
+* Cleaned tests
+
 === 0.4.1 released 2011-03-23
 
 * Handle socket errors just like connection errors
