@@ -1,12 +1,12 @@
 # coding: utf-8
 
-require 'unit/helper'
-require 'unit/tweet_helper'
+require 'support/unit_test_case'
+require 'support/tweets'
 
 module Tweetwine::Test::Unit
 
 class TweetTest < TestCase
-  include TweetHelper
+  include Test::Tweets
 
   describe "for initialization" do
     it "raises exception if from user field is not found" do

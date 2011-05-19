@@ -1,6 +1,6 @@
 # coding: utf-8
 
-require 'unit/helper'
+require 'support/unit_test_case'
 
 module Tweetwine::Test::Unit
 

@@ -1,6 +1,6 @@
 # coding: utf-8
 
-require 'integration/helper'
+require 'support/integration_test_case'
 require 'fixture/oauth'
 
 module Tweetwine::Test::Integration

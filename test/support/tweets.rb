@@ -2,8 +2,8 @@
 
 require 'timecop'
 
-module Tweetwine::Test::Unit
-  module TweetHelper
+module Tweetwine::Test
+  module Tweets
     FIELD_PATHS = {
       :from_user  => %w{screen_name},
       :to_user    => %w{status in_reply_to_screen_name},
@@ -43,11 +43,11 @@ module Tweetwine::Test::Unit
     end
 
     def at_default_time(&block)
-      Timecop.freeze(TweetHelper::DEFAULT_TIMESTAMP, &block)
+      Timecop.freeze(DEFAULT_TIMESTAMP, &block)
     end
 
     def create_timestamp(minus_seconds)
-      (TweetHelper::DEFAULT_TIMESTAMP - minus_seconds).iso8601
+      (DEFAULT_TIMESTAMP - minus_seconds).iso8601
     end
 
     private

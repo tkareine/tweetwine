@@ -1,12 +1,12 @@
 # coding: utf-8
 
-require 'unit/helper'
-require 'unit/tweet_helper'
+require 'support/unit_test_case'
+require 'support/tweets'
 
 module Tweetwine::Test::Unit
 
 class UITest < TestCase
-  include TweetHelper
+  include Test::Tweets
 
   before do
     @in  = mock

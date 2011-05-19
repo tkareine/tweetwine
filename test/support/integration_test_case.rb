@@ -7,15 +7,16 @@
   tempfile
   time
   timecop
+  support/common
+  support/common_helpers
+  support/webmock_integration
 }.each { |lib| require lib }
-
-require 'helper'
 
 module Tweetwine::Test
   module Integration
-    module Helper
-      include Tweetwine::Test::CommonHelper
-      extend Tweetwine::Test::CommonHelper
+    module Helpers
+      include CommonHelpers
+      extend CommonHelpers
 
       SNAPSHOT_CREATED_AT = Time.parse "2009-10-14 01:56:15 +0300"
 
@@ -61,10 +62,10 @@ module Tweetwine::Test
     end
 
     class TestCase < MiniTest::Spec
-      include WebMockIntegration
       include Tweetwine
-      include Helper
-      extend Helper
+      include WebMockIntegration
+      include Helpers
+      extend Helpers
     end
   end
 end

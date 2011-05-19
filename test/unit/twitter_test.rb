@@ -1,10 +1,10 @@
 # coding: utf-8
 
-require 'unit/helper'
+require 'support/unit_test_case'
 
 module Tweetwine::Test::Unit
 
-class ClientTest < TestCase
+class TwitterTest < TestCase
   before do
     @config = {
       :num_tweets => 20,
