@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'oauth', '~> 0.4.4'
   s.add_development_dependency 'gem-man',       '~> 0.2.0'
-  s.add_development_dependency 'minitest',      '~> 2.1.0'
+  s.add_development_dependency 'minitest',      '~> 2.4.0'
   s.add_development_dependency 'mocha',         '~> 0.9.12'
   s.add_development_dependency 'open4',         '~> 1.0.1'
   s.add_development_dependency 'rake',          '>= 0.8.7'
