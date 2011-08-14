@@ -12,13 +12,17 @@
 module Tweetwine::Test
   module Unit
     class TestCase < MiniTest::Spec
-      include Tweetwine
       include MochaIntegration
       include WebMockIntegration
+
       include Assertions
       include Doubles
       include CommonHelpers
       extend CommonHelpers
+
+      # Shorten writing tests a bit by making our main namespace available in
+      # the test case.
+      include Tweetwine
     end
   end
 end

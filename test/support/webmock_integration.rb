@@ -8,6 +8,7 @@ module Tweetwine::Test
 
     def teardown
       WebMock.reset!
+      super
     end
   end
 end

@@ -1,6 +1,6 @@
 # coding: utf-8
 
-require 'mocha'
+require 'mocha_standalone'
 
 module Tweetwine::Test
   module MochaIntegration
@@ -8,6 +8,7 @@ module Tweetwine::Test
 
     def teardown
       mocha_teardown
+      super
     end
   end
 end

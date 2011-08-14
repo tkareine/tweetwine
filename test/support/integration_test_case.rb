@@ -62,10 +62,14 @@ module Tweetwine::Test
     end
 
     class TestCase < MiniTest::Spec
-      include Tweetwine
       include WebMockIntegration
+
       include Helpers
       extend Helpers
+
+      # Shorten writing tests a bit by making our main namespace available in
+      # the test case.
+      include Tweetwine
     end
   end
 end
