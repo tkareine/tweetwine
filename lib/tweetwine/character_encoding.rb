@@ -1,7 +1,7 @@
 # coding: utf-8
 
 module Tweetwine
-  class CharacterEncoding
+  module CharacterEncoding
     class << self
       if defined? Encoding
         def to_utf8(str)
