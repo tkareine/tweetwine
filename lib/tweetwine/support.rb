@@ -36,15 +36,15 @@ module Tweetwine
       else [(difference/86400.0).round, "day"]
       end
 
-      [value, pluralize_unit(value, unit)]
+      [value, Helper.pluralize_unit(value, unit)]
     end
 
     def stringify_hash_keys(hash)
-      recursive_copy_hash(hash) { |key, value| [key.to_s, value] }
+      Helper.recursive_copy_hash(hash) { |key, value| [key.to_s, value] }
     end
 
     def symbolize_hash_keys(hash)
-      recursive_copy_hash(hash) { |key, value| [key.to_sym, value] }
+      Helper.recursive_copy_hash(hash) { |key, value| [key.to_sym, value] }
     end
 
     def parse_int_gt(value, default, min, name_for_error)
@@ -64,7 +64,7 @@ module Tweetwine
       dup_str = str.dup
       str_pos, dup_pos = 0, 0
       while str_pos < str.size && (match_data = regexp.match(str[str_pos..-1]))
-        matching_group_indexes = indexes_of_filled_matches(match_data)
+        matching_group_indexes = Helper.indexes_of_filled_matches(match_data)
 
         matching_group_indexes.each do |i|
           replacement = (yield match_data[i]).to_s
@@ -93,30 +93,32 @@ module Tweetwine
       end
     end
 
-    private
+    module Helper
+      class << self
+        def recursive_copy_hash(hash, &pair_modifier)
+          hash.inject({}) do |result, pair|
+            value = pair.last
+            value = recursive_copy_hash(value, &pair_modifier) if value.is_a? Hash
+            key, value = pair_modifier.call(pair.first, value)
+            result[key] = value
+            result
+          end
+        end
 
-    def recursive_copy_hash(hash, &pair_modifier)
-      hash.inject({}) do |result, pair|
-        value = pair.last
-        value = recursive_copy_hash(value, &pair_modifier) if value.is_a? Hash
-        key, value = pair_modifier.call(pair.first, value)
-        result[key] = value
-        result
-      end
-    end
+        def pluralize_unit(value, unit)
+          if %w{hour day}.include?(unit) && value > 1
+            unit = unit + 's'
+          end
+          unit
+        end
 
-    def pluralize_unit(value, unit)
-      if %w{hour day}.include?(unit) && value > 1
-        unit = unit + 's'
-      end
-      unit
-    end
-
-    def indexes_of_filled_matches(match_data)
-      if match_data.size > 1
-        (1...match_data.size).to_a.reject { |i| match_data[i].nil? }
-      else
-        [0]
+        def indexes_of_filled_matches(match_data)
+          if match_data.size > 1
+            (1...match_data.size).to_a.reject { |i| match_data[i].nil? }
+          else
+            [0]
+          end
+        end
       end
     end
   end
