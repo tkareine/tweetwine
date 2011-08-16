@@ -22,7 +22,7 @@ class UseHttpProxyTest < TestCase
     end
 
     it "uses the proxy to fetch my home timeline" do
-      must_use_proxy
+      assert_use_proxy
     end
   end
 
@@ -33,7 +33,7 @@ class UseHttpProxyTest < TestCase
     end
 
     it "uses the proxy to fetch my home timeline" do
-      must_use_proxy
+      assert_use_proxy
     end
   end
 
@@ -50,16 +50,16 @@ class UseHttpProxyTest < TestCase
 
   private
 
-  def must_use_proxy
+  def assert_use_proxy
     nh = net_http
-    nh.proxy_class?.must_equal true
+    assert nh.proxy_class?
     nh.instance_variable_get(:@proxy_address).must_equal PROXY_HOST
     nh.instance_variable_get(:@proxy_port).must_equal PROXY_PORT
     assert_requested(:get, HOME_URL)
   end
 
   def refute_use_proxy
-    net_http.proxy_class?.must_equal false
+    refute net_http.proxy_class?
     assert_requested(:get, HOME_URL)
   end
 
