@@ -9,7 +9,7 @@ module Tweetwine::Test
       assert_equal(expected.size, actual.size, message(msg_diff_size) {
         'Expected %s to be of same size as %s' % [actual.inspect, expected.inspect]
       })
-      assert(enumerable_minus_each_element(actual, expected).empty?, message(msg_diff_elems) {
+      assert(Assertions.enumerable_minus_each_element(actual, expected).empty?, message(msg_diff_elems) {
         'Expected %s to contain all the elements of %s' % [actual.inspect, expected.inspect]
       })
     end
@@ -46,9 +46,7 @@ module Tweetwine::Test
       })
     end
 
-    private
-
-    def enumerable_minus_each_element(enumerable, elements)
+    def self.enumerable_minus_each_element(enumerable, elements)
       remaining = enumerable.dup.to_a
       elements.each do |e|
         index = remaining.index(e)
