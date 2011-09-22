@@ -6,8 +6,6 @@ rescue LoadError
   raise 'Could not load JSON library; do you have one installed as a gem?'
 end unless defined? JSON
 
-gem 'oauth', '~> 0.4.4'
-
 require 'tweetwine/version'
 
 module Tweetwine
