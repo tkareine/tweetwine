@@ -1,6 +1,8 @@
 # coding: utf-8
 
 name = 'tweetwine'
+# Add lib dir to $LOAD_PATH so that `require 'tweetwine/version'`
+# (executed in tests) loads the version file only once on MRI 1.8.7.
 $LOAD_PATH.unshift File.expand_path('lib', File.dirname(__FILE__))
 require "#{name}/version"
 
