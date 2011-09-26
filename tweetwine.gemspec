@@ -14,6 +14,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'minitest',      '~> 2.4.0'
   s.add_development_dependency 'mocha',         '~> 0.9.12'
   s.add_development_dependency 'open4',         '~> 1.0.1'
+  s.add_development_dependency 'perftools.rb',  '~> 0.5.6'
   s.add_development_dependency 'rake',          '>= 0.8.7'
   s.add_development_dependency 'ronn',          '~> 0.7.3'
   s.add_development_dependency 'timecop',       '~> 0.3.5'

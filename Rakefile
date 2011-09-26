@@ -80,6 +80,11 @@ namespace :test do
   task :all => [:unit, :integration]
 end
 
+desc "Profile fetching home timeline"
+task :profile do
+  sh %{bundle exec ruby -I lib -I test benchmark/home_bm.rb}
+end
+
 desc "Find code smells"
 task :roodi do
   sh %{roodi "**/*.rb"}
