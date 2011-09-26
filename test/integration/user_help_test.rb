@@ -14,7 +14,7 @@ class UserHelpTest < TestCase
       end
 
       it "shows version and exists with success status" do
-        @output.must_match(/\d+\.\d+\.\d+$/)
+        @output.must_match(/\d+\.\d+\.\d+[\w\.]*$/)
         @status.exitstatus.must_equal 0
       end
     end
