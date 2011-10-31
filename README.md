@@ -25,6 +25,7 @@ Install Tweetwine with RubyGems:
     $ gem install tweetwine
 
 The program is tested with MRI 1.8.7, 1.9.2, and 1.9.3.
+[![Build Status](https://secure.travis-ci.org/tkareine/tweetwine.png)](http://travis-ci.org/tkareine/tweetwine)
 
 The program requires [oauth](http://oauth.rubyforge.org/) gem to be installed.
 In addition, the program needs a JSON parser library, such as
