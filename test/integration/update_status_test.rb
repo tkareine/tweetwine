@@ -8,14 +8,10 @@ module Tweetwine::Test::Integration
 class UpdateStatusTest < TestCase
   RUBYGEMS_FIXTURE            = fixture_file 'shorten_rubygems.html'
   RUBYGEMS_FULL_URL           = 'http://rubygems.org/'
-  RUBYGEMS_FULL_URL_ENC       = 'http%3a%2f%2frubygems.org%2f'
   RUBYGEMS_SHORT_URL          = 'http://is.gd/gGazV'
-  RUBYGEMS_SHORT_URL_ENC      = 'http%3a%2f%2fis.gd%2fgGazV'
   RUBYLANG_FIXTURE            = fixture_file 'shorten_rubylang.html'
   RUBYLANG_FULL_URL           = 'http://ruby-lang.org/'
-  RUBYLANG_FULL_URL_ENC       = 'http%3a%2f%2fruby-lang.org%2f'
   RUBYLANG_SHORT_URL          = 'http://is.gd/gGaM3'
-  RUBYLANG_SHORT_URL_ENC      = 'http%3a%2f%2fis.gd%2fgGaM3'
   SHORTEN_CONFIG              = read_shorten_config
   SHORTEN_METHOD              = SHORTEN_CONFIG[:method].to_sym
   STATUS_WITH_FULL_URLS       = "ruby links: #{RUBYGEMS_FULL_URL} #{RUBYLANG_FULL_URL}"
@@ -26,8 +22,8 @@ class UpdateStatusTest < TestCase
   UPDATE_FIXTURE_UTF8         = fixture_file 'update_utf8.json'
   UPDATE_URL                  = "https://api.twitter.com/1/statuses/update.json"
 
-  BODY_WITH_SHORT_URLS  = "status=ruby%20links%3a%20#{RUBYGEMS_SHORT_URL_ENC}%20#{RUBYLANG_SHORT_URL_ENC}"
-  BODY_WITHOUT_URLS     = "status=bored.%20going%20to%20sleep."
+  BODY_WITH_SHORT_URLS  = { 'status' => "ruby links: #{RUBYGEMS_SHORT_URL} #{RUBYLANG_SHORT_URL}" }
+  BODY_WITHOUT_URLS     = { 'status' => 'bored. going to sleep.' }
 
   describe "update my status from command line with colorization disabled" do
     before do
@@ -111,8 +107,7 @@ class UpdateStatusTest < TestCase
       before do
         @status_utf8 = "résumé"
         @status_latin1 = @status_utf8.encode('ISO-8859-1')
-        url_encoded_body = "status=r%c3%a9sum%c3%a9"
-        stub_http_request(:post, UPDATE_URL).with(:body => url_encoded_body).to_return(:body => UPDATE_FIXTURE_UTF8)
+        stub_http_request(:post, UPDATE_URL).with(:body => { 'status' => @status_utf8 }).to_return(:body => UPDATE_FIXTURE_UTF8)
         at_snapshot do
           @output = start_cli %W{--no-colors update #{@status_latin1}}, %w{y}
         end
@@ -131,8 +126,7 @@ class UpdateStatusTest < TestCase
       before do
         @status_latin1 = "r\xe9sum\xe9"
         @status_utf8 = "r\xc3\xa9sum\xc3\xa9"
-        url_encoded_body = "status=r%c3%a9sum%c3%a9"
-        stub_http_request(:post, UPDATE_URL).with(:body => url_encoded_body).to_return(:body => UPDATE_FIXTURE_UTF8)
+        stub_http_request(:post, UPDATE_URL).with(:body => { 'status' => @status_utf8 }).to_return(:body => UPDATE_FIXTURE_UTF8)
         tmp_kcode('NONE') do
           tmp_env(:LANG => 'latin1') do
             Tweetwine::CharacterEncoding.forget_guess
@@ -153,8 +147,8 @@ class UpdateStatusTest < TestCase
 
   describe "shorten URLs in status update" do
     before do
-      @shorten_rubygems_body = "#{SHORTEN_CONFIG[:url_param_name]}=#{RUBYGEMS_FULL_URL_ENC}"
-      @shorten_rubylang_body = "#{SHORTEN_CONFIG[:url_param_name]}=#{RUBYLANG_FULL_URL_ENC}"
+      @shorten_rubygems_body = { SHORTEN_CONFIG[:url_param_name] => RUBYGEMS_FULL_URL }
+      @shorten_rubylang_body = { SHORTEN_CONFIG[:url_param_name] => RUBYLANG_FULL_URL }
       stub_http_request(SHORTEN_METHOD, SHORTEN_CONFIG[:service_url]).
         with(:body => @shorten_rubygems_body).
         to_return(:body => RUBYGEMS_FIXTURE)
