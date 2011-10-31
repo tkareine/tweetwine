@@ -1,3 +1,8 @@
+=== 0.4.3 released 2011-11-01
+
+* Warn if URL shortening results in no shortened URL
+* Minor cleanups
+
 === 0.4.2 released 2011-05-18
 
 * Fail graciously if config file is invalid
