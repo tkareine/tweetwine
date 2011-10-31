@@ -4,5 +4,5 @@ colors: false
 shorten_urls: 
   service_url: http://is.gd/create.php
   method: post
-  url_param_name: URL
+  url_param_name: url
   xpath_selector: //input[@id='short_url']/@value

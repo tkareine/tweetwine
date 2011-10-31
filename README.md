@@ -81,7 +81,7 @@ enabled via `shorten_urls` field in the configuration file; for example:
     shorten_urls:
       service_url: http://is.gd/create.php
       method: post
-      url_param_name: URL
+      url_param_name: url
       xpath_selector: //input[@id='short_url']/@value
       disable: false    # optional
 
