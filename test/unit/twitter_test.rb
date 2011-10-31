@@ -383,31 +383,6 @@ class TwitterTest < TestCase
         @twitter.update(long_status)
       end
 
-      it "discards obviously invalid shortened URLs, using originals instead" do
-        long_urls = ["http://www.google.fi/", "http://www.w3.org/TR/1999/REC-xpath-19991116"]
-        status = long_urls.join(" and ")
-        short_urls = [nil, ""]
-        twitter_records, internal_records = create_rest_api_status_records({
-          :from_user  => @username,
-          :status     => status
-        })
-        @oauth.expects(:request_signer)
-        http_subresource = mock
-        http_subresource.expects(:post).
-          with({ :status => status }).
-          returns(twitter_records[0].to_json)
-        @rest_api.expects(:[]).
-          with("statuses/update.json").
-          returns(http_subresource)
-        @url_shortener.expects(:shorten).with(long_urls.first).returns(short_urls.first)
-        @url_shortener.expects(:shorten).with(long_urls.last).returns(short_urls.last)
-        @ui.expects(:show_status_preview).with(status)
-        @ui.expects(:confirm).with("Really send?").returns(true)
-        @ui.expects(:info).with("Sent status update.\n\n")
-        @ui.expects(:show_tweets).with(internal_records)
-        @twitter.update(status)
-      end
-
       it "reuses a shortened URL for duplicate long URLs" do
         long_urls = ["http://www.w3.org/TR/1999/REC-xpath-19991116"] * 2
         long_status = long_urls.join(" and ")
@@ -441,6 +416,33 @@ class TwitterTest < TestCase
             :from_user  => @username,
             :status     => @status
           })
+        end
+
+        it "warns if URLs returned from shortening service are not shortened, using originals instead" do
+          long_urls = ["http://www.google.fi/", "http://www.w3.org/TR/1999/REC-xpath-19991116"]
+          status = long_urls.join(" and ")
+          short_urls = [long_urls.first, ""]
+          twitter_records, internal_records = create_rest_api_status_records({
+            :from_user  => @username,
+            :status     => status
+          })
+          @oauth.expects(:request_signer)
+          http_subresource = mock
+          http_subresource.expects(:post).
+            with({ :status => status }).
+            returns(twitter_records[0].to_json)
+          @rest_api.expects(:[]).
+            with("statuses/update.json").
+            returns(http_subresource)
+          @url_shortener.expects(:shorten).with(long_urls.first).returns(short_urls.first)
+          @url_shortener.expects(:shorten).with(long_urls.last).returns(short_urls.last)
+          @ui.expects(:warn).with("No short URL for #{long_urls.first}")
+          @ui.expects(:warn).with("No short URL for #{long_urls.last}")
+          @ui.expects(:show_status_preview).with(status)
+          @ui.expects(:confirm).with("Really send?").returns(true)
+          @ui.expects(:info).with("Sent status update.\n\n")
+          @ui.expects(:show_tweets).with(internal_records)
+          @twitter.update(status)
         end
 
         it "skips shortening URLs if required libraries are not found" do

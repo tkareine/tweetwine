@@ -15,6 +15,7 @@ class UpdateStatusTest < TestCase
   SHORTEN_CONFIG              = read_shorten_config
   SHORTEN_METHOD              = SHORTEN_CONFIG[:method].to_sym
   STATUS_WITH_FULL_URLS       = "ruby links: #{RUBYGEMS_FULL_URL} #{RUBYLANG_FULL_URL}"
+  STATUS_WITH_MIXED_URLS      = "ruby links: #{RUBYGEMS_SHORT_URL} #{RUBYLANG_FULL_URL}"
   STATUS_WITH_SHORT_URLS      = "ruby links: #{RUBYGEMS_SHORT_URL} #{RUBYLANG_SHORT_URL}"
   STATUS_WITHOUT_URLS         = "bored. going to sleep."
   UPDATE_FIXTURE_WITH_URLS    = fixture_file 'update_with_urls.json'
@@ -22,8 +23,9 @@ class UpdateStatusTest < TestCase
   UPDATE_FIXTURE_UTF8         = fixture_file 'update_utf8.json'
   UPDATE_URL                  = "https://api.twitter.com/1/statuses/update.json"
 
-  BODY_WITH_SHORT_URLS  = { 'status' => "ruby links: #{RUBYGEMS_SHORT_URL} #{RUBYLANG_SHORT_URL}" }
-  BODY_WITHOUT_URLS     = { 'status' => 'bored. going to sleep.' }
+  BODY_WITH_SHORT_URLS  = { 'status' => STATUS_WITH_SHORT_URLS }
+  BODY_WITH_MIXED_URLS  = { 'status' => STATUS_WITH_MIXED_URLS }
+  BODY_WITHOUT_URLS     = { 'status' => STATUS_WITHOUT_URLS }
 
   describe "update my status from command line with colorization disabled" do
     before do
@@ -147,14 +149,7 @@ class UpdateStatusTest < TestCase
 
   describe "shorten URLs in status update" do
     before do
-      @shorten_rubygems_body = { SHORTEN_CONFIG[:url_param_name] => RUBYGEMS_FULL_URL }
-      @shorten_rubylang_body = { SHORTEN_CONFIG[:url_param_name] => RUBYLANG_FULL_URL }
-      stub_http_request(SHORTEN_METHOD, SHORTEN_CONFIG[:service_url]).
-        with(:body => @shorten_rubygems_body).
-        to_return(:body => RUBYGEMS_FIXTURE)
-      stub_http_request(SHORTEN_METHOD, SHORTEN_CONFIG[:service_url]).
-        with(:body => @shorten_rubylang_body).
-        to_return(:body => RUBYLANG_FIXTURE)
+      stub_url_shortening(:rubygems => RUBYGEMS_FIXTURE, :rubylang => RUBYLANG_FIXTURE)
       stub_http_request(:post, UPDATE_URL).
         with(:body => BODY_WITH_SHORT_URLS).
         to_return(:body => UPDATE_FIXTURE_WITH_URLS)
@@ -164,11 +159,28 @@ class UpdateStatusTest < TestCase
     end
 
     it "shortens the URLs in the status before sending it" do
-      assert_requested(SHORTEN_METHOD, SHORTEN_CONFIG[:service_url], :body => @shorten_rubygems_body)
-      assert_requested(SHORTEN_METHOD, SHORTEN_CONFIG[:service_url], :body => @shorten_rubylang_body)
+      assert_requested(SHORTEN_METHOD, SHORTEN_CONFIG[:service_url], :body => @request_bodies[:rubygems])
+      assert_requested(SHORTEN_METHOD, SHORTEN_CONFIG[:service_url], :body => @request_bodies[:rubylang])
       @output[1].must_equal STATUS_WITH_SHORT_URLS
       @output[5].must_equal "#{USER}, 9 hours ago:"
       @output[6].must_equal STATUS_WITH_SHORT_URLS
+    end
+  end
+
+  describe "warn if URL shortening results in no shortened URL in status update" do
+    before do
+      stub_url_shortening(:rubygems => RUBYGEMS_FIXTURE, :rubylang => '')
+      stub_http_request(:post, UPDATE_URL).
+        with(:body => BODY_WITH_MIXED_URLS).
+        to_return(:body => UPDATE_FIXTURE_WITH_URLS)
+      at_snapshot do
+        @output = start_cli %W{--no-colors update #{STATUS_WITH_FULL_URLS}}, %w{y}
+      end
+    end
+
+    it "warns which URL was not shortened, falling back to using the original URL" do
+      @output[0].must_equal "Warning: No short URL for #{RUBYLANG_FULL_URL}"
+      @output[2].must_equal STATUS_WITH_MIXED_URLS
     end
   end
 
@@ -187,6 +199,21 @@ class UpdateStatusTest < TestCase
       @output[5].must_equal "#{USER}, 9 hours ago:"
       @output[6].must_equal STATUS_WITH_SHORT_URLS
     end
+  end
+
+  private
+
+  def stub_url_shortening(response_bodies)
+    @request_bodies = {
+      :rubygems => { SHORTEN_CONFIG[:url_param_name] => RUBYGEMS_FULL_URL },
+      :rubylang => { SHORTEN_CONFIG[:url_param_name] => RUBYLANG_FULL_URL }
+    }
+    stub_http_request(SHORTEN_METHOD, SHORTEN_CONFIG[:service_url]).
+      with(:body => @request_bodies[:rubygems]).
+      to_return(:body => response_bodies[:rubygems])
+    stub_http_request(SHORTEN_METHOD, SHORTEN_CONFIG[:service_url]).
+      with(:body => @request_bodies[:rubylang]).
+      to_return(:body => response_bodies[:rubylang])
   end
 end
 

@@ -193,9 +193,12 @@ module Tweetwine
       url_pairs = Uri.
         extract(status, %w{http https}).
         uniq.
-        map { |full_url| [full_url, CLI.url_shortener.shorten(full_url)] }.
-        reject { |(_, short_url)| Support.blank? short_url }
-      url_pairs.each { |(full_url, short_url)| status.gsub!(full_url, short_url) }
+        map { |url| [ url, CLI.url_shortener.shorten(url) ] }
+      failed, succeeded = *url_pairs.partition do |(full_url, short_url)|
+        Support.blank? short_url or full_url == short_url
+      end
+      failed.each { |(full_url, _)| CLI.ui.warn "No short URL for #{full_url}" }
+      succeeded.each { |(full_url, short_url)| status.gsub! full_url, short_url }
     rescue HttpError, LoadError => e
       CLI.ui.warn "#{e}\nSkipping URL shortening..."
     end
