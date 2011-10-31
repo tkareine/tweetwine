@@ -17,7 +17,7 @@ module Tweetwine
           if retries < max_retries
             retries += 1
             timeout = retry_base_wait_timeout**retries
-            CLI.ui.warn("Could not connect -- retrying in #{timeout} seconds")
+            CLI.ui.warn "Could not connect -- retrying in #{timeout} seconds"
             sleep timeout
             retry
           else

@@ -184,8 +184,8 @@ module Tweetwine
         status.dup
       end
       status.strip!
-      shorten_urls_in(status) if CLI.config[:shorten_urls] && !CLI.config[:shorten_urls][:disable]
-      truncate_status(status) if status.length > MAX_STATUS_LENGTH
+      shorten_urls_in status if CLI.config[:shorten_urls] && !CLI.config[:shorten_urls][:disable]
+      truncate_status status if status.length > MAX_STATUS_LENGTH
       status
     end
 
