@@ -82,7 +82,7 @@ end
 
 desc "Profile fetching home timeline"
 task :profile do
-  sh %{bundle exec ruby -I lib -I test benchmark/home_bm.rb}
+  sh %{ruby -rubygems -I lib -I test benchmark/home_bm.rb}
 end
 
 desc "Find code smells"

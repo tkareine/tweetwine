@@ -1,6 +1,8 @@
 #!/usr/bin/env ruby
 # coding: utf-8
 
+gem 'perftools.rb', '~> 0.5.6'
+
 require 'tweetwine'
 require 'perftools'
 require 'support/common_helpers'
