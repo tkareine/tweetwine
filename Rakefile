@@ -5,6 +5,11 @@ require File.expand_path('project', File.dirname(__FILE__))
 require 'rake/clean'
 require 'shellwords'
 
+desc "Benchmark (profile) fetching home timeline"
+task :bm do
+  sh %{ruby -rubygems -I lib -I test benchmark/home_bm.rb}
+end
+
 namespace :gem do
   CLOBBER.include "#{Project.spec[:name]}-*.gem"
 
@@ -78,11 +83,6 @@ namespace :test do
 
   desc "Run all tests"
   task :all => [:unit, :integration]
-end
-
-desc "Profile fetching home timeline"
-task :profile do
-  sh %{ruby -rubygems -I lib -I test benchmark/home_bm.rb}
 end
 
 desc "Find code smells"
