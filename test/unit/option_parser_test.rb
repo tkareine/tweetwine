@@ -35,7 +35,7 @@ class OptionParserTest < TestCase
 
   it "parses from beginning, removing recognized options" do
     args = %w{-u jack foo bar}
-    options = @parser.parse args
+    @parser.parse args
     assert_equal(%w{foo bar}, args)
   end
 

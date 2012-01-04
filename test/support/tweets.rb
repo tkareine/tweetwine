@@ -52,7 +52,7 @@ module Tweetwine::Test
 
     class << self
       def nonrt_fields(fields)
-        DEFAULT_FIELD_VALUES.merge(fields.reject { |(k, v)| k == :rt_user })
+        DEFAULT_FIELD_VALUES.merge(fields.reject { |(k, _)| k == :rt_user })
       end
 
       def create_nonrt_record(fields)
