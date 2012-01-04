@@ -9,23 +9,21 @@ end unless defined? JSON
 require 'tweetwine/version'
 
 module Tweetwine
-  lib_path = File.expand_path(File.dirname(__FILE__))
+  require 'tweetwine/exceptions'
+  require 'tweetwine/basic_object'
 
-  require "#{lib_path}/tweetwine/exceptions"
-  require "#{lib_path}/tweetwine/basic_object"
-
-  autoload :CharacterEncoding,  "#{lib_path}/tweetwine/character_encoding"
-  autoload :CLI,                "#{lib_path}/tweetwine/cli"
-  autoload :Config,             "#{lib_path}/tweetwine/config"
-  autoload :Http,               "#{lib_path}/tweetwine/http"
-  autoload :OAuth,              "#{lib_path}/tweetwine/oauth"
-  autoload :Obfuscate,          "#{lib_path}/tweetwine/obfuscate"
-  autoload :OptionParser,       "#{lib_path}/tweetwine/option_parser"
-  autoload :Promise,            "#{lib_path}/tweetwine/promise"
-  autoload :Support,            "#{lib_path}/tweetwine/support"
-  autoload :Tweet,              "#{lib_path}/tweetwine/tweet"
-  autoload :Twitter,            "#{lib_path}/tweetwine/twitter"
-  autoload :UI,                 "#{lib_path}/tweetwine/ui"
-  autoload :Uri,                "#{lib_path}/tweetwine/uri"
-  autoload :UrlShortener,       "#{lib_path}/tweetwine/url_shortener"
+  autoload :CharacterEncoding,  'tweetwine/character_encoding'
+  autoload :CLI,                'tweetwine/cli'
+  autoload :Config,             'tweetwine/config'
+  autoload :Http,               'tweetwine/http'
+  autoload :OAuth,              'tweetwine/oauth'
+  autoload :Obfuscate,          'tweetwine/obfuscate'
+  autoload :OptionParser,       'tweetwine/option_parser'
+  autoload :Promise,            'tweetwine/promise'
+  autoload :Support,            'tweetwine/support'
+  autoload :Tweet,              'tweetwine/tweet'
+  autoload :Twitter,            'tweetwine/twitter'
+  autoload :UI,                 'tweetwine/ui'
+  autoload :Uri,                'tweetwine/uri'
+  autoload :UrlShortener,       'tweetwine/url_shortener'
 end

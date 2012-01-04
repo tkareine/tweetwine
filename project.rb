@@ -1,14 +1,14 @@
 # coding: utf-8
 
-name = 'tweetwine'
 # Add lib dir to $LOAD_PATH so that `require 'tweetwine/version'`
 # (executed in tests) loads the version file only once on MRI 1.8.7.
-$LOAD_PATH.unshift File.expand_path('lib', File.dirname(__FILE__))
-require "#{name}/version"
+lib_dir = File.expand_path('lib', File.dirname(__FILE__))
+$LOAD_PATH.unshift lib_dir unless $LOAD_PATH.include? lib_dir
+require 'tweetwine/version'
 
 Project = Struct.new('Project', :spec, :dirs, :extra).new(
   {
-    :name         => name,
+    :name         => 'tweetwine',
     :version      => Tweetwine.version.dup,
     :summary      => Tweetwine.summary,
     :description  => '',
