@@ -4,7 +4,8 @@ $EDITOR lib/tweetwine/version.rb        # update version number
 $EDITOR CHANGELOG.rdoc                  # describe history summary
 git diff                                # review the changes
 bundle exec rake gem:build              # check that tests pass
-git commit -am "Bump to release-<version>"
+git add -p
+git commit -m "Bump to release-<version>"
 git tag release-<version>
 git push --tags origin master
 gem push tweetwine-<version>.gem
