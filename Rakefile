@@ -38,7 +38,7 @@ namespace :man do
 
   desc "Build the manual"
   task :build do
-    sh %{ronn -br5 --manual='#{Project.spec[:name].capitalize} Manual' --organization='#{Project.spec[:authors].first}' #{Project.dirs[:man]}/*.ronn}
+    sh %{ronn --html --roff --manual='#{Project.spec[:name].capitalize} Manual' --organization='#{Project.spec[:authors].first}' #{Project.dirs[:man]}/*.ronn}
   end
 
   desc "Show the manual section 7"
