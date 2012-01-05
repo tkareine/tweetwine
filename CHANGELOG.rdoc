@@ -1,3 +1,8 @@
+=== 0.4.4 released 2012-01-06
+
+* Simplify source file autoloading, relying on `lib` beign in $LOAD_PATH
+* Remove interpreter warnings on Ruby 1.9.3
+
 === 0.4.3 released 2011-11-01
 
 * Warn if URL shortening results in no shortened URL
