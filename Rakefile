@@ -13,14 +13,10 @@ end
 namespace :gem do
   CLOBBER.include "#{Project.spec[:name]}-*.gem"
 
-  current_gem = "#{Project.spec[:name]}-#{Project.spec[:version]}.gem"
-
-  file current_gem do |f|
+  desc "Package the software as a gem"
+  task :build => [:"man:build", :"test:all"] do
     sh %{gem build #{Project.spec[:name]}.gemspec}
   end
-
-  desc "Package the software as a gem"
-  task :build => [:"man:build", :"test:all", current_gem]
 
   desc "Install the software as a gem"
   task :install => :build do
