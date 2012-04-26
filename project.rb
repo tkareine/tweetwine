@@ -6,27 +6,25 @@ lib_dir = File.expand_path('lib', File.dirname(__FILE__))
 $LOAD_PATH.unshift lib_dir unless $LOAD_PATH.include? lib_dir
 require 'tweetwine/version'
 
-Project = Struct.new('Project', :spec, :dirs, :extra).new(
-  {
-    :name         => 'tweetwine',
-    :version      => Tweetwine.version.dup,
+name = 'tweetwine'
+version = Tweetwine.version.dup
+
+Project = {
+  :spec => {
+    :name         => name,
+    :version      => version,
     :summary      => Tweetwine.summary,
-    :description  => '',
+    :description  => 'A simple but tasty Twitter agent for command line use, designed for quickly\nshowing the latest tweets.',
     :email        => 'tkareine@gmail.com',
     :homepage     => 'https://github.com/tkareine/tweetwine',
     :authors      => ['Tuomas Kareinen']
   },
-  {
+  :extra => {
+    :title => "#{name} #{version}"
+  },
+  :dir => {
     :man  => 'man',
     :rdoc => 'rdoc',
     :test => 'test'
-  },
-  {}
-)
-
-Project.spec[:description] = <<-END
-A simple but tasty Twitter agent for command line use, designed for quickly
-showing the latest tweets.
-  END
-
-Project.extra[:title] = "#{Project.spec[:name]} #{Project.spec[:version]}"
+  }
+}
