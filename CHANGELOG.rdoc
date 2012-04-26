@@ -1,3 +1,8 @@
+=== 0.4.5 released 2012-04-26
+
+* Fix empty config file handling on Ruby 1.9.3-p194
+* Upgrade gem dependencies for tests
+
 === 0.4.4 released 2012-01-06
 
 * Simplify source file autoloading, relying on `lib` beign in $LOAD_PATH
